@@ -18,7 +18,7 @@
 
     <div id="app" class="w-full min-h-screen bg-white flex flex-col relative">
         
-        <!-- Blinkit Style Clean Top Header -->
+        <!-- Header -->
         <header class="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-40 shadow-xs">
             <div class="flex justify-between items-center mb-2.5">
                 <div>
@@ -29,13 +29,12 @@
                         📍 <span id="addr-text" class="underline ml-1">Select delivery address</span> ▼
                     </p>
                 </div>
-                <!-- Profile Icon Button -->
                 <button onclick="openProfileModal()" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 border border-gray-200 shadow-2xs">
                     👤
                 </button>
             </div>
 
-            <!-- Blinkit Style Search Bar -->
+            <!-- Search Bar -->
             <div class="relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">🔍</span>
                 <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search 'rice, oil, milk'..." class="w-full pl-9 pr-3 py-2.5 bg-gray-100 border border-gray-200 rounded-xl text-xs focus:bg-white focus:border-green-600 outline-none transition font-medium">
@@ -54,7 +53,6 @@
             <div id="view-shop" class="space-y-4">
                 <div id="announcement-box" class="hidden bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-xs text-amber-800 font-bold text-center"></div>
 
-                <!-- Categories Grid (Blinkit Style) -->
                 <div id="shop-content">
                     <h2 class="font-extrabold text-xs text-gray-800 mb-2.5 uppercase tracking-wider">Grocery & Kitchen</h2>
                     <div id="categories-grid" class="grid grid-cols-4 gap-2.5"></div>
@@ -80,7 +78,7 @@
                 </div>
             </div>
 
-            <!-- CART / CHECKOUT VIEW -->
+            <!-- CART VIEW -->
             <div id="view-cart" class="hidden space-y-3 max-w-2xl mx-auto pt-2">
                 <div class="flex justify-between items-center mb-2">
                     <h2 class="font-extrabold text-sm text-gray-900">🛒 Review Cart & Pay</h2>
@@ -100,7 +98,7 @@
                     <h3 class="font-extrabold text-xs text-gray-800 uppercase">💳 Payment Method</h3>
                     <div class="grid grid-cols-2 gap-2">
                         <button onclick="setPaymentMode('COD')" id="pay-cod" class="p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800 shadow-xs">💵 Cash on Delivery</button>
-                        <button onclick="setPaymentMode('Online')" id="pay-online" class="p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700 shadow-xs">💳 Online (Razorpay)</button>
+                        <button onclick="setPaymentMode('Online')" id="pay-online" class="p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700 shadow-sm">💳 Online (Razorpay)</button>
                     </div>
 
                     <button onclick="placeOrder()" id="place-order-btn" class="w-full bg-green-600 text-white py-3 rounded-xl text-xs font-extrabold mt-2 shadow-md">Place Order</button>
@@ -181,7 +179,6 @@
         let activeTab = 'shop';
         let selectedCategory = '';
         let paymentMode = 'COD';
-        let deleteStepOrderId = null;
 
         window.onload = () => {
             if (!currentPhone) {
@@ -195,7 +192,6 @@
 
             fetchStoreData();
             setInterval(fetchStoreData, 6000);
-            checkURLPaymentReturn();
         };
 
         function fetchStoreData() {
@@ -303,9 +299,15 @@
             pGrid.innerHTML = '';
             let items = categories[cat] || {};
             
-            Object.keys(items).forEach(pKey => {
-                if (['status', 'image', 'discountPercent'].includes(pKey)) return;
+            let productKeys = Object.keys(items).filter(k => k !== 'image' && k !== 'discountPercent');
+            if (productKeys.length === 0) {
+                pGrid.innerHTML = '<p class="col-span-2 text-center text-gray-400 text-xs py-10">No products available in this category yet.</p>';
+                return;
+            }
+
+            productKeys.forEach(pKey => {
                 let pr = items[pKey];
+                if (!pr || typeof pr !== 'object' || !pr.name) return;
                 if (query && !pr.name.toLowerCase().includes(query.toLowerCase())) return;
 
                 let priceVal = Number(pr.price || 0);
@@ -356,7 +358,7 @@
                 Object.keys(items).forEach(pKey => {
                     if (['status', 'image', 'discountPercent'].includes(pKey)) return;
                     let pr = items[pKey];
-                    if (pr.name.toLowerCase().includes(val.toLowerCase())) {
+                    if (pr && pr.name && pr.name.toLowerCase().includes(val.toLowerCase())) {
                         let priceVal = Number(pr.price || 0);
                         let discVal = Number(pr.discount || 0);
                         let effPrice = priceVal - discVal;
@@ -511,22 +513,6 @@
                         }
                     });
                 });
-        }
-
-        function checkURLPaymentReturn() {
-            const params = new URLSearchParams(window.location.search);
-            if (params.get('status') === 'success' || params.get('razorpay_payment_id')) {
-                let orderId = params.get('order_id');
-                if (orderId) {
-                    fetch(DB_URL + `orders/${orderId}/deliveryStatus.json`, {
-                        method: 'PUT',
-                        body: JSON.stringify('Order Successful')
-                    }).then(() => {
-                        alert("Product successful and verified!");
-                        switchTab('orders');
-                    });
-                }
-            }
         }
     </script>
 </body>
