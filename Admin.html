@@ -3,93 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manor Mart - Admin Dashboard</title>
+    <title>Manor Mart - Advanced Admin Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
       body { font-family: system-ui, -apple-system, sans-serif; background-color: #f3f4f6; margin: 0; padding: 0; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 min-h-screen pb-20">
+<body class="bg-gray-100 text-gray-900 min-h-screen">
 
-    <div class="w-full min-h-screen bg-white flex flex-col relative max-w-3xl mx-auto shadow-xl">
+    <!-- PIN Lock Overlay -->
+    <div id="lock-screen" class="fixed inset-0 bg-green-900 z-50 flex flex-col items-center justify-center p-6 text-white">
+        <span class="text-5xl mb-3">🔐</span>
+        <h1 class="text-xl font-black mb-1">MANOR MART ADMIN</h1>
+        <p class="text-xs text-green-200 mb-6 text-center">Enter 4-digit Security PIN to access control panel:</p>
+        <input type="password" id="pin-input" maxlength="6" placeholder="Enter PIN" class="w-48 p-3 bg-white text-gray-900 rounded-xl text-center font-bold text-lg tracking-widest outline-none mb-4 shadow-lg">
+        <button onclick="verifyPin()" class="w-48 bg-amber-400 text-gray-900 py-3 rounded-xl font-extrabold text-sm shadow-md hover:bg-amber-300 transition">Unlock Dashboard</button>
+        <p class="text-[10px] text-green-300 mt-4">(Default PIN: 1234)</p>
+    </div>
+
+    <div class="w-full min-h-screen bg-white flex flex-col relative max-w-4xl mx-auto shadow-2xl">
         
-        <!-- Admin Header -->
-        <header class="bg-purple-900 text-white p-4 sticky top-0 z-50 shadow-md">
+        <!-- Header -->
+        <header class="bg-green-900 text-white p-4 sticky top-0 z-40 shadow-md">
             <div class="flex justify-between items-center">
                 <div>
-                    <h1 class="font-black text-sm">🛠️ MANOR MART ADMIN</h1>
-                    <p class="text-[10px] text-purple-200">Store Management Panel</p>
+                    <h1 class="font-black text-sm">👑 MANOR MART ADMIN PANEL</h1>
+                    <p class="text-[10px] text-green-200">Complete Management & Control Suite</p>
                 </div>
-                <div id="store-status-badge" class="bg-green-600 px-3 py-1 rounded-full text-xs font-extrabold">
-                    STORE OPEN
-                </div>
+                <button onclick="lockDashboard()" class="bg-green-700 px-3 py-1.5 rounded-lg text-xs font-extrabold shadow-sm">🔒 Lock</button>
             </div>
 
-            <!-- Admin Navigation Tabs -->
-            <div class="flex space-x-1 mt-3 border-t border-purple-800 pt-2">
-                <button onclick="switchAdminTab('orders')" id="atab-orders" class="flex-1 py-1.5 rounded-lg bg-amber-400 text-purple-900 font-extrabold text-xs text-center shadow-sm">📦 Orders</button>
-                <button onclick="switchAdminTab('products')" id="atab-products" class="flex-1 py-1.5 rounded-lg bg-purple-800 text-white font-extrabold text-xs text-center">🛒 Products</button>
-                <button onclick="switchAdminTab('settings')" id="atab-settings" class="flex-1 py-1.5 rounded-lg bg-purple-800 text-white font-extrabold text-xs text-center">⚙️ Settings</button>
+            <!-- Navigation Tabs -->
+            <div class="flex space-x-1 mt-3 border-t border-green-800 pt-2 overflow-x-auto">
+                <button onclick="switchTab('orders')" id="tab-orders" class="flex-1 py-2 rounded-lg bg-amber-400 text-green-900 font-extrabold text-xs text-center shadow-sm">📦 ORDERS</button>
+                <button onclick="switchTab('products')" id="tab-products" class="flex-1 py-2 rounded-lg bg-green-800 text-white font-extrabold text-xs text-center">🛒 PRODUCTS</button>
+                <button onclick="switchTab('boys')" id="tab-boys" class="flex-1 py-2 rounded-lg bg-green-800 text-white font-extrabold text-xs text-center">🚴 BOYS</button>
+                <button onclick="switchTab('offers')" id="tab-offers" class="flex-1 py-2 rounded-lg bg-green-800 text-white font-extrabold text-xs text-center">📢 OFFERS</button>
+                <button onclick="switchTab('settings')" id="tab-settings" class="flex-1 py-2 rounded-lg bg-green-800 text-white font-extrabold text-xs text-center">⚙️ SETTINGS</button>
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main class="flex-1 p-3 pb-20 overflow-y-auto">
+        <!-- Main Content Area -->
+        <main class="flex-1 p-4 pb-24 overflow-y-auto">
             
-            <!-- ORDERS SECTION -->
-            <div id="admin-orders" class="space-y-3">
-                <div class="flex justify-between items-center mb-2">
-                    <h2 class="font-extrabold text-xs text-purple-900 uppercase tracking-wider">📦 Live Customer Orders</h2>
-                    <button onclick="loadAdminOrders()" class="bg-purple-100 text-purple-900 px-2.5 py-1 rounded-lg text-xs font-bold">🔄 Refresh</button>
+            <!-- TAB 1: ORDERS -->
+            <div id="view-orders" class="space-y-4">
+                <div class="bg-white p-3 rounded-2xl border border-green-200 shadow-2xs">
+                    <input type="text" id="order-search" oninput="renderOrders()" placeholder="🔍 Global Search Order by Customer Name, Phone or ID..." class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs outline-none">
                 </div>
-                <div id="admin-orders-list" class="space-y-3">
-                    <p class="text-center text-gray-400 text-xs py-10">Loading orders...</p>
+
+                <div class="flex justify-between items-center bg-white p-3 rounded-2xl border border-green-200 shadow-2xs">
+                    <span id="orders-count-label" class="font-extrabold text-xs text-green-900">Total Orders: 0</span>
+                    <button onclick="loadOrders()" class="bg-green-100 text-green-800 px-3 py-1.5 rounded-lg text-xs font-bold shadow-2xs">🔄 Refresh</button>
+                </div>
+
+                <!-- Normal Pending Orders Section -->
+                <div class="bg-white rounded-2xl border border-green-200 overflow-hidden shadow-2xs">
+                    <button onclick="toggleSection('normal-body')" class="w-full bg-green-800 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
+                        <span>📦 NORMAL PENDING ORDERS</span> <span id="normal-count">(0)</span>
+                    </button>
+                    <div id="normal-body" class="p-3 space-y-3"></div>
+                </div>
+
+                <!-- Express Orders Section -->
+                <div class="bg-white rounded-2xl border border-orange-200 overflow-hidden shadow-2xs">
+                    <button onclick="toggleSection('express-body')" class="w-full bg-orange-600 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
+                        <span>⚡ EXPRESS ORDERS</span> <span id="express-count">(0)</span>
+                    </button>
+                    <div id="express-body" class="p-3 space-y-3 hidden"></div>
+                </div>
+
+                <!-- Earnings & Audit Section -->
+                <div class="bg-white rounded-2xl border border-green-200 overflow-hidden shadow-2xs">
+                    <button onclick="toggleSection('stats-body')" class="w-full bg-green-900 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
+                        <span>📊 Store Earnings & Cash / Online Audit</span> <span>▼</span>
+                    </button>
+                    <div id="stats-body" class="p-3 grid grid-cols-2 gap-2 hidden">
+                        <div class="bg-green-50 p-3 rounded-xl border border-green-100 text-center"><p class="text-[10px] font-bold text-gray-500">Total Orders</p><p id="stat-total-ord" class="text-base font-black text-green-900">0</p></div>
+                        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 text-center"><p class="text-[10px] font-bold text-gray-500">Total Sales</p><p id="stat-total-sales" class="text-base font-black text-blue-900">₹0</p></div>
+                        <div class="bg-orange-50 p-3 rounded-xl border border-orange-100 text-center"><p class="text-[10px] font-bold text-gray-500">Total Cash (COD)</p><p id="stat-total-cash" class="text-base font-black text-orange-900">₹0</p></div>
+                        <div class="bg-purple-50 p-3 rounded-xl border border-purple-100 text-center"><p class="text-[10px] font-bold text-gray-500">Total Online UPI</p><p id="stat-total-online" class="text-base font-black text-purple-900">₹0</p></div>
+                    </div>
+                </div>
+
+                <!-- Delivered Orders Section -->
+                <div class="bg-white rounded-2xl border border-green-200 overflow-hidden shadow-2xs">
+                    <button onclick="toggleSection('delivered-body')" class="w-full bg-green-700 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
+                        <span>✅ DELIVERED ORDERS</span> <span id="delivered-count">(0)</span>
+                    </button>
+                    <div id="delivered-body" class="p-3 space-y-3 hidden"></div>
+                </div>
+
+                <!-- Cancelled Orders Section -->
+                <div class="bg-white rounded-2xl border border-red-200 overflow-hidden shadow-2xs">
+                    <button onclick="toggleSection('cancelled-body')" class="w-full bg-red-700 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
+                        <span>❌ CANCELLED ORDERS</span> <span id="cancelled-count">(0)</span>
+                    </button>
+                    <div id="cancelled-body" class="p-3 space-y-3 hidden"></div>
                 </div>
             </div>
 
-            <!-- PRODUCTS SECTION -->
-            <div id="admin-products" class="hidden space-y-4">
-                <div class="bg-purple-50 p-3.5 rounded-2xl border border-purple-200 space-y-3 shadow-2xs">
-                    <h3 class="font-extrabold text-xs text-purple-900 uppercase">➕ Add / Update Product</h3>
+            <!-- TAB 2: PRODUCTS -->
+            <div id="view-products" class="hidden space-y-4">
+                <div class="bg-white p-3 rounded-2xl border border-green-200 shadow-2xs">
+                    <input type="text" id="global-product-search" oninput="renderProductCatalog()" placeholder="🔍 Search any product to edit/delete..." class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs outline-none">
+                </div>
+
+                <!-- Add Category -->
+                <div class="bg-green-50 p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
+                    <h3 class="font-extrabold text-xs text-green-900 uppercase">📁 Create New Category</h3>
                     <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-600">Category Name:</label>
-                            <input type="text" id="p-cat" class="w-full p-2 bg-white border border-purple-200 rounded-xl text-xs outline-none" placeholder="e.g. Vegetables">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-600">Product Name:</label>
-                            <input type="text" id="p-name" class="w-full p-2 bg-white border border-purple-200 rounded-xl text-xs outline-none" placeholder="e.g. Potato">
-                        </div>
+                        <input type="text" id="new-cat-name" placeholder="Category Name" class="p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                        <input type="text" id="new-cat-img" placeholder="Image URL (Optional)" class="p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
                     </div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-600">Price (₹):</label>
-                            <input type="number" id="p-price" class="w-full p-2 bg-white border border-purple-200 rounded-xl text-xs outline-none" placeholder="30">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-600">Discount (₹):</label>
-                            <input type="number" id="p-disc" class="w-full p-2 bg-white border border-purple-200 rounded-xl text-xs outline-none" placeholder="5">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-600">Unit:</label>
-                            <input type="text" id="p-unit" class="w-full p-2 bg-white border border-purple-200 rounded-xl text-xs outline-none" placeholder="1 kg">
-                        </div>
-                    </div>
-                    <button onclick="saveProduct()" class="w-full bg-purple-900 text-white py-2.5 rounded-xl text-xs font-extrabold shadow-sm">Save Product to Database</button>
+                    <button onclick="addCategory()" class="w-full bg-green-900 text-white py-2.5 rounded-xl text-xs font-extrabold shadow-sm">Add Category</button>
                 </div>
 
-                <div class="bg-white p-3.5 rounded-2xl border border-gray-200 shadow-2xs">
-                    <h3 class="font-extrabold text-xs text-gray-900 uppercase mb-2">📋 Existing Store Catalog</h3>
-                    <div id="admin-catalog-list" class="space-y-2">
-                        <p class="text-xs text-gray-400">Loading catalog...</p>
+                <!-- Add Product -->
+                <div class="bg-green-50 p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
+                    <h3 class="font-extrabold text-xs text-green-900 uppercase">🛍️ Add New Product</h3>
+                    <div id="category-chips-container" class="flex flex-wrap gap-1.5 mb-2"></div>
+                    <input type="text" id="p-name" placeholder="Product Name (e.g. Potato)" class="w-full p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                    <div class="grid grid-cols-3 gap-2">
+                        <input type="number" id="p-price" placeholder="Price (₹)" class="p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                        <input type="number" id="p-disc" placeholder="Discount ₹" class="p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                        <input type="text" id="p-unit" placeholder="Unit (1 kg)" value="1 kg" class="p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
                     </div>
+                    <input type="text" id="p-img" placeholder="Product Image URL (Optional)" class="w-full p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                    <button onclick="addProduct()" class="w-full bg-green-900 text-white py-2.5 rounded-xl text-xs font-extrabold shadow-sm">Save & Add Product</button>
+                </div>
+
+                <!-- Catalog Management Center -->
+                <div class="bg-white p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
+                    <h3 class="font-extrabold text-xs text-green-900 uppercase">🎯 Manage Store Catalog</h3>
+                    <div id="admin-catalog-container" class="space-y-3"></div>
                 </div>
             </div>
 
-            <!-- SETTINGS SECTION -->
-            <div id="admin-settings" class="hidden space-y-4">
-                <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-2xs space-y-3">
-                    <h3 class="font-extrabold text-xs text-purple-900 uppercase">⚙️ Store Operations</h3>
+            <!-- TAB 3: DELIVERY BOYS -->
+            <div id="view-boys" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
+                    <h3 class="font-extrabold text-xs text-green-900 uppercase">🚴 Register Delivery Partner</h3>
+                    <input type="text" id="boy-name" placeholder="Delivery Partner Name" class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs outline-none">
+                    <input type="tel" id="boy-phone" maxlength="10" placeholder="10-digit Phone Number" class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs outline-none">
+                    <input type="text" id="boy-code" placeholder="Secret Access Code" class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs outline-none">
+                    <button onclick="addDeliveryBoy()" class="w-full bg-green-900 text-white py-2.5 rounded-xl text-xs font-extrabold shadow-sm">Register Partner</button>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
+                    <h3 class="font-extrabold text-xs text-green-900 uppercase">📋 Active Delivery Partners</h3>
+                    <div id="delivery-boys-list" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- TAB 4: OFFERS & BROADCAST -->
+            <div id="view-offers" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
+                    <h3 class="font-extrabold text-xs text-green-900 uppercase">📢 Broadcast Push Offers to All Customers</h3>
+                    <p class="text-[11px] text-gray-500">Sabhi customer devices par instant push notification baje gi!</p>
+                    
+                    <label class="text-[10px] font-bold text-gray-600 uppercase">Offer Heading / Title:</label>
+                    <input type="text" id="offer-title" placeholder="e.g. Aaj Sham Ka Bumper Discount! 🔥" class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs outline-none">
+
+                    <label class="text-[10px] font-bold text-gray-600 uppercase">Offer Message:</label>
+                    <textarea id="offer-msg" placeholder="e.g. Sabhi products par 20% flat discount!" class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs h-20 outline-none"></textarea>
+
+                    <button onclick="broadcastOffer()" class="w-full bg-orange-600 text-white py-3 rounded-xl text-xs font-extrabold shadow-md">📢 Send Push Notification</button>
+                    <button onclick="hideCustomerBanner()" class="w-full bg-red-600 text-white py-2.5 rounded-xl text-xs font-bold shadow-sm">🛑 Clear / Hide App Banner</button>
+                </div>
+            </div>
+
+            <!-- TAB 5: SETTINGS -->
+            <div id="view-settings" class="hidden space-y-4">
+                <div class="bg-white p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
+                    <h3 class="font-extrabold text-xs text-green-900 uppercase">⚙️ Store Control Center</h3>
+                    
                     <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
                         <div>
                             <p class="font-bold text-xs">Store Open / Close</p>
@@ -98,204 +186,545 @@
                         <button onclick="toggleStoreOpen()" id="store-toggle-btn" class="px-4 py-2 bg-green-600 text-white font-extrabold text-xs rounded-xl shadow-xs">OPEN</button>
                     </div>
 
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-600">Delivery Radius Limit (KM):</label>
-                        <input type="number" id="set-radius" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold mt-1 outline-none" placeholder="2">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-600">Announcement / Notice:</label>
-                        <input type="text" id="set-announcement" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold mt-1 outline-none" placeholder="e.g. Fresh stock arrived today!">
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-600">Radius (KM):</label>
+                            <input type="number" id="set-radius" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none mt-1">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-600">Min Order (₹):</label>
+                            <input type="number" id="set-minord" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none mt-1">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-600">Express Time:</label>
+                            <input type="text" id="set-exptime" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none mt-1">
+                        </div>
                     </div>
 
-                    <button onclick="saveStoreSettings()" class="w-full bg-purple-900 text-white py-3 rounded-xl text-xs font-extrabold shadow-md">Save Settings</button>
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-600">Store Name:</label>
+                        <input type="text" id="set-storename" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none mt-1">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-600">Admin Security PIN:</label>
+                        <input type="text" id="set-pin" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none mt-1">
+                    </div>
+
+                    <button onclick="saveSettings()" class="w-full bg-green-900 text-white py-3 rounded-xl text-xs font-extrabold shadow-md mt-2">💾 Save Settings Live</button>
                 </div>
             </div>
 
         </main>
     </div>
 
+    <!-- Edit Product Modal -->
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-5 w-full max-w-md space-y-3 shadow-2xl">
+            <h3 class="font-extrabold text-sm text-green-900 uppercase">✏️ Edit Product</h3>
+            <input type="hidden" id="edit-cat">
+            <input type="hidden" id="edit-id">
+            
+            <label class="text-[10px] font-bold text-gray-600">Product Name:</label>
+            <input type="text" id="edit-name" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium">
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-600">Price (₹):</label>
+                    <input type="number" id="edit-price" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-600">Discount (₹):</label>
+                    <input type="number" id="edit-disc" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium">
+                </div>
+            </div>
+
+            <label class="text-[10px] font-bold text-gray-600">Unit:</label>
+            <input type="text" id="edit-unit" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium">
+
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeEditModal()" class="flex-1 bg-gray-300 text-gray-700 py-2.5 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="saveEditedProduct()" class="flex-1 bg-green-900 text-white py-2.5 rounded-xl text-xs font-bold">Save</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const DB_URL = "https://manormart-b14cd-default-rtdb.firebaseio.com/";
-        let storeData = {};
-        let currentAdminTab = 'orders';
+        let adminPin = '1234';
+        let storeData = { categories: {}, orders: {}, deliveryBoys: {}, settings: {} };
+        let selectedProductCat = '';
+        let confirmState = {};
 
         window.onload = () => {
-            fetchAdminData();
-            setInterval(fetchAdminData, 6000);
+            loadSettingsAndPin();
+            setInterval(loadOrdersOnly, 5000);
         };
 
-        function fetchAdminData() {
-            fetch(DB_URL + ".json")
-                .then(res => res.json())
-                .then(data => {
-                    if (!data) return;
-                    storeData = data;
-                    if (currentAdminTab === 'orders') renderAdminOrders();
-                    if (currentAdminTab === 'products') renderAdminCatalog();
-                    if (data.settings) {
-                        let isOpen = data.settings.storeOpen !== false;
-                        let btn = document.getElementById('store-toggle-btn');
-                        let badge = document.getElementById('store-status-badge');
-                        if (isOpen) {
-                            btn.innerText = "OPEN";
-                            btn.className = "px-4 py-2 bg-green-600 text-white font-extrabold text-xs rounded-xl shadow-xs";
-                            badge.innerText = "STORE OPEN";
-                            badge.className = "bg-green-600 px-3 py-1 rounded-full text-xs font-extrabold text-white";
-                        } else {
-                            btn.innerText = "CLOSED";
-                            btn.className = "px-4 py-2 bg-red-600 text-white font-extrabold text-xs rounded-xl shadow-xs";
-                            badge.innerText = "STORE CLOSED";
-                            badge.className = "bg-red-600 px-3 py-1 rounded-full text-xs font-extrabold text-white";
-                        }
-                        document.getElementById('set-radius').value = data.settings.radiusKm || 2;
-                        document.getElementById('set-announcement').value = data.settings.adminNote || '';
-                    }
-                }).catch(e => console.log(e));
-        }
-
-        function switchAdminTab(tab) {
-            currentAdminTab = tab;
-            ['orders', 'products', 'settings'].forEach(t => {
-                document.getElementById('admin-' + t)?.classList.add('hidden');
-                document.getElementById('atab-' + t)?.classList.remove('bg-amber-400', 'text-purple-900', 'shadow-sm');
-                document.getElementById('atab-' + t)?.classList.add('bg-purple-800', 'text-white');
-            });
-            document.getElementById('admin-' + tab)?.classList.remove('hidden');
-            let activeBtn = document.getElementById('atab-' + tab);
-            if (activeBtn) {
-                activeBtn.classList.remove('bg-purple-800', 'text-white');
-                activeBtn.classList.add('bg-amber-400', 'text-purple-900', 'shadow-sm');
+        function verifyPin() {
+            let pin = document.getElementById('pin-input').value.trim();
+            if (pin === adminPin) {
+                document.getElementById('lock-screen').classList.add('hidden');
+                loadAllData();
+            } else {
+                alert("Incorrect Admin Security PIN!");
             }
-
-            if (tab === 'orders') renderAdminOrders();
-            if (tab === 'products') renderAdminCatalog();
         }
 
-        function renderAdminOrders() {
-            let container = document.getElementById('admin-orders-list');
-            container.innerHTML = '';
-            let orders = storeData.orders || {};
-            let keys = Object.keys(orders).reverse();
+        function lockDashboard() {
+            document.getElementById('lock-screen').classList.remove('hidden');
+            document.getElementById('pin-input').value = '';
+        }
 
-            if (keys.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-400 text-xs py-10">No orders received yet.</p>';
+        function switchTab(tab) {
+            ['orders', 'products', 'boys', 'offers', 'settings'].forEach(t => {
+                document.getElementById('view-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).className = "flex-1 py-2 rounded-lg bg-green-800 text-white font-extrabold text-xs text-center";
+            });
+            document.getElementById('view-' + tab).classList.remove('hidden');
+            document.getElementById('tab-' + tab).className = "flex-1 py-2 rounded-lg bg-amber-400 text-green-900 font-extrabold text-xs text-center shadow-sm";
+
+            if (tab === 'orders') loadOrders();
+            if (tab === 'products') renderProductCatalog();
+            if (tab === 'boys') renderDeliveryBoys();
+            if (tab === 'settings') loadSettingsValues();
+        }
+
+        function toggleSection(id) {
+            let el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+
+        function loadAllData() {
+            fetch(DB_URL + ".json").then(r => r.json()).then(data => {
+                if (!data) return;
+                storeData = data;
+                renderOrders();
+                renderProductCatalog();
+                renderDeliveryBoys();
+            });
+        }
+
+        function loadOrders() {
+            fetch(DB_URL + "orders.json").then(r => r.json()).then(data => {
+                if (data) storeData.orders = data;
+                else storeData.orders = {};
+                renderOrders();
+            });
+        }
+
+        function loadOrdersOnly() {
+            fetch(DB_URL + "orders.json").then(r => r.json()).then(data => {
+                if (data) {
+                    storeData.orders = data;
+                    renderOrders();
+                }
+            }).catch(e => {});
+        }
+
+        function loadSettingsAndPin() {
+            fetch(DB_URL + "settings.json").then(r => r.json()).then(data => {
+                if (data) {
+                    storeData.settings = data;
+                    if (data.pin) adminPin = data.pin;
+                }
+            });
+        }
+
+        function renderOrders() {
+            let ordersObj = storeData.orders || {};
+            let list = Object.keys(ordersObj).map(k => ({ id: k, ...ordersObj[k] })).reverse();
+            let search = document.getElementById('order-search').value.toLowerCase();
+
+            let filtered = list.filter(ord => {
+                if (!search) return true;
+                return (ord.name && ord.name.toLowerCase().includes(search)) ||
+                       (ord.phone && ord.phone.includes(search)) ||
+                       (ord.id && ord.id.toLowerCase().includes(search));
+            });
+
+            document.getElementById('orders-count-label').innerText = `Total Orders: ${list.length} (Filtered: ${filtered.length})`;
+
+            let normalList = filtered.filter(o => o.deliveryType !== 'Express' && o.deliveryStatus !== 'Delivered' && o.deliveryStatus !== 'Cancelled');
+            let expressList = filtered.filter(o => o.deliveryType === 'Express' && o.deliveryStatus !== 'Delivered' && o.deliveryStatus !== 'Cancelled');
+            let deliveredList = filtered.filter(o => o.deliveryStatus === 'Delivered');
+            let cancelledList = filtered.filter(o => o.deliveryStatus === 'Cancelled');
+
+            document.getElementById('normal-count').innerText = `(${normalList.length})`;
+            document.getElementById('express-count').innerText = `(${expressList.length})`;
+            document.getElementById('delivered-count').innerText = `(${deliveredList.length})`;
+            document.getElementById('cancelled-count').innerText = `(${cancelledList.length})`;
+
+            // Render stats
+            let totalSales = 0, totalCash = 0, totalOnline = 0;
+            list.forEach(o => {
+                let v = Number(o.total || 0);
+                totalSales += v;
+                if (o.payment === 'Online') totalOnline += v;
+                else totalCash += v;
+            });
+            document.getElementById('stat-total-ord').innerText = list.length;
+            document.getElementById('stat-total-sales').innerText = '₹' + totalSales;
+            document.getElementById('stat-total-cash').innerText = '₹' + totalCash;
+            document.getElementById('stat-total-online').innerText = '₹' + totalOnline;
+
+            renderOrderGroup('normal-body', normalList);
+            renderOrderGroup('express-body', expressList);
+            renderOrderGroup('delivered-body', deliveredList);
+            renderOrderGroup('cancelled-body', cancelledList);
+        }
+
+        function renderOrderGroup(containerId, ordersArr) {
+            let con = document.getElementById(containerId);
+            con.innerHTML = '';
+            if (ordersArr.length === 0) {
+                con.innerHTML = '<p class="text-center text-gray-400 text-xs py-4">No orders in this section.</p>';
                 return;
             }
 
-            keys.forEach(k => {
-                let ord = orders[k];
-                let itemsList = Object.values(ord.items || {}).map(i => `• ${i.name} (${i.unit}) x ${i.qty}`).join('<br>');
+            ordersArr.forEach(ord => {
+                let itemsStr = Object.values(ord.items || {}).map(i => `• ${i.name} (${i.unit}) x ${i.qty}`).join('<br>');
+                let boysObj = storeData.deliveryBoys || {};
+                let boysBtns = Object.keys(boysObj).map(bk => {
+                    let b = boysObj[bk];
+                    return `<button onclick="assignBoy('${ord.id}', '${b.name}', '${b.phone}')" class="bg-green-700 text-white px-2 py-1 rounded text-[10px] font-bold mr-1 mb-1">${b.name}</button>`;
+                }).join('');
 
-                container.innerHTML += `
-                    <div class="bg-white p-3.5 rounded-2xl border border-purple-200 shadow-2xs space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="font-extrabold text-purple-900 text-xs">ORDER #${ord.id.slice(-6)}</span>
-                            <span class="font-extrabold text-green-700 text-xs">₹${ord.total} (${ord.payment})</span>
+                con.innerHTML += `
+                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs space-y-2">
+                        <div class="flex justify-between font-extrabold text-green-900">
+                            <span>ORDER #${ord.id.slice(-6)}</span>
+                            <span class="text-green-700">₹${ord.total} (${ord.payment})</span>
                         </div>
-                        <p class="text-[11px] text-gray-700 font-medium">👤 <strong>${ord.name}</strong> (${ord.phone})</p>
-                        <p class="text-[11px] text-gray-600">📍 ${ord.addr}</p>
-                        <div class="bg-gray-50 p-2 rounded-xl text-[10px] text-gray-700">${itemsList}</div>
-                        
-                        <div class="flex justify-between items-center pt-2 border-t border-gray-100">
-                            <span class="text-[10px] font-bold text-purple-800">Status: ${ord.deliveryStatus}</span>
+                        <p class="text-gray-700">👤 <strong>${ord.name}</strong> (${ord.phone})</p>
+                        <p class="text-gray-600">📍 ${ord.addr}</p>
+                        <div class="bg-white p-2 rounded border border-gray-200 text-[11px]">${itemsStr}</div>
+                        <p class="font-bold text-green-800">Status: ${ord.deliveryStatus || 'Pending'} | Partner: ${ord.assignedBoy || 'None'}</p>
+                        <div class="pt-1 flex flex-wrap gap-1">${boysBtns}</div>
+                        <div class="flex justify-between items-center pt-2 border-t border-gray-200">
                             <div class="space-x-1">
-                                <button onclick="updateOrderStatus('${ord.id}', 'Order Successful')" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold">Accept</button>
-                                <button onclick="updateOrderStatus('${ord.id}', 'Out for Delivery')" class="bg-amber-500 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold">Dispatched</button>
-                                <button onclick="updateOrderStatus('${ord.id}', 'Delivered')" class="bg-green-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold">Delivered</button>
+                                <button onclick="updateStatus('${ord.id}', 'Order Successful')" class="bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold">Accept</button>
+                                <button onclick="updateStatus('${ord.id}', 'Out for Delivery')" class="bg-amber-500 text-white px-2 py-1 rounded text-[10px] font-bold">Dispatched</button>
+                                <button onclick="updateStatus('${ord.id}', 'Delivered')" class="bg-green-600 text-white px-2 py-1 rounded text-[10px] font-bold">Delivered</button>
                             </div>
+                            <button onclick="deleteOrder('${ord.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded text-[10px] font-bold">Delete</button>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function updateOrderStatus(orderId, status) {
+        function updateStatus(orderId, status) {
             fetch(DB_URL + `orders/${orderId}/deliveryStatus.json`, {
                 method: 'PUT',
                 body: JSON.stringify(status)
+            }).then(() => loadOrders());
+        }
+
+        function assignBoy(orderId, boyName, boyPhone) {
+            fetch(DB_URL + `orders/${orderId}.json`, {
+                method: 'PATCH',
+                body: JSON.stringify({ assignedBoy: boyName, deliveryBoyPhone: boyPhone, deliveryStatus: 'Assigned' })
             }).then(() => {
-                alert("Order status updated to: " + status);
-                fetchAdminData();
+                alert(`Assigned to ${boyName}!`);
+                loadOrders();
             });
         }
 
-        function saveProduct() {
-            let cat = document.getElementById('p-cat').value.trim();
+        function deleteOrder(orderId) {
+            if (confirm("Permanently delete this order?")) {
+                fetch(DB_URL + `orders/${orderId}.json`, { method: 'DELETE' }).then(() => loadOrders());
+            }
+        }
+
+        function renderProductCatalog() {
+            let cats = storeData.categories || {};
+            let search = document.getElementById('global-product-search').value.toLowerCase();
+            let container = document.getElementById('admin-catalog-container');
+            container.innerHTML = '';
+
+            // Render category chips for adding products
+            let chipsCon = document.getElementById('category-chips-container');
+            chipsCon.innerHTML = '';
+            Object.keys(cats).forEach(cat => {
+                let isSel = selectedProductCat === cat;
+                chipsCon.innerHTML += `<button onclick="selectProductCat('${cat}')" class="px-2.5 py-1 rounded-lg text-xs font-bold border ${isSel ? 'bg-green-900 text-white border-green-900' : 'bg-gray-100 text-gray-700 border-gray-200'}">${cat}</button>`;
+            });
+            if (!selectedProductCat && Object.keys(cats).length > 0) {
+                selectedProductCat = Object.keys(cats)[0];
+                renderProductCatalog();
+                return;
+            }
+
+            Object.keys(cats).forEach(cat => {
+                let items = cats[cat];
+                let prodKeys = Object.keys(items).filter(k => k !== 'image' && k !== 'discountPercent');
+                
+                let matches = prodKeys.filter(pk => {
+                    let pr = items[pk];
+                    if (!search) return true;
+                    return pr.name && pr.name.toLowerCase().includes(search);
+                });
+
+                if (search && matches.length === 0) return;
+
+                let itemsHtml = matches.map(pk => {
+                    let pr = items[pk];
+                    let isSold = pr.status === 'sold';
+                    return `
+                        <div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-xs">
+                            <div>
+                                <p class="font-bold text-gray-900">${pr.name} (${pr.unit}) ${isSold ? '🔴 [SOLD]' : ''}</p>
+                                <p class="text-[10px] text-gray-500">₹${pr.price} | Disc: ₹${pr.discount || 0}</p>
+                            </div>
+                            <div class="space-x-1">
+                                <button onclick="toggleSold('${cat}', '${pk}', '${pr.status}')" class="px-2 py-1 rounded text-[10px] font-bold text-white ${isSold ? 'bg-red-600' : 'bg-green-600'}">${isSold ? 'Sold' : 'Stock'}</button>
+                                <button onclick="openEditModal('${cat}', '${pk}')" class="bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold">Edit</button>
+                                <button onclick="deleteProduct('${cat}', '${pk}')" class="bg-red-600 text-white px-2 py-1 rounded text-[10px] font-bold">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                container.innerHTML += `
+                    <div class="border border-green-200 rounded-xl p-3 space-y-2 bg-white">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-extrabold text-xs text-green-900 uppercase">📁 ${cat}</h4>
+                            <button onclick="deleteCategory('${cat}')" class="text-red-600 font-bold text-[10px]">Delete Category</button>
+                        </div>
+                        <div class="space-y-1">${itemsHtml || '<p class="text-[10px] text-gray-400">No products here.</p>'}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function selectProductCat(cat) {
+            selectedProductCat = cat;
+            renderProductCatalog();
+        }
+
+        function addCategory() {
+            let name = document.getElementById('new-cat-name').value.trim();
+            let img = document.getElementById('new-cat-img').value.trim();
+            if (!name) return alert("Enter category name!");
+            let enc = encodeURIComponent(name);
+            fetch(DB_URL + `categories/${enc}/image.json`, {
+                method: 'PUT',
+                body: JSON.stringify(img)
+            }).then(() => {
+                alert("Category added!");
+                document.getElementById('new-cat-name').value = '';
+                document.getElementById('new-cat-img').value = '';
+                loadAllData();
+            });
+        }
+
+        function addProduct() {
+            if (!selectedProductCat) return alert("Select a category first!");
             let name = document.getElementById('p-name').value.trim();
-            let price = document.getElementById('p-price').value.trim();
-            let disc = document.getElementById('p-disc').value || '0';
-            let unit = document.getElementById('p-unit').value.trim();
+            let price = Number(document.getElementById('p-price').value);
+            let disc = Number(document.getElementById('p-disc').value || 0);
+            let unit = document.getElementById('p-unit').value.trim() || '1 kg';
+            let img = document.getElementById('p-img').value.trim();
 
-            if (!cat || !name || !price || !unit) return alert("Please fill all product fields.");
+            if (!name || !price) return alert("Enter product name and price!");
+            let id = 'prod_' + Date.now();
+            let prodObj = { id, name, price, discount: disc, unit, image: img, status: 'available', inStock: true };
+            let enc = encodeURIComponent(selectedProductCat);
 
-            let pKey = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-            let prodObj = { name, price: Number(price), discount: Number(disc), unit, inStock: true };
-
-            fetch(DB_URL + `categories/${cat}/${pKey}.json`, {
+            fetch(DB_URL + `categories/${enc}/${id}.json`, {
                 method: 'PUT',
                 body: JSON.stringify(prodObj)
             }).then(() => {
-                alert("Product saved successfully!");
+                alert("Product added successfully!");
                 document.getElementById('p-name').value = '';
                 document.getElementById('p-price').value = '';
                 document.getElementById('p-disc').value = '';
-                document.getElementById('p-unit').value = '';
-                fetchAdminData();
+                document.getElementById('p-img').value = '';
+                loadAllData();
             });
         }
 
-        function renderAdminCatalog() {
-            let container = document.getElementById('admin-catalog-list');
-            container.innerHTML = '';
-            let cats = storeData.categories || {};
+        function toggleSold(cat, pk, status) {
+            let newStatus = status === 'sold' ? 'available' : 'sold';
+            let enc = encodeURIComponent(cat);
+            fetch(DB_URL + `categories/${enc}/${pk}/status.json`, { method: 'PUT', body: JSON.stringify(newStatus) })
+                .then(() => fetch(DB_URL + `categories/${enc}/${pk}/inStock.json`, { method: 'PUT', body: JSON.stringify(newStatus === 'available') }))
+                .then(() => loadAllData());
+        }
 
-            Object.keys(cats).forEach(cat => {
-                container.innerHTML += `<p class="font-extrabold text-xs text-purple-900 mt-2">📁 ${cat}</p>`;
-                let items = cats[cat];
-                Object.keys(items).forEach(pKey => {
-                    if (['status', 'image', 'discountPercent'].includes(pKey)) return;
-                    let pr = items[pKey];
-                    container.innerHTML += `
-                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded-xl border border-gray-100 text-xs">
-                            <span>${pr.name} (${pr.unit}) - ₹${pr.price}</span>
-                            <button onclick="deleteProduct('${cat}', '${pKey}')" class="bg-red-50 text-red-600 px-2 py-0.5 rounded-lg text-[10px] font-bold">Delete</button>
+        function deleteProduct(cat, pk) {
+            if (confirm("Delete this product?")) {
+                let enc = encodeURIComponent(cat);
+                fetch(DB_URL + `categories/${enc}/${pk}.json`, { method: 'DELETE' }).then(() => loadAllData());
+            }
+        }
+
+        function deleteCategory(cat) {
+            if (confirm(`Delete category "${cat}" and all its products?`)) {
+                let enc = encodeURIComponent(cat);
+                fetch(DB_URL + `categories/${enc}.json`, { method: 'DELETE' }).then(() => loadAllData());
+            }
+        }
+
+        function openEditModal(cat, pk) {
+            let pr = storeData.categories[cat][pk];
+            document.getElementById('edit-cat').value = cat;
+            document.getElementById('edit-id').value = pk;
+            document.getElementById('edit-name').value = pr.name || '';
+            document.getElementById('edit-price').value = pr.price || '';
+            document.getElementById('edit-disc').value = pr.discount || '';
+            document.getElementById('edit-unit').value = pr.unit || '';
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+
+        function saveEditedProduct() {
+            let cat = document.getElementById('edit-cat').value;
+            let pk = document.getElementById('edit-id').value;
+            let name = document.getElementById('edit-name').value.trim();
+            let price = Number(document.getElementById('edit-price').value);
+            let disc = Number(document.getElementById('edit-disc').value || 0);
+            let unit = document.getElementById('edit-unit').value.trim();
+
+            if (!name || !price) return alert("Name and Price required!");
+            let enc = encodeURIComponent(cat);
+
+            fetch(DB_URL + `categories/${enc}/${pk}.json`, {
+                method: 'PATCH',
+                body: JSON.stringify({ name, price, discount: disc, unit })
+            }).then(() => {
+                alert("Product updated!");
+                closeEditModal();
+                loadAllData();
+            });
+        }
+
+        function renderDeliveryBoys() {
+            let boys = storeData.deliveryBoys || {};
+            let con = document.getElementById('delivery-boys-list');
+            con.innerHTML = '';
+            Object.keys(boys).forEach(bk => {
+                let b = boys[bk];
+                con.innerHTML += `
+                    <div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-xs">
+                        <div>
+                            <p class="font-bold text-gray-900">${b.name} (${b.phone})</p>
+                            <p class="text-[10px] text-gray-500">Code: ${b.secretCode} | Status: ${b.status || 'Active'}</p>
                         </div>
-                    `;
+                        <button onclick="deleteBoy('${bk}')" class="bg-red-600 text-white px-2 py-1 rounded text-[10px] font-bold">Remove</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addDeliveryBoy() {
+            let name = document.getElementById('boy-name').value.trim();
+            let phone = document.getElementById('boy-phone').value.trim();
+            let code = document.getElementById('boy-code').value.trim();
+            if (!name || phone.length !== 10 || !code) return alert("Enter valid name, 10-digit phone, and secret code!");
+
+            let id = 'boy_' + phone;
+            fetch(DB_URL + `deliveryBoys/${id}.json`, {
+                method: 'PUT',
+                body: JSON.stringify({ name, phone, secretCode: code, status: 'Active' })
+            }).then(() => {
+                alert("Delivery partner registered!");
+                document.getElementById('boy-name').value = '';
+                document.getElementById('boy-phone').value = '';
+                document.getElementById('boy-code').value = '';
+                loadAllData();
+            });
+        }
+
+        function deleteBoy(bk) {
+            if (confirm("Remove this delivery partner?")) {
+                fetch(DB_URL + `deliveryBoys/${bk}.json`, { method: 'DELETE' }).then(() => loadAllData());
+            }
+        }
+
+        function broadcastOffer() {
+            let title = document.getElementById('offer-title').value.trim();
+            let msg = document.getElementById('offer-msg').value.trim();
+            if (!title || !msg) return alert("Enter title and message!");
+
+            fetch(DB_URL + "customerTokens.json").then(r => r.json()).then(tokens => {
+                if (!tokens) return alert("No customer push tokens registered yet.");
+                let tokenList = Object.values(tokens).map(t => t.token).filter(Boolean);
+                if (tokenList.length === 0) return alert("No tokens found.");
+
+                let messages = tokenList.map(token => ({
+                    to: token,
+                    sound: 'default',
+                    title: `🔥 ${title}`,
+                    body: msg,
+                    priority: 'high',
+                    channelId: 'default'
+                }));
+
+                fetch('https://exp.host/--/api/v2/push/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(messages)
+                }).then(() => {
+                    fetch(DB_URL + "settings/adminNote.json", {
+                        method: 'PUT',
+                        body: JSON.stringify(`${title}: ${msg}`)
+                    });
+                    alert(`Offer notification sent to ${tokenList.length} devices!`);
+                    document.getElementById('offer-title').value = '';
+                    document.getElementById('offer-msg').value = '';
                 });
             });
         }
 
-        function deleteProduct(cat, pKey) {
-            if (confirm("Are you sure you want to delete this product?")) {
-                fetch(DB_URL + `categories/${cat}/${pKey}.json`, { method: 'DELETE' })
-                    .then(() => {
-                        alert("Product deleted!");
-                        fetchAdminData();
-                    });
-            }
+        function hideCustomerBanner() {
+            fetch(DB_URL + "settings/adminNote.json", { method: 'PUT', body: JSON.stringify('') })
+                .then(() => alert("Customer app banner hidden!"));
+        }
+
+        function loadSettingsValues() {
+            let s = storeData.settings || {};
+            let isOpen = s.storeOpen !== false;
+            let btn = document.getElementById('store-toggle-btn');
+            btn.innerText = isOpen ? "OPEN" : "CLOSED";
+            btn.className = `px-4 py-2 text-white font-extrabold text-xs rounded-xl shadow-xs ${isOpen ? 'bg-green-600' : 'bg-red-600'}`;
+
+            document.getElementById('set-radius').value = s.radiusKm || 2;
+            document.getElementById('set-minord').value = s.minOrd || 0;
+            document.getElementById('set-exptime').value = s.expDeliveryTime || '45 Mins';
+            document.getElementById('set-storename').value = s.store || 'MANOR MART';
+            document.getElementById('set-pin').value = s.pin || '1234';
         }
 
         function toggleStoreOpen() {
-            let currentOpen = storeData.settings?.storeOpen !== false;
-            let newOpen = !currentOpen;
-            fetch(DB_URL + `settings/storeOpen.json`, {
-                method: 'PUT',
-                body: JSON.stringify(newOpen)
-            }).then(() => {
-                fetchAdminData();
-            });
+            let current = storeData.settings?.storeOpen !== false;
+            let next = !current;
+            fetch(DB_URL + "settings/storeOpen.json", { method: 'PUT', body: JSON.stringify(next) })
+                .then(() => {
+                    loadSettingsAndPin();
+                    setTimeout(loadSettingsValues, 300);
+                });
         }
 
-        function saveStoreSettings() {
-            let radius = document.getElementById('set-radius').value;
-            let note = document.getElementById('set-announcement').value;
+        function saveSettings() {
+            let radius = Number(document.getElementById('set-radius').value || 2);
+            let minOrd = Number(document.getElementById('set-minord').value || 0);
+            let expTime = document.getElementById('set-exptime').value.trim();
+            let storeName = document.getElementById('set-storename').value.trim();
+            let pin = document.getElementById('set-pin').value.trim();
 
-            fetch(DB_URL + `settings.json`, {
+            let payload = { radiusKm: radius, minOrd, expDeliveryTime: expTime, store: storeName, pin };
+
+            fetch(DB_URL + "settings.json", {
                 method: 'PATCH',
-                body: JSON.stringify({ radiusKm: Number(radius) || 2, adminNote: note })
+                body: JSON.stringify(payload)
             }).then(() => {
                 alert("Settings saved successfully!");
-                fetchAdminData();
+                loadSettingsAndPin();
             });
         }
     </script>
