@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manor Mart - Advanced Admin Dashboard</title>
+    <title>Manor Mart - Admin Panel</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
       body { font-family: system-ui, -apple-system, sans-serif; background-color: #f3f4f6; margin: 0; padding: 0; }
@@ -28,15 +28,15 @@
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="font-black text-sm">👑 MANOR MART ADMIN PANEL</h1>
-                    <p class="text-[10px] text-green-200">Complete Management & Control Suite</p>
+                    <p class="text-[10px] text-green-200">Catalog & Operations Management</p>
                 </div>
                 <button onclick="lockDashboard()" class="bg-green-700 px-3 py-1.5 rounded-lg text-xs font-extrabold shadow-sm">🔒 Lock</button>
             </div>
 
             <!-- Navigation Tabs -->
             <div class="flex space-x-1 mt-3 border-t border-green-800 pt-2 overflow-x-auto">
-                <button onclick="switchTab('orders')" id="tab-orders" class="flex-1 py-2 rounded-lg bg-amber-400 text-green-900 font-extrabold text-xs text-center shadow-sm">📦 ORDERS</button>
-                <button onclick="switchTab('products')" id="tab-products" class="flex-1 py-2 rounded-lg bg-green-800 text-white font-extrabold text-xs text-center">🛒 PRODUCTS</button>
+                <button onclick="switchTab('orders')" id="tab-orders" class="flex-1 py-2 rounded-lg bg-green-800 text-white font-extrabold text-xs text-center">📦 ORDERS</button>
+                <button onclick="switchTab('products')" id="tab-products" class="flex-1 py-2 rounded-lg bg-amber-400 text-green-900 font-extrabold text-xs text-center shadow-sm">🛒 PRODUCTS</button>
                 <button onclick="switchTab('boys')" id="tab-boys" class="flex-1 py-2 rounded-lg bg-green-800 text-white font-extrabold text-xs text-center">🚴 BOYS</button>
                 <button onclick="switchTab('offers')" id="tab-offers" class="flex-1 py-2 rounded-lg bg-green-800 text-white font-extrabold text-xs text-center">📢 OFFERS</button>
                 <button onclick="switchTab('settings')" id="tab-settings" class="flex-1 py-2 rounded-lg bg-green-800 text-white font-extrabold text-xs text-center">⚙️ SETTINGS</button>
@@ -47,7 +47,7 @@
         <main class="flex-1 p-4 pb-24 overflow-y-auto">
             
             <!-- TAB 1: ORDERS -->
-            <div id="view-orders" class="space-y-4">
+            <div id="view-orders" class="hidden space-y-4">
                 <div class="bg-white p-3 rounded-2xl border border-green-200 shadow-2xs">
                     <input type="text" id="order-search" oninput="renderOrders()" placeholder="🔍 Global Search Order by Customer Name, Phone or ID..." class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs outline-none">
                 </div>
@@ -57,7 +57,6 @@
                     <button onclick="loadOrders()" class="bg-green-100 text-green-800 px-3 py-1.5 rounded-lg text-xs font-bold shadow-2xs">🔄 Refresh</button>
                 </div>
 
-                <!-- Normal Pending Orders Section -->
                 <div class="bg-white rounded-2xl border border-green-200 overflow-hidden shadow-2xs">
                     <button onclick="toggleSection('normal-body')" class="w-full bg-green-800 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
                         <span>📦 NORMAL PENDING ORDERS</span> <span id="normal-count">(0)</span>
@@ -65,7 +64,6 @@
                     <div id="normal-body" class="p-3 space-y-3"></div>
                 </div>
 
-                <!-- Express Orders Section -->
                 <div class="bg-white rounded-2xl border border-orange-200 overflow-hidden shadow-2xs">
                     <button onclick="toggleSection('express-body')" class="w-full bg-orange-600 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
                         <span>⚡ EXPRESS ORDERS</span> <span id="express-count">(0)</span>
@@ -73,7 +71,6 @@
                     <div id="express-body" class="p-3 space-y-3 hidden"></div>
                 </div>
 
-                <!-- Earnings & Audit Section -->
                 <div class="bg-white rounded-2xl border border-green-200 overflow-hidden shadow-2xs">
                     <button onclick="toggleSection('stats-body')" class="w-full bg-green-900 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
                         <span>📊 Store Earnings & Cash / Online Audit</span> <span>▼</span>
@@ -86,7 +83,6 @@
                     </div>
                 </div>
 
-                <!-- Delivered Orders Section -->
                 <div class="bg-white rounded-2xl border border-green-200 overflow-hidden shadow-2xs">
                     <button onclick="toggleSection('delivered-body')" class="w-full bg-green-700 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
                         <span>✅ DELIVERED ORDERS</span> <span id="delivered-count">(0)</span>
@@ -94,7 +90,6 @@
                     <div id="delivered-body" class="p-3 space-y-3 hidden"></div>
                 </div>
 
-                <!-- Cancelled Orders Section -->
                 <div class="bg-white rounded-2xl border border-red-200 overflow-hidden shadow-2xs">
                     <button onclick="toggleSection('cancelled-body')" class="w-full bg-red-700 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
                         <span>❌ CANCELLED ORDERS</span> <span id="cancelled-count">(0)</span>
@@ -103,39 +98,60 @@
                 </div>
             </div>
 
-            <!-- TAB 2: PRODUCTS -->
-            <div id="view-products" class="hidden space-y-4">
+            <!-- TAB 2: PRODUCTS & CATALOG -->
+            <div id="view-products" class="space-y-4">
                 <div class="bg-white p-3 rounded-2xl border border-green-200 shadow-2xs">
                     <input type="text" id="global-product-search" oninput="renderProductCatalog()" placeholder="🔍 Search any product to edit/delete..." class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs outline-none">
                 </div>
 
-                <!-- Add Category -->
+                <!-- Create Category Card -->
                 <div class="bg-green-50 p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
                     <h3 class="font-extrabold text-xs text-green-900 uppercase">📁 Create New Category</h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="new-cat-name" placeholder="Category Name" class="p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
-                        <input type="text" id="new-cat-img" placeholder="Image URL (Optional)" class="p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input type="text" id="new-cat-name" placeholder="Category Name (e.g. Dry fruits)" class="p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                        <input type="text" id="new-cat-img" placeholder="Category Image URL (https://...)" class="p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
                     </div>
-                    <button onclick="addCategory()" class="w-full bg-green-900 text-white py-2.5 rounded-xl text-xs font-extrabold shadow-sm">Add Category</button>
+                    <button onclick="addCategory()" class="w-full bg-green-900 text-white py-2.5 rounded-xl text-xs font-extrabold shadow-sm hover:bg-green-800 transition">Add Category</button>
                 </div>
 
-                <!-- Add Product -->
+                <!-- Add New Product Form -->
                 <div class="bg-green-50 p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
                     <h3 class="font-extrabold text-xs text-green-900 uppercase">🛍️ Add New Product</h3>
-                    <div id="category-chips-container" class="flex flex-wrap gap-1.5 mb-2"></div>
-                    <input type="text" id="p-name" placeholder="Product Name (e.g. Potato)" class="w-full p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
-                    <div class="grid grid-cols-3 gap-2">
-                        <input type="number" id="p-price" placeholder="Price (₹)" class="p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
-                        <input type="number" id="p-disc" placeholder="Discount ₹" class="p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
-                        <input type="text" id="p-unit" placeholder="Unit (1 kg)" value="1 kg" class="p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                    <div>
+                        <label class="text-[10px] font-bold text-green-800 uppercase block mb-1">Select Category:</label>
+                        <div id="category-chips-container" class="flex flex-wrap gap-1.5 mb-2"></div>
                     </div>
-                    <input type="text" id="p-img" placeholder="Product Image URL (Optional)" class="w-full p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
-                    <button onclick="addProduct()" class="w-full bg-green-900 text-white py-2.5 rounded-xl text-xs font-extrabold shadow-sm">Save & Add Product</button>
+                    <div>
+                        <label class="text-[10px] font-bold text-green-800 uppercase block mb-1">Product Name:</label>
+                        <input type="text" id="p-name" placeholder="e.g. Kaju (Cashew Nuts)" class="w-full p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="text-[10px] font-bold text-green-800 uppercase block mb-1">Price (₹):</label>
+                            <input type="number" id="p-price" placeholder="260" class="w-full p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-green-800 uppercase block mb-1">Discount (₹):</label>
+                            <input type="number" id="p-disc" placeholder="5" class="w-full p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-green-800 uppercase block mb-1">Unit:</label>
+                            <input type="text" id="p-unit" placeholder="250g / 1 kg" value="250g" class="w-full p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-green-800 uppercase block mb-1">Product Image URL:</label>
+                        <input type="text" id="p-img" placeholder="https://cdn.postimage.me/... (Optional)" class="w-full p-2.5 bg-white border border-green-200 rounded-xl text-xs outline-none">
+                    </div>
+                    <button onclick="addProduct()" class="w-full bg-green-900 text-white py-3 rounded-xl text-xs font-extrabold shadow-md hover:bg-green-800 transition mt-1">Save & Add Product</button>
                 </div>
 
-                <!-- Catalog Management Center -->
+                <!-- Manage Store Catalog (Accordion Folders) -->
                 <div class="bg-white p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
-                    <h3 class="font-extrabold text-xs text-green-900 uppercase">🎯 Manage Store Catalog</h3>
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-extrabold text-xs text-green-900 uppercase">🎯 Manage Store Catalog</h3>
+                        <span class="text-[10px] text-gray-400">Tap category header to open/close</span>
+                    </div>
                     <div id="admin-catalog-container" class="space-y-3"></div>
                 </div>
             </div>
@@ -160,15 +176,15 @@
             <div id="view-offers" class="hidden space-y-4">
                 <div class="bg-white p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
                     <h3 class="font-extrabold text-xs text-green-900 uppercase">📢 Broadcast Push Offers to All Customers</h3>
-                    <p class="text-[11px] text-gray-500">Sabhi customer devices par instant push notification baje gi!</p>
+                    <p class="text-[11px] text-gray-500">Notice app ke top par banner ke roop mein dikhega.</p>
                     
-                    <label class="text-[10px] font-bold text-gray-600 uppercase">Offer Heading / Title:</label>
+                    <label class="text-[10px] font-bold text-gray-600 uppercase">Offer Heading / Notice:</label>
                     <input type="text" id="offer-title" placeholder="e.g. Aaj Sham Ka Bumper Discount! 🔥" class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs outline-none">
 
-                    <label class="text-[10px] font-bold text-gray-600 uppercase">Offer Message:</label>
+                    <label class="text-[10px] font-bold text-gray-600 uppercase">Offer Details:</label>
                     <textarea id="offer-msg" placeholder="e.g. Sabhi products par 20% flat discount!" class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs h-20 outline-none"></textarea>
 
-                    <button onclick="broadcastOffer()" class="w-full bg-orange-600 text-white py-3 rounded-xl text-xs font-extrabold shadow-md">📢 Send Push Notification</button>
+                    <button onclick="broadcastOffer()" class="w-full bg-orange-600 text-white py-3 rounded-xl text-xs font-extrabold shadow-md">📢 Post Live Banner Notice</button>
                     <button onclick="hideCustomerBanner()" class="w-full bg-red-600 text-white py-2.5 rounded-xl text-xs font-bold shadow-sm">🛑 Clear / Hide App Banner</button>
                 </div>
             </div>
@@ -176,7 +192,7 @@
             <!-- TAB 5: SETTINGS -->
             <div id="view-settings" class="hidden space-y-4">
                 <div class="bg-white p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
-                    <h3 class="font-extrabold text-xs text-green-900 uppercase">⚙️ Store Control Center</h3>
+                    <h3 class="font-extrabold text-xs text-green-900 uppercase">⚙️ Store Control Center & GPS Configuration</h3>
                     
                     <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
                         <div>
@@ -184,6 +200,20 @@
                             <p class="text-[10px] text-gray-500">Temporarily allow or stop incoming orders</p>
                         </div>
                         <button onclick="toggleStoreOpen()" id="store-toggle-btn" class="px-4 py-2 bg-green-600 text-white font-extrabold text-xs rounded-xl shadow-xs">OPEN</button>
+                    </div>
+
+                    <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 space-y-2">
+                        <p class="font-extrabold text-xs text-blue-900">📍 Hub GPS Coordinates (Geo-Fencing)</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-600">Hub Latitude:</label>
+                                <input type="number" step="any" id="set-lat" placeholder="19.7280" class="w-full p-2 bg-white border border-blue-200 rounded-xl text-xs font-bold outline-none mt-1">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-600">Hub Longitude:</label>
+                                <input type="number" step="any" id="set-lng" placeholder="72.9150" class="w-full p-2 bg-white border border-blue-200 rounded-xl text-xs font-bold outline-none mt-1">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-3 gap-2">
@@ -218,33 +248,75 @@
         </main>
     </div>
 
-    <!-- Edit Product Modal -->
-    <div id="edit-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <!-- Edit Product Modal (With Image URL + Preview) -->
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl p-5 w-full max-w-md space-y-3 shadow-2xl">
-            <h3 class="font-extrabold text-sm text-green-900 uppercase">✏️ Edit Product</h3>
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-extrabold text-sm text-green-900 uppercase">✏️ Edit Product</h3>
+                <button onclick="closeEditModal()" class="text-gray-400 font-bold text-xs">✕</button>
+            </div>
+
             <input type="hidden" id="edit-cat">
             <input type="hidden" id="edit-id">
             
-            <label class="text-[10px] font-bold text-gray-600">Product Name:</label>
-            <input type="text" id="edit-name" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium">
+            <div>
+                <label class="text-[10px] font-bold text-gray-600">Product Name:</label>
+                <input type="text" id="edit-name" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium mt-0.5">
+            </div>
 
             <div class="grid grid-cols-2 gap-2">
                 <div>
                     <label class="text-[10px] font-bold text-gray-600">Price (₹):</label>
-                    <input type="number" id="edit-price" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium">
+                    <input type="number" id="edit-price" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium mt-0.5">
                 </div>
                 <div>
                     <label class="text-[10px] font-bold text-gray-600">Discount (₹):</label>
-                    <input type="number" id="edit-disc" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium">
+                    <input type="number" id="edit-disc" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium mt-0.5">
                 </div>
             </div>
 
-            <label class="text-[10px] font-bold text-gray-600">Unit:</label>
-            <input type="text" id="edit-unit" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium">
+            <div>
+                <label class="text-[10px] font-bold text-gray-600">Unit (e.g. 250g, 1 kg):</label>
+                <input type="text" id="edit-unit" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium mt-0.5">
+            </div>
+
+            <div>
+                <label class="text-[10px] font-bold text-gray-600">Product Image URL:</label>
+                <input type="text" id="edit-img" oninput="previewEditImage(this.value)" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium mt-0.5" placeholder="https://...">
+            </div>
+
+            <!-- Image Preview Box -->
+            <div class="flex items-center space-x-3 bg-gray-50 p-2 rounded-xl border border-gray-200">
+                <img id="edit-img-preview" src="" class="w-12 h-12 object-cover rounded-lg bg-gray-200 border border-gray-300" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'><text x=\'50%\' y=\'50%\' font-size=\'20\' dominant-baseline=\'middle\' text-anchor=\'middle\'>📦</text></svg>'">
+                <p class="text-[10px] text-gray-500">Live Image Preview</p>
+            </div>
 
             <div class="flex space-x-2 pt-2">
-                <button onclick="closeEditModal()" class="flex-1 bg-gray-300 text-gray-700 py-2.5 rounded-xl text-xs font-bold">Cancel</button>
-                <button onclick="saveEditedProduct()" class="flex-1 bg-green-900 text-white py-2.5 rounded-xl text-xs font-bold">Save</button>
+                <button onclick="closeEditModal()" class="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="saveEditedProduct()" class="flex-1 bg-green-900 text-white py-2.5 rounded-xl text-xs font-bold shadow-sm">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Category Modal -->
+    <div id="edit-cat-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
+            <h3 class="font-extrabold text-sm text-green-900 uppercase">📁 Edit Category</h3>
+            <input type="hidden" id="edit-cat-oldname">
+
+            <div>
+                <label class="text-[10px] font-bold text-gray-600">Category Name:</label>
+                <input type="text" id="edit-cat-newname" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium mt-0.5">
+            </div>
+
+            <div>
+                <label class="text-[10px] font-bold text-gray-600">Category Image URL:</label>
+                <input type="text" id="edit-cat-img" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs outline-none font-medium mt-0.5" placeholder="https://...">
+            </div>
+
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeEditCatModal()" class="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="saveEditedCategory()" class="flex-1 bg-green-900 text-white py-2.5 rounded-xl text-xs font-bold shadow-sm">Save Category</button>
             </div>
         </div>
     </div>
@@ -254,7 +326,7 @@
         let adminPin = '1234';
         let storeData = { categories: {}, orders: {}, deliveryBoys: {}, settings: {} };
         let selectedProductCat = '';
-        let confirmState = {};
+        let openCatalogFolder = null; // null = sab band, string = wahi open
 
         window.onload = () => {
             loadSettingsAndPin();
@@ -307,8 +379,7 @@
 
         function loadOrders() {
             fetch(DB_URL + "orders.json").then(r => r.json()).then(data => {
-                if (data) storeData.orders = data;
-                else storeData.orders = {};
+                storeData.orders = data || {};
                 renderOrders();
             });
         }
@@ -355,7 +426,6 @@
             document.getElementById('delivered-count').innerText = `(${deliveredList.length})`;
             document.getElementById('cancelled-count').innerText = `(${cancelledList.length})`;
 
-            // Render stats
             let totalSales = 0, totalCash = 0, totalOnline = 0;
             list.forEach(o => {
                 let v = Number(o.total || 0);
@@ -437,26 +507,40 @@
             }
         }
 
+        // Folder Toggle Logic
+        function toggleCatalogFolder(cat) {
+            if (openCatalogFolder === cat) {
+                openCatalogFolder = null; // dubara tap par band
+            } else {
+                openCatalogFolder = cat; // tap par khule
+            }
+            renderProductCatalog();
+        }
+
+        // Catalog Management & Render
         function renderProductCatalog() {
             let cats = storeData.categories || {};
             let search = document.getElementById('global-product-search').value.toLowerCase();
             let container = document.getElementById('admin-catalog-container');
             container.innerHTML = '';
 
-            // Render category chips for adding products
             let chipsCon = document.getElementById('category-chips-container');
             chipsCon.innerHTML = '';
             Object.keys(cats).forEach(cat => {
-                let isSel = selectedProductCat === cat;
+                let isSel = selectedProductCat.toLowerCase() === cat.toLowerCase();
                 chipsCon.innerHTML += `<button onclick="selectProductCat('${cat}')" class="px-2.5 py-1 rounded-lg text-xs font-bold border ${isSel ? 'bg-green-900 text-white border-green-900' : 'bg-gray-100 text-gray-700 border-gray-200'}">${cat}</button>`;
             });
             if (!selectedProductCat && Object.keys(cats).length > 0) {
                 selectedProductCat = Object.keys(cats)[0];
-                renderProductCatalog();
+            }
+
+            let catKeys = Object.keys(cats);
+            if (catKeys.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-400 text-center py-4">No categories created yet.</p>';
                 return;
             }
 
-            Object.keys(cats).forEach(cat => {
+            catKeys.forEach(cat => {
                 let items = cats[cat];
                 let prodKeys = Object.keys(items).filter(k => k !== 'image' && k !== 'discountPercent');
                 
@@ -468,16 +552,24 @@
 
                 if (search && matches.length === 0) return;
 
+                let isOpen = (openCatalogFolder === cat) || (search.length > 0);
+                let catImg = items.image ? `<img src="${items.image}" class="w-6 h-6 object-cover rounded-full border border-gray-200 mr-2" onerror="this.remove()">` : '';
+
                 let itemsHtml = matches.map(pk => {
                     let pr = items[pk];
-                    let isSold = pr.status === 'sold';
+                    let isSold = pr.status === 'sold' || pr.inStock === false;
+                    let prImg = pr.image ? `<img src="${pr.image}" class="w-8 h-8 object-cover rounded-lg mr-2 border border-gray-200" onerror="this.remove()">` : '';
+
                     return `
                         <div class="flex justify-between items-center bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-xs">
-                            <div>
-                                <p class="font-bold text-gray-900">${pr.name} (${pr.unit}) ${isSold ? '🔴 [SOLD]' : ''}</p>
-                                <p class="text-[10px] text-gray-500">₹${pr.price} | Disc: ₹${pr.discount || 0}</p>
+                            <div class="flex items-center flex-1 mr-2 truncate">
+                                ${prImg}
+                                <div class="truncate">
+                                    <p class="font-bold text-gray-900 truncate">${pr.name} (${pr.unit || ''}) ${isSold ? '<span class="text-red-600 font-bold">[SOLD]</span>' : ''}</p>
+                                    <p class="text-[10px] text-gray-500">₹${pr.price} | Disc: ₹${pr.discount || 0}</p>
+                                </div>
                             </div>
-                            <div class="space-x-1">
+                            <div class="space-x-1 flex items-center">
                                 <button onclick="toggleSold('${cat}', '${pk}', '${pr.status}')" class="px-2 py-1 rounded text-[10px] font-bold text-white ${isSold ? 'bg-red-600' : 'bg-green-600'}">${isSold ? 'Sold' : 'Stock'}</button>
                                 <button onclick="openEditModal('${cat}', '${pk}')" class="bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold">Edit</button>
                                 <button onclick="deleteProduct('${cat}', '${pk}')" class="bg-red-600 text-white px-2 py-1 rounded text-[10px] font-bold">Delete</button>
@@ -487,12 +579,26 @@
                 }).join('');
 
                 container.innerHTML += `
-                    <div class="border border-green-200 rounded-xl p-3 space-y-2 bg-white">
-                        <div class="flex justify-between items-center">
-                            <h4 class="font-extrabold text-xs text-green-900 uppercase">📁 ${cat}</h4>
-                            <button onclick="deleteCategory('${cat}')" class="text-red-600 font-bold text-[10px]">Delete Category</button>
+                    <div class="border border-green-200 rounded-2xl overflow-hidden bg-white shadow-2xs">
+                        <!-- Folder Header (Tap to Open / Close) -->
+                        <div class="bg-green-50 p-3 flex justify-between items-center cursor-pointer border-b border-green-100" onclick="toggleCatalogFolder('${cat}')">
+                            <div class="flex items-center flex-1">
+                                ${catImg}
+                                <span class="font-black text-xs text-green-900 uppercase">📁 ${cat}</span>
+                                <span class="text-[10px] font-bold text-green-700 ml-2 bg-green-200 px-2 py-0.5 rounded-full">(${matches.length} items)</span>
+                                <span class="text-xs text-green-800 ml-2 font-black">${isOpen ? '▲' : '▼'}</span>
+                            </div>
+
+                            <div class="space-x-1" onclick="event.stopPropagation()">
+                                <button onclick="openEditCatModal('${cat}')" class="text-blue-700 bg-blue-50 border border-blue-200 px-2 py-1 rounded-lg text-[10px] font-bold">✏️ Edit</button>
+                                <button onclick="deleteCategory('${cat}')" class="text-red-700 bg-red-50 border border-red-200 px-2 py-1 rounded-lg text-[10px] font-bold">🗑️ Delete</button>
+                            </div>
                         </div>
-                        <div class="space-y-1">${itemsHtml || '<p class="text-[10px] text-gray-400">No products here.</p>'}</div>
+
+                        <!-- Folder Body (Toggled) -->
+                        <div class="p-3 space-y-2 ${isOpen ? '' : 'hidden'}">
+                            ${itemsHtml || '<p class="text-[10px] text-gray-400 text-center py-2">No products in this category.</p>'}
+                        </div>
                     </div>
                 `;
             });
@@ -503,22 +609,25 @@
             renderProductCatalog();
         }
 
+        // Add Category (Saving image cleanly)
         function addCategory() {
             let name = document.getElementById('new-cat-name').value.trim();
             let img = document.getElementById('new-cat-img').value.trim();
             if (!name) return alert("Enter category name!");
             let enc = encodeURIComponent(name);
+
             fetch(DB_URL + `categories/${enc}/image.json`, {
                 method: 'PUT',
                 body: JSON.stringify(img)
             }).then(() => {
-                alert("Category added!");
+                alert("Category added successfully!");
                 document.getElementById('new-cat-name').value = '';
                 document.getElementById('new-cat-img').value = '';
                 loadAllData();
             });
         }
 
+        // Add Product
         function addProduct() {
             if (!selectedProductCat) return alert("Select a category first!");
             let name = document.getElementById('p-name').value.trim();
@@ -567,6 +676,7 @@
             }
         }
 
+        // Edit Product Modal Handlers
         function openEditModal(cat, pk) {
             let pr = storeData.categories[cat][pk];
             document.getElementById('edit-cat').value = cat;
@@ -575,7 +685,16 @@
             document.getElementById('edit-price').value = pr.price || '';
             document.getElementById('edit-disc').value = pr.discount || '';
             document.getElementById('edit-unit').value = pr.unit || '';
+            
+            let imgUrl = pr.image || '';
+            document.getElementById('edit-img').value = imgUrl;
+            previewEditImage(imgUrl);
+
             document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function previewEditImage(url) {
+            document.getElementById('edit-img-preview').src = url || '';
         }
 
         function closeEditModal() {
@@ -589,18 +708,65 @@
             let price = Number(document.getElementById('edit-price').value);
             let disc = Number(document.getElementById('edit-disc').value || 0);
             let unit = document.getElementById('edit-unit').value.trim();
+            let image = document.getElementById('edit-img').value.trim();
 
             if (!name || !price) return alert("Name and Price required!");
             let enc = encodeURIComponent(cat);
 
             fetch(DB_URL + `categories/${enc}/${pk}.json`, {
                 method: 'PATCH',
-                body: JSON.stringify({ name, price, discount: disc, unit })
+                body: JSON.stringify({ name, price, discount: disc, unit, image })
             }).then(() => {
-                alert("Product updated!");
+                alert("Product updated with photo successfully!");
                 closeEditModal();
                 loadAllData();
             });
+        }
+
+        // Edit Category Modal Handlers
+        function openEditCatModal(cat) {
+            document.getElementById('edit-cat-oldname').value = cat;
+            document.getElementById('edit-cat-newname').value = cat;
+            document.getElementById('edit-cat-img').value = storeData.categories[cat]?.image || '';
+            document.getElementById('edit-cat-modal').classList.remove('hidden');
+        }
+
+        function closeEditCatModal() {
+            document.getElementById('edit-cat-modal').classList.add('hidden');
+        }
+
+        function saveEditedCategory() {
+            let oldName = document.getElementById('edit-cat-oldname').value;
+            let newName = document.getElementById('edit-cat-newname').value.trim();
+            let imgUrl = document.getElementById('edit-cat-img').value.trim();
+
+            if (!newName) return alert("Category name cannot be empty!");
+
+            let encOld = encodeURIComponent(oldName);
+            let encNew = encodeURIComponent(newName);
+
+            if (oldName !== newName) {
+                fetch(DB_URL + `categories/${encOld}.json`).then(r => r.json()).then(catData => {
+                    let updated = catData || {};
+                    updated.image = imgUrl;
+                    fetch(DB_URL + `categories/${encNew}.json`, { method: 'PUT', body: JSON.stringify(updated) })
+                        .then(() => fetch(DB_URL + `categories/${encOld}.json`, { method: 'DELETE' }))
+                        .then(() => {
+                            alert("Category renamed and photo saved!");
+                            closeEditCatModal();
+                            loadAllData();
+                        });
+                });
+            } else {
+                fetch(DB_URL + `categories/${encOld}/image.json`, {
+                    method: 'PUT',
+                    body: JSON.stringify(imgUrl)
+                }).then(() => {
+                    alert("Category photo updated!");
+                    closeEditCatModal();
+                    loadAllData();
+                });
+            }
         }
 
         function renderDeliveryBoys() {
@@ -649,35 +815,16 @@
         function broadcastOffer() {
             let title = document.getElementById('offer-title').value.trim();
             let msg = document.getElementById('offer-msg').value.trim();
-            if (!title || !msg) return alert("Enter title and message!");
+            if (!title) return alert("Enter title or notice!");
 
-            fetch(DB_URL + "customerTokens.json").then(r => r.json()).then(tokens => {
-                if (!tokens) return alert("No customer push tokens registered yet.");
-                let tokenList = Object.values(tokens).map(t => t.token).filter(Boolean);
-                if (tokenList.length === 0) return alert("No tokens found.");
-
-                let messages = tokenList.map(token => ({
-                    to: token,
-                    sound: 'default',
-                    title: `🔥 ${title}`,
-                    body: msg,
-                    priority: 'high',
-                    channelId: 'default'
-                }));
-
-                fetch('https://exp.host/--/api/v2/push/send', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(messages)
-                }).then(() => {
-                    fetch(DB_URL + "settings/adminNote.json", {
-                        method: 'PUT',
-                        body: JSON.stringify(`${title}: ${msg}`)
-                    });
-                    alert(`Offer notification sent to ${tokenList.length} devices!`);
-                    document.getElementById('offer-title').value = '';
-                    document.getElementById('offer-msg').value = '';
-                });
+            let bannerText = msg ? `${title}: ${msg}` : title;
+            fetch(DB_URL + "settings/adminNote.json", {
+                method: 'PUT',
+                body: JSON.stringify(bannerText)
+            }).then(() => {
+                alert("Notice banner updated live on customer app!");
+                document.getElementById('offer-title').value = '';
+                document.getElementById('offer-msg').value = '';
             });
         }
 
@@ -693,6 +840,8 @@
             btn.innerText = isOpen ? "OPEN" : "CLOSED";
             btn.className = `px-4 py-2 text-white font-extrabold text-xs rounded-xl shadow-xs ${isOpen ? 'bg-green-600' : 'bg-red-600'}`;
 
+            document.getElementById('set-lat').value = s.hubLat || '19.7280';
+            document.getElementById('set-lng').value = s.hubLng || '72.9150';
             document.getElementById('set-radius').value = s.radiusKm || 2;
             document.getElementById('set-minord').value = s.minOrd || 0;
             document.getElementById('set-exptime').value = s.expDeliveryTime || '45 Mins';
@@ -711,19 +860,21 @@
         }
 
         function saveSettings() {
+            let lat = document.getElementById('set-lat').value.trim();
+            let lng = document.getElementById('set-lng').value.trim();
             let radius = Number(document.getElementById('set-radius').value || 2);
             let minOrd = Number(document.getElementById('set-minord').value || 0);
             let expTime = document.getElementById('set-exptime').value.trim();
             let storeName = document.getElementById('set-storename').value.trim();
             let pin = document.getElementById('set-pin').value.trim();
 
-            let payload = { radiusKm: radius, minOrd, expDeliveryTime: expTime, store: storeName, pin };
+            let payload = { hubLat: lat, hubLng: lng, radiusKm: radius, minOrd, expDeliveryTime: expTime, store: storeName, pin };
 
             fetch(DB_URL + "settings.json", {
                 method: 'PATCH',
                 body: JSON.stringify(payload)
             }).then(() => {
-                alert("Settings saved successfully!");
+                alert("Settings & GPS coordinates saved successfully!");
                 loadSettingsAndPin();
             });
         }
