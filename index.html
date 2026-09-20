@@ -7,6 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
       body { font-family: system-ui, -apple-system, sans-serif; background-color: #f8f9f8; margin: 0; padding: 0; }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       @keyframes slideUp {
         from { transform: translateY(100%); opacity: 0; }
         to { transform: translateY(0); opacity: 1; }
@@ -24,9 +26,10 @@
                 <div>
                     <div class="flex items-center space-x-1.5">
                         <span class="text-xs font-black tracking-tight text-gray-900">Delivery in 13 minutes</span>
+                        <span id="geo-status-badge" class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded">Checking GPS...</span>
                     </div>
-                    <p id="store-address-label" onclick="openProfileModal()" class="text-[11px] text-gray-500 font-medium truncate mt-0.5 cursor-pointer flex items-center">
-                        📍 <span id="addr-text" class="underline ml-1">Select delivery address</span> ▼
+                    <p id="store-address-label" onclick="triggerGpsLocation()" class="text-[11px] text-gray-500 font-medium truncate mt-0.5 cursor-pointer flex items-center">
+                        📍 <span id="addr-text" class="underline ml-1">Tap to detect live GPS</span> ▼
                     </p>
                 </div>
                 <button onclick="openProfileModal()" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 border border-gray-200 shadow-2xs">
@@ -50,30 +53,39 @@
         <main class="flex-1 p-3 pb-28">
             
             <!-- SHOP TAB -->
-            <div id="view-shop" class="space-y-4">
+            <div id="view-shop" class="space-y-3">
                 
-                <!-- Category Section -->
-                <div>
+                <!-- Normal Grid View (Jab koi category khuli na ho) -->
+                <div id="home-category-section">
                     <div class="flex justify-between items-center mb-2">
-                        <h2 class="font-extrabold text-xs text-gray-800 uppercase tracking-wider">Grocery & Kitchen</h2>
-                        <button id="clear-cat-btn" onclick="clearCategoryFilter()" class="hidden text-[11px] text-green-700 font-bold underline">Show All</button>
+                        <h2 class="font-extrabold text-xs text-gray-800 uppercase tracking-wider">GROCERY & KITCHEN</h2>
                     </div>
                     <div id="categories-grid" class="grid grid-cols-4 gap-2.5">
                         <p class="col-span-4 text-center text-gray-400 text-xs py-4">Loading categories...</p>
                     </div>
-                </div>
 
-                <hr class="border-gray-100 my-2">
+                    <hr class="border-gray-100 my-4">
 
-                <!-- Products Display Section -->
-                <div>
                     <div class="flex justify-between items-center mb-3">
-                        <h3 id="current-view-title" class="font-extrabold text-xs text-gray-900 uppercase tracking-wide">📦 All Items</h3>
+                        <h3 class="font-extrabold text-xs text-gray-900 uppercase tracking-wide">🔥 Popular Products</h3>
                         <span id="product-count-badge" class="text-[10px] bg-gray-100 text-gray-600 font-bold px-2 py-0.5 rounded-full">0 items</span>
                     </div>
 
-                    <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        <p class="col-span-2 text-center text-gray-400 text-xs py-8">Loading products...</p>
+                    <div id="home-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+                </div>
+
+                <!-- Blinkit Side-by-Side Category Browser (Category tap hone par) -->
+                <div id="blinkit-split-view" class="hidden flex h-[75vh] border border-gray-100 rounded-2xl overflow-hidden shadow-2xs">
+                    <!-- Left Sidebar (Categories) -->
+                    <div id="sidebar-categories" class="w-24 bg-gray-50 border-r border-gray-200 overflow-y-auto no-scrollbar flex flex-col divide-y divide-gray-100"></div>
+
+                    <!-- Right Column (Products) -->
+                    <div class="flex-1 bg-white p-3 overflow-y-auto">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 id="split-cat-title" class="font-black text-xs text-gray-900 uppercase">CATEGORY</h3>
+                            <button onclick="closeSplitView()" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg font-bold">✕ Close</button>
+                        </div>
+                        <div id="split-products-grid" class="grid grid-cols-2 gap-2.5"></div>
                     </div>
                 </div>
 
@@ -181,14 +193,16 @@
 
     <script>
         const DB_URL = "https://manormart-b14cd-default-rtdb.firebaseio.com/";
+        let storeSettings = { hubLat: 19.7280, hubLng: 72.9150, radiusKm: 10, storeOpen: true };
         let categoriesData = {};
         let allProductsList = [];
         let cart = {};
         let currentPhone = localStorage.getItem('manor_cust_phone') || '';
         let currentName = localStorage.getItem('manor_cust_name') || '';
         let currentAddr = localStorage.getItem('manor_cust_addr') || '';
-        let selectedCategory = '';
+        let activeSplitCategory = null;
         let paymentMode = 'COD';
+        let userCoords = null;
 
         window.onload = () => {
             if (!currentPhone) {
@@ -201,8 +215,59 @@
             document.getElementById('profile-address').value = currentAddr;
 
             fetchStoreData();
+            triggerGpsLocation();
             setInterval(fetchStoreData, 5000);
         };
+
+        function triggerGpsLocation() {
+            if (!navigator.geolocation) {
+                document.getElementById('geo-status-badge').innerText = "GPS Not Supported";
+                return;
+            }
+
+            document.getElementById('geo-status-badge').innerText = "Locating...";
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                    checkDeliveryZone(userCoords.lat, userCoords.lng);
+                },
+                (err) => {
+                    document.getElementById('geo-status-badge').innerText = "GPS Disabled";
+                    document.getElementById('geo-status-badge').className = "bg-red-100 text-red-700 text-[9px] font-bold px-1.5 py-0.5 rounded";
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        function calculateDistanceKm(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function checkDeliveryZone(lat, lng) {
+            let hubLat = Number(storeSettings.hubLat) || 19.7280;
+            let hubLng = Number(storeSettings.hubLng) || 72.9150;
+            let maxRadius = Number(storeSettings.radiusKm) || 10;
+
+            let dist = calculateDistanceKm(lat, lng, hubLat, hubLng);
+            let badge = document.getElementById('geo-status-badge');
+
+            if (dist <= maxRadius) {
+                badge.innerText = `⚡ In Zone (${dist.toFixed(1)} km)`;
+                badge.className = "bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded";
+                document.getElementById('addr-text').innerText = "Live GPS Verified";
+            } else {
+                badge.innerText = `Outside Zone (${dist.toFixed(1)} km)`;
+                badge.className = "bg-red-100 text-red-700 text-[9px] font-bold px-1.5 py-0.5 rounded";
+                document.getElementById('addr-text').innerText = "Out of delivery area";
+            }
+        }
 
         function fetchStoreData() {
             fetch(DB_URL + ".json")
@@ -210,16 +275,24 @@
                 .then(data => {
                     if (!data) return;
                     
-                    if (data.settings && data.settings.storeOpen === false) {
-                        document.getElementById('store-closed-banner').classList.remove('hidden');
-                    } else {
-                        document.getElementById('store-closed-banner').classList.add('hidden');
+                    if (data.settings) {
+                        storeSettings = { ...storeSettings, ...data.settings };
+                        if (storeSettings.storeOpen === false) {
+                            document.getElementById('store-closed-banner').classList.remove('hidden');
+                        } else {
+                            document.getElementById('store-closed-banner').classList.add('hidden');
+                        }
                     }
 
                     categoriesData = data.categories || data.menu || {};
                     flattenAllProducts();
-                    renderCategories();
-                    renderFilteredProducts();
+                    renderTopCategories();
+
+                    if (!activeSplitCategory) {
+                        renderHomeProducts();
+                    } else {
+                        renderSplitCategoryProducts(activeSplitCategory);
+                    }
                 }).catch(e => console.log(e));
         }
 
@@ -233,17 +306,13 @@
                     if (['image', 'discountPercent', 'status'].includes(pKey)) return;
                     let p = catObj[pKey];
                     if (p && typeof p === 'object' && p.name) {
-                        allProductsList.push({
-                            key: pKey,
-                            cat: catKey,
-                            ...p
-                        });
+                        allProductsList.push({ key: pKey, cat: catKey, ...p });
                     }
                 });
             });
         }
 
-        function renderCategories() {
+        function renderTopCategories() {
             const grid = document.getElementById('categories-grid');
             let keys = Object.keys(categoriesData);
             if (keys.length === 0) {
@@ -253,11 +322,8 @@
 
             grid.innerHTML = '';
             keys.forEach(cat => {
-                let isSelected = selectedCategory === cat;
-                let bgStyle = isSelected ? 'bg-green-100 border-green-500 shadow-sm ring-1 ring-green-500' : 'bg-sky-50/50 hover:bg-sky-100/60 border-sky-100';
-                
                 grid.innerHTML += `
-                    <button onclick="filterByCategory('${cat}')" class="${bgStyle} p-2.5 rounded-2xl border flex flex-col items-center justify-center transition shadow-2xs">
+                    <button onclick="toggleCategorySplit('${cat}')" class="bg-sky-50/50 hover:bg-sky-100/60 border-sky-100 p-2.5 rounded-2xl border flex flex-col items-center justify-center transition shadow-2xs">
                         <div class="w-12 h-12 bg-white rounded-xl shadow-xs flex items-center justify-center text-xl mb-1.5">📦</div>
                         <span class="text-[10px] font-bold text-gray-800 truncate w-full text-center">${cat}</span>
                     </button>
@@ -265,88 +331,130 @@
             });
         }
 
-        function filterByCategory(cat) {
-            if (selectedCategory === cat) {
-                selectedCategory = '';
-                document.getElementById('clear-cat-btn').classList.add('hidden');
-                document.getElementById('current-view-title').innerText = '📦 All Items';
-            } else {
-                selectedCategory = cat;
-                document.getElementById('clear-cat-btn').classList.remove('hidden');
-                document.getElementById('current-view-title').innerText = `📁 ${cat}`;
-            }
-            renderCategories();
-            renderFilteredProducts();
-        }
-
-        function clearCategoryFilter() {
-            selectedCategory = '';
-            document.getElementById('clear-cat-btn').classList.add('hidden');
-            document.getElementById('current-view-title').innerText = '📦 All Items';
-            renderCategories();
-            renderFilteredProducts();
-        }
-
-        function renderFilteredProducts(searchQuery = '') {
-            const pGrid = document.getElementById('products-grid');
-            let list = allProductsList;
-
-            if (selectedCategory) {
-                list = list.filter(p => p.cat.toLowerCase() === selectedCategory.toLowerCase());
-            }
-
-            if (searchQuery) {
-                let q = searchQuery.toLowerCase();
-                list = list.filter(p => p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
-            }
-
-            document.getElementById('product-count-badge').innerText = `${list.length} items`;
-
-            if (list.length === 0) {
-                pGrid.innerHTML = '<p class="col-span-2 sm:col-span-3 text-center text-gray-400 text-xs py-10">No items available in this category.</p>';
+        // Toggle on/off like Blinkit
+        function toggleCategorySplit(cat) {
+            if (activeSplitCategory === cat) {
+                closeSplitView();
                 return;
             }
 
-            pGrid.innerHTML = '';
-            list.forEach(pr => {
-                let priceVal = Number(pr.price || 0);
-                let discVal = Number(pr.discount || 0);
-                let effPrice = priceVal - discVal;
-                let discPercent = (discVal > 0 && priceVal > 0) ? Math.round((discVal / priceVal) * 100) : 0;
-                let cartQty = cart[pr.key]?.qty || 0;
-                let imgDisplay = pr.image ? `<img src="${pr.image}" class="h-28 w-full object-cover rounded-xl mb-2" onerror="this.onerror=null;this.parentNode.innerHTML='<div class=\\'h-28 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-2 border border-gray-100\\'>🛒</div>';">` : `<div class="h-28 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-2 border border-gray-100">🛒</div>`;
+            activeSplitCategory = cat;
+            document.getElementById('home-category-section').classList.add('hidden');
+            document.getElementById('blinkit-split-view').classList.remove('hidden');
 
-                pGrid.innerHTML += `
-                    <div class="bg-white p-2.5 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between relative overflow-hidden">
-                        ${discPercent > 0 ? `<div class="absolute top-0 left-0 bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-br-xl shadow-xs z-10">${discPercent}% OFF</div>` : ''}
-                        <div>
-                            ${imgDisplay}
-                            <span class="bg-gray-100 text-gray-600 text-[9px] font-extrabold px-1.5 py-0.5 rounded">13 MINS</span>
-                            <h4 class="font-bold text-xs text-gray-900 line-clamp-2 mt-1">${pr.name}</h4>
-                            <p class="text-[10px] text-gray-400 mt-0.5">${pr.unit || '1 unit'}</p>
-                            <div class="flex items-center mt-1">
-                                <span class="font-extrabold text-gray-900 text-xs">₹${effPrice}</span>
-                                ${discVal > 0 ? `<span class="text-[9px] text-gray-400 line-through ml-1">₹${priceVal}</span>` : ''}
-                            </div>
-                        </div>
-                        <div class="mt-2.5">
-                            ${cartQty === 0 ? `
-                                <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-full bg-emerald-50 text-emerald-700 border border-emerald-600 py-1.5 rounded-xl text-[11px] font-extrabold hover:bg-emerald-600 hover:text-white transition shadow-2xs">ADD</button>
-                            ` : `
-                                <div class="flex items-center justify-between bg-emerald-600 text-white p-1 rounded-xl shadow-2xs">
-                                    <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, -1)' class="w-6 h-6 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">-</button>
-                                    <span class="text-xs font-extrabold">${cartQty}</span>
-                                    <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-6 h-6 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">+</button>
-                                </div>
-                            `}
-                        </div>
-                    </div>
+            renderSidebar();
+            renderSplitCategoryProducts(cat);
+        }
+
+        function closeSplitView() {
+            activeSplitCategory = null;
+            document.getElementById('blinkit-split-view').classList.add('hidden');
+            document.getElementById('home-category-section').classList.remove('hidden');
+            renderHomeProducts();
+        }
+
+        function renderSidebar() {
+            const side = document.getElementById('sidebar-categories');
+            side.innerHTML = '';
+            Object.keys(categoriesData).forEach(cat => {
+                let isActive = activeSplitCategory === cat;
+                side.innerHTML += `
+                    <button onclick="toggleCategorySplit('${cat}')" class="p-3 text-center transition ${isActive ? 'bg-white border-l-4 border-green-600 font-extrabold text-green-900 shadow-xs' : 'text-gray-500 font-medium'}">
+                        <div class="text-lg">📦</div>
+                        <span class="text-[9px] block mt-1 leading-tight">${cat}</span>
+                    </button>
                 `;
             });
         }
 
+        function renderSplitCategoryProducts(cat) {
+            document.getElementById('split-cat-title').innerText = cat;
+            const grid = document.getElementById('split-products-grid');
+            grid.innerHTML = '';
+
+            let items = allProductsList.filter(p => p.cat.toLowerCase() === cat.toLowerCase());
+            if (items.length === 0) {
+                grid.innerHTML = '<p class="col-span-2 text-center text-gray-400 text-xs py-8">No products in this category.</p>';
+                return;
+            }
+
+            items.forEach(pr => {
+                grid.innerHTML += createProductCardHtml(pr);
+            });
+        }
+
+        function renderHomeProducts() {
+            const grid = document.getElementById('home-products-grid');
+            document.getElementById('product-count-badge').innerText = `${allProductsList.length} items`;
+            grid.innerHTML = '';
+
+            if (allProductsList.length === 0) {
+                grid.innerHTML = '<p class="col-span-2 sm:col-span-3 text-center text-gray-400 text-xs py-10">No products available.</p>';
+                return;
+            }
+
+            allProductsList.forEach(pr => {
+                grid.innerHTML += createProductCardHtml(pr);
+            });
+        }
+
+        function createProductCardHtml(pr) {
+            let priceVal = Number(pr.price || 0);
+            let discVal = Number(pr.discount || 0);
+            let effPrice = priceVal - discVal;
+            let discPercent = (discVal > 0 && priceVal > 0) ? Math.round((discVal / priceVal) * 100) : 0;
+            let cartQty = cart[pr.key]?.qty || 0;
+            let imgDisplay = pr.image ? `<img src="${pr.image}" class="h-24 w-full object-cover rounded-xl mb-1.5" onerror="this.onerror=null;this.parentNode.innerHTML='<div class=\\'h-24 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-1.5 border border-gray-100\\'>🛒</div>';">` : `<div class="h-24 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-1.5 border border-gray-100">🛒</div>`;
+
+            return `
+                <div class="bg-white p-2.5 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between relative overflow-hidden">
+                    ${discPercent > 0 ? `<div class="absolute top-0 left-0 bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-br-xl shadow-xs z-10">${discPercent}% OFF</div>` : ''}
+                    <div>
+                        ${imgDisplay}
+                        <span class="bg-gray-100 text-gray-600 text-[9px] font-extrabold px-1.5 py-0.5 rounded">13 MINS</span>
+                        <h4 class="font-bold text-xs text-gray-900 line-clamp-2 mt-1">${pr.name}</h4>
+                        <p class="text-[10px] text-gray-400 mt-0.5">${pr.unit || '1 unit'}</p>
+                        <div class="flex items-center mt-1">
+                            <span class="font-extrabold text-gray-900 text-xs">₹${effPrice}</span>
+                            ${discVal > 0 ? `<span class="text-[9px] text-gray-400 line-through ml-1">₹${priceVal}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        ${cartQty === 0 ? `
+                            <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-full bg-emerald-50 text-emerald-700 border border-emerald-600 py-1.5 rounded-xl text-[11px] font-extrabold hover:bg-emerald-600 hover:text-white transition shadow-2xs">ADD</button>
+                        ` : `
+                            <div class="flex items-center justify-between bg-emerald-600 text-white p-1 rounded-xl shadow-2xs">
+                                <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, -1)' class="w-6 h-6 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">-</button>
+                                <span class="text-xs font-extrabold">${cartQty}</span>
+                                <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-6 h-6 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">+</button>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
         function handleSearch(val) {
-            renderFilteredProducts(val.trim());
+            let q = val.trim().toLowerCase();
+            if (!q) {
+                if (activeSplitCategory) renderSplitCategoryProducts(activeSplitCategory);
+                else renderHomeProducts();
+                return;
+            }
+
+            if (activeSplitCategory) closeSplitView();
+
+            const grid = document.getElementById('home-products-grid');
+            let matched = allProductsList.filter(p => p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
+            document.getElementById('product-count-badge').innerText = `${matched.length} items`;
+            grid.innerHTML = '';
+
+            if (matched.length === 0) {
+                grid.innerHTML = '<p class="col-span-2 sm:col-span-3 text-center text-gray-400 text-xs py-10">No items match your search.</p>';
+                return;
+            }
+
+            matched.forEach(pr => { grid.innerHTML += createProductCardHtml(pr); });
         }
 
         function updateCart(pKey, pr, delta) {
@@ -359,7 +467,8 @@
             if (cart[pKey].qty <= 0) delete cart[pKey];
 
             updateCartUI();
-            renderFilteredProducts(document.getElementById('search-input').value.trim());
+            if (activeSplitCategory) renderSplitCategoryProducts(activeSplitCategory);
+            else renderHomeProducts();
         }
 
         function updateCartUI() {
@@ -397,7 +506,8 @@
         function deleteCartItem(pKey) {
             delete cart[pKey];
             updateCartUI();
-            renderFilteredProducts(document.getElementById('search-input').value.trim());
+            if (activeSplitCategory) renderSplitCategoryProducts(activeSplitCategory);
+            else renderHomeProducts();
         }
 
         function switchTab(tab) {
