@@ -7,8 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
       body { font-family: system-ui, -apple-system, sans-serif; background-color: #f8f9f8; margin: 0; padding: 0; }
-      .no-scrollbar::-webkit-scrollbar { display: none; }
-      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       @keyframes slideUp {
         from { transform: translateY(100%); opacity: 0; }
         to { transform: translateY(0); opacity: 1; }
@@ -28,8 +26,8 @@
                         <span class="text-xs font-black tracking-tight text-gray-900">Delivery in 13 minutes</span>
                         <span id="geo-status-badge" class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded">Checking GPS...</span>
                     </div>
-                    <p id="store-address-label" onclick="triggerGpsLocation()" class="text-[11px] text-gray-500 font-medium truncate mt-0.5 cursor-pointer flex items-center">
-                        📍 <span id="addr-text" class="underline ml-1">Tap to detect live GPS</span> ▼
+                    <p id="store-address-label" onclick="triggerGpsLocation(true)" class="text-[11px] text-gray-500 font-medium truncate mt-0.5 cursor-pointer flex items-center">
+                        📍 <span id="addr-text" class="underline ml-1">Detect live GPS</span> ▼
                     </p>
                 </div>
                 <button onclick="openProfileModal()" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 border border-gray-200 shadow-2xs">
@@ -49,43 +47,42 @@
             🔴 Store is Currently Closed! Orders are temporarily suspended.
         </div>
 
+        <!-- Outside Zone Warning -->
+        <div id="geo-warning-banner" class="hidden bg-amber-500 text-white p-2 text-center text-xs font-bold">
+            ⚠️ You are outside the delivery zone. Ordering is temporarily restricted.
+        </div>
+
         <!-- Main Content Area -->
         <main class="flex-1 p-3 pb-28">
             
             <!-- SHOP TAB -->
-            <div id="view-shop" class="space-y-3">
+            <div id="view-shop" class="space-y-4">
                 
-                <!-- Normal Grid View (Jab koi category khuli na ho) -->
-                <div id="home-category-section">
+                <!-- Announcement Notice -->
+                <div id="announcement-box" class="hidden bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-xs text-amber-800 font-bold text-center"></div>
+
+                <!-- Category Section -->
+                <div>
                     <div class="flex justify-between items-center mb-2">
                         <h2 class="font-extrabold text-xs text-gray-800 uppercase tracking-wider">GROCERY & KITCHEN</h2>
+                        <button id="clear-cat-btn" onclick="clearCategoryFilter()" class="hidden text-[11px] text-green-700 font-bold underline">Show All</button>
                     </div>
                     <div id="categories-grid" class="grid grid-cols-4 gap-2.5">
                         <p class="col-span-4 text-center text-gray-400 text-xs py-4">Loading categories...</p>
                     </div>
+                </div>
 
-                    <hr class="border-gray-100 my-4">
+                <hr class="border-gray-100 my-2">
 
+                <!-- Products Display Section -->
+                <div>
                     <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-extrabold text-xs text-gray-900 uppercase tracking-wide">🔥 Popular Products</h3>
+                        <h3 id="current-view-title" class="font-extrabold text-xs text-gray-900 uppercase tracking-wide">🔥 Popular Products</h3>
                         <span id="product-count-badge" class="text-[10px] bg-gray-100 text-gray-600 font-bold px-2 py-0.5 rounded-full">0 items</span>
                     </div>
 
-                    <div id="home-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
-                </div>
-
-                <!-- Blinkit Side-by-Side Category Browser (Category tap hone par) -->
-                <div id="blinkit-split-view" class="hidden flex h-[75vh] border border-gray-100 rounded-2xl overflow-hidden shadow-2xs">
-                    <!-- Left Sidebar (Categories) -->
-                    <div id="sidebar-categories" class="w-24 bg-gray-50 border-r border-gray-200 overflow-y-auto no-scrollbar flex flex-col divide-y divide-gray-100"></div>
-
-                    <!-- Right Column (Products) -->
-                    <div class="flex-1 bg-white p-3 overflow-y-auto">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 id="split-cat-title" class="font-black text-xs text-gray-900 uppercase">CATEGORY</h3>
-                            <button onclick="closeSplitView()" class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg font-bold">✕ Close</button>
-                        </div>
-                        <div id="split-products-grid" class="grid grid-cols-2 gap-2.5"></div>
+                    <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <p class="col-span-2 text-center text-gray-400 text-xs py-8">Loading products...</p>
                     </div>
                 </div>
 
@@ -94,7 +91,7 @@
             <!-- ORDERS TAB -->
             <div id="view-orders" class="hidden space-y-3 pt-2">
                 <div class="flex justify-between items-center mb-2">
-                    <h2 class="font-extrabold text-sm text-gray-900">📦 Your Orders</h2>
+                    <h2 class="font-extrabold text-sm text-gray-900">📦 Track Orders & Live Timeline</h2>
                     <button onclick="loadCustomerOrders()" class="bg-gray-100 text-gray-800 px-2.5 py-1 rounded-lg text-xs font-bold">🔄 Refresh</button>
                 </div>
                 <div id="orders-list" class="space-y-3">
@@ -118,28 +115,47 @@
                     </div>
                 </div>
 
+                <!-- Delivery Speed & Shift Selection -->
                 <div class="bg-white p-3.5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
-                    <h3 class="font-extrabold text-xs text-gray-800 uppercase">💳 Payment Method</h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="setPaymentMode('COD')" id="pay-cod" class="p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800 shadow-xs">💵 Cash on Delivery</button>
-                        <button onclick="setPaymentMode('Online')" id="pay-online" class="p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700 shadow-xs">💳 Online (Razorpay)</button>
+                    <h3 class="font-extrabold text-xs text-gray-800 uppercase">⚡ Delivery Options</h3>
+                    
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Delivery Speed:</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="setDeliverySpeed('Normal')" id="spd-normal" class="p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800">📦 Normal (Standard)</button>
+                            <button onclick="setDeliverySpeed('Express')" id="spd-express" class="p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700">⚡ Express (+₹30)</button>
+                        </div>
                     </div>
 
-                    <button onclick="placeOrder()" id="place-order-btn" class="w-full bg-green-600 text-white py-3 rounded-xl text-xs font-extrabold mt-2 shadow-md">Place Order</button>
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Delivery Shift:</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="setDeliveryShift('Morning (8 AM - 11 AM)')" id="shf-morning" class="p-2 rounded-xl border border-green-600 text-[11px] font-bold bg-green-50 text-green-800">Morning (8-11 AM)</button>
+                            <button onclick="setDeliveryShift('Evening (4 PM - 8 PM)')" id="shf-evening" class="p-2 rounded-xl border border-gray-200 text-[11px] font-bold bg-gray-50 text-gray-700">Evening (4-8 PM)</button>
+                        </div>
+                    </div>
+
+                    <h3 class="font-extrabold text-xs text-gray-800 uppercase pt-2">💳 Payment Method</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setPaymentMode('COD')" id="pay-cod" class="p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800">💵 Cash on Delivery</button>
+                        <button onclick="setPaymentMode('Online')" id="pay-online" class="p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700">💳 Online (Razorpay)</button>
+                    </div>
+
+                    <button onclick="placeOrder()" id="place-order-btn" class="w-full bg-green-600 text-white py-3.5 rounded-xl text-xs font-extrabold mt-2 shadow-md hover:bg-green-700 transition">Place Order</button>
                 </div>
             </div>
 
         </main>
 
-        <!-- Profile Modal -->
+        <!-- Profile Modal with Address Management & Legal Link -->
         <div id="profile-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex justify-end flex-col backdrop-blur-xs">
             <div id="modal-content" class="bg-white rounded-t-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3">
                     <div class="flex items-center space-x-2">
                         <div class="w-8 h-8 bg-green-600 text-white rounded-lg flex items-center justify-center font-black text-xs">MM</div>
                         <div>
-                            <h3 class="font-extrabold text-sm text-gray-900">Manor Mart</h3>
-                            <p class="text-[10px] text-gray-400 font-medium">India's last minute app</p>
+                            <h3 class="font-extrabold text-sm text-gray-900">Manor Mart Profile</h3>
+                            <p class="text-[10px] text-gray-400 font-medium">Manage Account & Saved Addresses</p>
                         </div>
                     </div>
                     <button onclick="closeProfileModal()" class="w-7 h-7 rounded-full bg-gray-100 text-gray-600 font-bold text-xs flex items-center justify-center">✕</button>
@@ -158,13 +174,39 @@
                         <input type="text" id="profile-name" class="w-full p-3 border border-gray-200 bg-gray-50 rounded-xl text-xs font-medium mt-1 outline-none focus:border-green-600" placeholder="Enter Full Name">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-gray-500 uppercase">Delivery Address:</label>
-                        <textarea id="profile-address" class="w-full p-3 border border-gray-200 bg-gray-50 rounded-xl text-xs h-20 font-medium mt-1 outline-none focus:border-green-600" placeholder="House No, Landmark, Area..."></textarea>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase">Current Delivery Address:</label>
+                        <textarea id="profile-address" class="w-full p-3 border border-gray-200 bg-gray-50 rounded-xl text-xs h-18 font-medium mt-1 outline-none focus:border-green-600" placeholder="House No, Landmark, Area..."></textarea>
                     </div>
 
-                    <button onclick="saveProfileAndAddress()" class="w-full bg-green-600 text-white py-3.5 rounded-xl text-xs font-extrabold shadow-md hover:bg-green-700 transition">Continue</button>
-                    <button onclick="logout()" class="w-full bg-red-50 text-red-600 border border-red-200 py-2.5 rounded-xl text-xs font-bold mt-2">🚪 Logout</button>
+                    <!-- Saved Addresses List -->
+                    <div id="saved-addrs-box" class="space-y-1 pt-1">
+                        <label class="text-[10px] font-bold text-gray-500 uppercase">Saved Addresses:</label>
+                        <div id="saved-addrs-list" class="space-y-1 max-h-32 overflow-y-auto"></div>
+                    </div>
+
+                    <button onclick="saveProfileAndAddress()" class="w-full bg-green-600 text-white py-3 rounded-xl text-xs font-extrabold shadow-md hover:bg-green-700 transition">💾 Save Profile & Address</button>
+                    
+                    <button onclick="openLegalModal()" class="w-full bg-gray-100 text-gray-700 py-2.5 rounded-xl text-xs font-bold border border-gray-200">📄 Terms, Privacy & 5-7 Days Refund Policy</button>
+
+                    <button onclick="logout()" class="w-full bg-red-50 text-red-600 border border-red-200 py-2.5 rounded-xl text-xs font-bold mt-1">🚪 Logout / Switch Account</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Legal Policies Modal -->
+        <div id="legal-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl p-5 w-full max-w-lg space-y-3 shadow-2xl max-h-[85vh] overflow-y-auto">
+                <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+                    <h3 class="font-extrabold text-sm text-green-900 uppercase">📜 Terms, Privacy & Refund Policy</h3>
+                    <button onclick="closeLegalModal()" class="w-7 h-7 rounded-full bg-gray-100 text-gray-600 font-bold text-xs flex items-center justify-center">✕</button>
+                </div>
+                <div class="space-y-2 text-xs text-gray-700 leading-relaxed">
+                    <p><strong>1. Quick Delivery:</strong> Manor Mart aggregates products locally in Manor, Maharashtra within geo-fenced boundaries[span_12](start_span)[span_12](end_span).</p>
+                    <p><strong>2. 5-7 Days Refund Policy:</strong> Prepaid orders (Razorpay/UPI) cancelled before dispatch will be automatically refunded back to the source bank account within 5 to 7 business days[span_13](start_span)[span_13](end_span).</p>
+                    <p><strong>3. Data Privacy:</strong> We collect your mobile number, address, and live GPS strictly to verify delivery radius and fulfill orders[span_14](start_span)[span_14](end_span).</p>
+                    <p><strong>4. Support:</strong> Contact us at <em>shabaj9769@gmail.com</em> for order support and grievances[span_15](start_span)[span_15](end_span).</p>
+                </div>
+                <button onclick="closeLegalModal()" class="w-full bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold">✓ Close Policy</button>
             </div>
         </div>
 
@@ -172,7 +214,7 @@
         <div id="floating-cart" class="hidden fixed bottom-16 left-3 right-3 bg-green-700 text-white p-3.5 rounded-2xl flex justify-between items-center shadow-xl z-30 max-w-2xl mx-auto">
             <div>
                 <p id="floating-cart-info" class="text-xs font-extrabold">0 items • ₹0</p>
-                <p class="text-[10px] text-green-100">Extra charges may apply</p>
+                <p class="text-[10px] text-green-100">All taxes included</p>
             </div>
             <button onclick="switchTab('cart')" class="bg-white text-green-800 px-4 py-2 rounded-xl font-extrabold text-xs shadow-sm">View Cart ➔</button>
         </div>
@@ -193,16 +235,25 @@
 
     <script>
         const DB_URL = "https://manormart-b14cd-default-rtdb.firebaseio.com/";
-        let storeSettings = { hubLat: 19.7280, hubLng: 72.9150, radiusKm: 10, storeOpen: true };
+        let storeSettings = { hubLat: 19.7280, hubLng: 72.9150, radiusKm: 10, storeOpen: true, normCharge: 0, expCharge: 30, freeDel: 0, minOrd: 0 };
         let categoriesData = {};
         let allProductsList = [];
+        let deliveryBoysList = {};
         let cart = {};
+        
         let currentPhone = localStorage.getItem('manor_cust_phone') || '';
         let currentName = localStorage.getItem('manor_cust_name') || '';
         let currentAddr = localStorage.getItem('manor_cust_addr') || '';
-        let activeSplitCategory = null;
+        let savedAddresses = JSON.parse(localStorage.getItem('manor_cust_addrs_list') || '[]');
+
+        let selectedCategory = '';
+        let deliveryType = 'Normal';
+        let deliveryShift = 'Morning (8 AM - 11 AM)';
         let paymentMode = 'COD';
-        let userCoords = null;
+        let inRange = true;
+        let distanceKm = 0;
+        let cancelStepOrderId = null;
+        let deleteStepOrderId = null;
 
         window.onload = () => {
             if (!currentPhone) {
@@ -214,28 +265,32 @@
             document.getElementById('profile-name').value = currentName;
             document.getElementById('profile-address').value = currentAddr;
 
+            renderSavedAddresses();
             fetchStoreData();
             triggerGpsLocation();
-            setInterval(fetchStoreData, 5000);
+            checkURLPaymentReturn();
+            setInterval(fetchStoreData, 6000);
         };
 
-        function triggerGpsLocation() {
+        // GPS Geolocation & Distance Math
+        function triggerGpsLocation(isManual = false) {
             if (!navigator.geolocation) {
-                document.getElementById('geo-status-badge').innerText = "GPS Not Supported";
+                updateGeoBadge(false, "GPS Not Supported");
                 return;
             }
 
-            document.getElementById('geo-status-badge').innerText = "Locating...";
+            document.getElementById('geo-status-badge').innerText = "Locating GPS...";
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
-                    userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                    checkDeliveryZone(userCoords.lat, userCoords.lng);
+                    let lat = pos.coords.latitude;
+                    let lng = pos.coords.longitude;
+                    verifyDeliveryDistance(lat, lng);
                 },
                 (err) => {
-                    document.getElementById('geo-status-badge').innerText = "GPS Disabled";
-                    document.getElementById('geo-status-badge').className = "bg-red-100 text-red-700 text-[9px] font-bold px-1.5 py-0.5 rounded";
+                    updateGeoBadge(false, "GPS Disabled");
+                    if (isManual) alert("Please enable GPS / Location in your browser settings.");
                 },
-                { enableHighAccuracy: true, timeout: 10000 }
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 }
             );
         }
 
@@ -247,26 +302,34 @@
                       Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                       Math.sin(dLon/2) * Math.sin(dLon/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
+            return Number((R * c).toFixed(1));
         }
 
-        function checkDeliveryZone(lat, lng) {
+        function verifyDeliveryDistance(lat, lng) {
             let hubLat = Number(storeSettings.hubLat) || 19.7280;
             let hubLng = Number(storeSettings.hubLng) || 72.9150;
             let maxRadius = Number(storeSettings.radiusKm) || 10;
 
-            let dist = calculateDistanceKm(lat, lng, hubLat, hubLng);
-            let badge = document.getElementById('geo-status-badge');
+            distanceKm = calculateDistanceKm(lat, lng, hubLat, hubLng);
+            inRange = distanceKm <= maxRadius;
 
-            if (dist <= maxRadius) {
-                badge.innerText = `⚡ In Zone (${dist.toFixed(1)} km)`;
-                badge.className = "bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded";
+            if (inRange) {
+                updateGeoBadge(true, `⚡ In Zone (${distanceKm} km)`);
+                document.getElementById('geo-warning-banner').classList.add('hidden');
                 document.getElementById('addr-text').innerText = "Live GPS Verified";
             } else {
-                badge.innerText = `Outside Zone (${dist.toFixed(1)} km)`;
-                badge.className = "bg-red-100 text-red-700 text-[9px] font-bold px-1.5 py-0.5 rounded";
+                updateGeoBadge(false, `Outside Zone (${distanceKm} km)`);
+                document.getElementById('geo-warning-banner').classList.remove('hidden');
                 document.getElementById('addr-text').innerText = "Out of delivery area";
             }
+        }
+
+        function updateGeoBadge(isInRange, text) {
+            let badge = document.getElementById('geo-status-badge');
+            badge.innerText = text;
+            badge.className = isInRange 
+                ? "bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded" 
+                : "bg-red-100 text-red-700 text-[9px] font-bold px-1.5 py-0.5 rounded";
         }
 
         function fetchStoreData() {
@@ -274,7 +337,7 @@
                 .then(res => res.json())
                 .then(data => {
                     if (!data) return;
-                    
+
                     if (data.settings) {
                         storeSettings = { ...storeSettings, ...data.settings };
                         if (storeSettings.storeOpen === false) {
@@ -282,17 +345,24 @@
                         } else {
                             document.getElementById('store-closed-banner').classList.add('hidden');
                         }
+
+                        if (storeSettings.adminNote) {
+                            let ab = document.getElementById('announcement-box');
+                            ab.innerText = "📢 " + storeSettings.adminNote;
+                            ab.classList.remove('hidden');
+                        } else {
+                            document.getElementById('announcement-box').classList.add('hidden');
+                        }
+                    }
+
+                    if (data.deliveryBoys) {
+                        deliveryBoysList = data.deliveryBoys;
                     }
 
                     categoriesData = data.categories || data.menu || {};
                     flattenAllProducts();
-                    renderTopCategories();
-
-                    if (!activeSplitCategory) {
-                        renderHomeProducts();
-                    } else {
-                        renderSplitCategoryProducts(activeSplitCategory);
-                    }
+                    renderCategories();
+                    renderFilteredProducts();
                 }).catch(e => console.log(e));
         }
 
@@ -312,7 +382,8 @@
             });
         }
 
-        function renderTopCategories() {
+        // Tap Category Toggle Logic
+        function renderCategories() {
             const grid = document.getElementById('categories-grid');
             let keys = Object.keys(categoriesData);
             if (keys.length === 0) {
@@ -322,8 +393,13 @@
 
             grid.innerHTML = '';
             keys.forEach(cat => {
+                let isSelected = selectedCategory.toLowerCase() === cat.toLowerCase();
+                let bgStyle = isSelected 
+                    ? 'bg-green-100 border-green-600 ring-2 ring-green-500 shadow-xs' 
+                    : 'bg-sky-50/50 hover:bg-sky-100/60 border-sky-100';
+
                 grid.innerHTML += `
-                    <button onclick="toggleCategorySplit('${cat}')" class="bg-sky-50/50 hover:bg-sky-100/60 border-sky-100 p-2.5 rounded-2xl border flex flex-col items-center justify-center transition shadow-2xs">
+                    <button onclick="toggleCategoryFilter('${cat}')" class="${bgStyle} p-2.5 rounded-2xl border flex flex-col items-center justify-center transition shadow-2xs">
                         <div class="w-12 h-12 bg-white rounded-xl shadow-xs flex items-center justify-center text-xl mb-1.5">📦</div>
                         <span class="text-[10px] font-bold text-gray-800 truncate w-full text-center">${cat}</span>
                     </button>
@@ -331,133 +407,101 @@
             });
         }
 
-        // Toggle on/off like Blinkit
-        function toggleCategorySplit(cat) {
-            if (activeSplitCategory === cat) {
-                closeSplitView();
+        function toggleCategoryFilter(cat) {
+            if (selectedCategory.toLowerCase() === cat.toLowerCase()) {
+                selectedCategory = '';
+                document.getElementById('clear-cat-btn').classList.add('hidden');
+                document.getElementById('current-view-title').innerText = '🔥 Popular Products';
+            } else {
+                selectedCategory = cat;
+                document.getElementById('clear-cat-btn').classList.remove('hidden');
+                document.getElementById('current-view-title').innerText = `📁 ${cat}`;
+            }
+            renderCategories();
+            renderFilteredProducts();
+        }
+
+        function clearCategoryFilter() {
+            selectedCategory = '';
+            document.getElementById('clear-cat-btn').classList.add('hidden');
+            document.getElementById('current-view-title').innerText = '🔥 Popular Products';
+            renderCategories();
+            renderFilteredProducts();
+        }
+
+        function renderFilteredProducts(searchQuery = '') {
+            const pGrid = document.getElementById('products-grid');
+            let list = allProductsList;
+
+            if (selectedCategory) {
+                list = list.filter(p => p.cat.toLowerCase() === selectedCategory.toLowerCase());
+            }
+
+            if (searchQuery) {
+                let q = searchQuery.toLowerCase();
+                list = list.filter(p => p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
+            }
+
+            document.getElementById('product-count-badge').innerText = `${list.length} items`;
+
+            if (list.length === 0) {
+                pGrid.innerHTML = '<p class="col-span-2 sm:col-span-3 text-center text-gray-400 text-xs py-10">No items available in this category.</p>';
                 return;
             }
 
-            activeSplitCategory = cat;
-            document.getElementById('home-category-section').classList.add('hidden');
-            document.getElementById('blinkit-split-view').classList.remove('hidden');
+            pGrid.innerHTML = '';
+            list.forEach(pr => {
+                let priceVal = Number(pr.price || 0);
+                let discVal = Number(pr.discount || 0);
+                let effPrice = priceVal - discVal;
+                let discPercent = (discVal > 0 && priceVal > 0) ? Math.round((discVal / priceVal) * 100) : 0;
+                let cartQty = cart[pr.key]?.qty || 0;
+                let isSoldOut = pr.status === 'sold' || pr.inStock === false;
 
-            renderSidebar();
-            renderSplitCategoryProducts(cat);
-        }
+                let imgDisplay = pr.image 
+                    ? `<img src="${pr.image}" class="h-28 w-full object-cover rounded-xl mb-2" onerror="this.onerror=null;this.parentNode.innerHTML='<div class=\\'h-28 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-2 border border-gray-100\\'>🛒</div>';">` 
+                    : `<div class="h-28 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-2 border border-gray-100">🛒</div>`;
 
-        function closeSplitView() {
-            activeSplitCategory = null;
-            document.getElementById('blinkit-split-view').classList.add('hidden');
-            document.getElementById('home-category-section').classList.remove('hidden');
-            renderHomeProducts();
-        }
-
-        function renderSidebar() {
-            const side = document.getElementById('sidebar-categories');
-            side.innerHTML = '';
-            Object.keys(categoriesData).forEach(cat => {
-                let isActive = activeSplitCategory === cat;
-                side.innerHTML += `
-                    <button onclick="toggleCategorySplit('${cat}')" class="p-3 text-center transition ${isActive ? 'bg-white border-l-4 border-green-600 font-extrabold text-green-900 shadow-xs' : 'text-gray-500 font-medium'}">
-                        <div class="text-lg">📦</div>
-                        <span class="text-[9px] block mt-1 leading-tight">${cat}</span>
-                    </button>
+                pGrid.innerHTML += `
+                    <div class="bg-white p-2.5 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between relative overflow-hidden ${isSoldOut ? 'opacity-70 bg-gray-50' : ''}">
+                        ${discPercent > 0 ? `<div class="absolute top-0 left-0 bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-br-xl shadow-xs z-10">${discPercent}% OFF</div>` : ''}
+                        <div>
+                            ${imgDisplay}
+                            <span class="bg-gray-100 text-gray-600 text-[9px] font-extrabold px-1.5 py-0.5 rounded">13 MINS</span>
+                            <h4 class="font-bold text-xs text-gray-900 line-clamp-2 mt-1">${pr.name}</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">${pr.unit || '1 unit'}</p>
+                            <div class="flex items-center mt-1">
+                                <span class="font-extrabold text-gray-900 text-xs">₹${effPrice}</span>
+                                ${discVal > 0 ? `<span class="text-[9px] text-gray-400 line-through ml-1">₹${priceVal}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="mt-2.5">
+                            ${isSoldOut ? `
+                                <div class="w-full bg-red-100 text-red-700 py-1.5 rounded-xl text-[11px] font-extrabold text-center">SOLD OUT</div>
+                            ` : cartQty === 0 ? `
+                                <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-full bg-emerald-50 text-emerald-700 border border-emerald-600 py-1.5 rounded-xl text-[11px] font-extrabold hover:bg-emerald-600 hover:text-white transition shadow-2xs">ADD</button>
+                            ` : `
+                                <div class="flex items-center justify-between bg-emerald-600 text-white p-1 rounded-xl shadow-2xs">
+                                    <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, -1)' class="w-6 h-6 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">-</button>
+                                    <span class="text-xs font-extrabold">${cartQty}</span>
+                                    <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-6 h-6 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">+</button>
+                                </div>
+                            `}
+                        </div>
+                    </div>
                 `;
             });
         }
 
-        function renderSplitCategoryProducts(cat) {
-            document.getElementById('split-cat-title').innerText = cat;
-            const grid = document.getElementById('split-products-grid');
-            grid.innerHTML = '';
-
-            let items = allProductsList.filter(p => p.cat.toLowerCase() === cat.toLowerCase());
-            if (items.length === 0) {
-                grid.innerHTML = '<p class="col-span-2 text-center text-gray-400 text-xs py-8">No products in this category.</p>';
-                return;
-            }
-
-            items.forEach(pr => {
-                grid.innerHTML += createProductCardHtml(pr);
-            });
-        }
-
-        function renderHomeProducts() {
-            const grid = document.getElementById('home-products-grid');
-            document.getElementById('product-count-badge').innerText = `${allProductsList.length} items`;
-            grid.innerHTML = '';
-
-            if (allProductsList.length === 0) {
-                grid.innerHTML = '<p class="col-span-2 sm:col-span-3 text-center text-gray-400 text-xs py-10">No products available.</p>';
-                return;
-            }
-
-            allProductsList.forEach(pr => {
-                grid.innerHTML += createProductCardHtml(pr);
-            });
-        }
-
-        function createProductCardHtml(pr) {
-            let priceVal = Number(pr.price || 0);
-            let discVal = Number(pr.discount || 0);
-            let effPrice = priceVal - discVal;
-            let discPercent = (discVal > 0 && priceVal > 0) ? Math.round((discVal / priceVal) * 100) : 0;
-            let cartQty = cart[pr.key]?.qty || 0;
-            let imgDisplay = pr.image ? `<img src="${pr.image}" class="h-24 w-full object-cover rounded-xl mb-1.5" onerror="this.onerror=null;this.parentNode.innerHTML='<div class=\\'h-24 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-1.5 border border-gray-100\\'>🛒</div>';">` : `<div class="h-24 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-1.5 border border-gray-100">🛒</div>`;
-
-            return `
-                <div class="bg-white p-2.5 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between relative overflow-hidden">
-                    ${discPercent > 0 ? `<div class="absolute top-0 left-0 bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-br-xl shadow-xs z-10">${discPercent}% OFF</div>` : ''}
-                    <div>
-                        ${imgDisplay}
-                        <span class="bg-gray-100 text-gray-600 text-[9px] font-extrabold px-1.5 py-0.5 rounded">13 MINS</span>
-                        <h4 class="font-bold text-xs text-gray-900 line-clamp-2 mt-1">${pr.name}</h4>
-                        <p class="text-[10px] text-gray-400 mt-0.5">${pr.unit || '1 unit'}</p>
-                        <div class="flex items-center mt-1">
-                            <span class="font-extrabold text-gray-900 text-xs">₹${effPrice}</span>
-                            ${discVal > 0 ? `<span class="text-[9px] text-gray-400 line-through ml-1">₹${priceVal}</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="mt-2">
-                        ${cartQty === 0 ? `
-                            <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-full bg-emerald-50 text-emerald-700 border border-emerald-600 py-1.5 rounded-xl text-[11px] font-extrabold hover:bg-emerald-600 hover:text-white transition shadow-2xs">ADD</button>
-                        ` : `
-                            <div class="flex items-center justify-between bg-emerald-600 text-white p-1 rounded-xl shadow-2xs">
-                                <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, -1)' class="w-6 h-6 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">-</button>
-                                <span class="text-xs font-extrabold">${cartQty}</span>
-                                <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-6 h-6 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">+</button>
-                            </div>
-                        `}
-                    </div>
-                </div>
-            `;
-        }
-
         function handleSearch(val) {
-            let q = val.trim().toLowerCase();
-            if (!q) {
-                if (activeSplitCategory) renderSplitCategoryProducts(activeSplitCategory);
-                else renderHomeProducts();
-                return;
-            }
-
-            if (activeSplitCategory) closeSplitView();
-
-            const grid = document.getElementById('home-products-grid');
-            let matched = allProductsList.filter(p => p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
-            document.getElementById('product-count-badge').innerText = `${matched.length} items`;
-            grid.innerHTML = '';
-
-            if (matched.length === 0) {
-                grid.innerHTML = '<p class="col-span-2 sm:col-span-3 text-center text-gray-400 text-xs py-10">No items match your search.</p>';
-                return;
-            }
-
-            matched.forEach(pr => { grid.innerHTML += createProductCardHtml(pr); });
+            renderFilteredProducts(val.trim());
         }
 
         function updateCart(pKey, pr, delta) {
+            if (pr.status === 'sold' || pr.inStock === false) {
+                return alert("Sorry, this product is currently sold out.");
+            }
+
             if (!cart[pKey]) {
                 let priceVal = Number(pr.price || 0);
                 let discVal = Number(pr.discount || 0);
@@ -467,8 +511,7 @@
             if (cart[pKey].qty <= 0) delete cart[pKey];
 
             updateCartUI();
-            if (activeSplitCategory) renderSplitCategoryProducts(activeSplitCategory);
-            else renderHomeProducts();
+            renderFilteredProducts(document.getElementById('search-input').value.trim());
         }
 
         function updateCartUI() {
@@ -476,10 +519,18 @@
             let subtotal = items.reduce((sum, i) => sum + (i.effectivePrice * i.qty), 0);
             let totalQty = items.reduce((sum, i) => sum + i.qty, 0);
 
+            // Fee calculation based on speed & free delivery threshold
+            let deliveryFee = Number(storeSettings.normCharge || 0);
+            if (deliveryType === 'Express') deliveryFee += Number(storeSettings.expCharge || 30);
+            let freeDelLimit = Number(storeSettings.freeDel || 0);
+            if (freeDelLimit > 0 && subtotal >= freeDelLimit) deliveryFee = 0;
+
+            let grandTotal = subtotal + (subtotal > 0 ? deliveryFee : 0);
+
             const floating = document.getElementById('floating-cart');
             if (totalQty > 0) {
                 floating.classList.remove('hidden');
-                document.getElementById('floating-cart-info').innerText = `${totalQty} items • ₹${subtotal}`;
+                document.getElementById('floating-cart-info').innerText = `${totalQty} items • ₹${grandTotal}`;
             } else {
                 floating.classList.add('hidden');
             }
@@ -499,15 +550,33 @@
             });
 
             document.getElementById('cart-subtotal').innerText = '₹' + subtotal;
-            document.getElementById('cart-delivery-fee').innerText = '₹0';
-            document.getElementById('cart-total').innerText = '₹' + subtotal;
+            document.getElementById('cart-delivery-fee').innerText = '₹' + deliveryFee;
+            document.getElementById('cart-total').innerText = '₹' + grandTotal;
         }
 
         function deleteCartItem(pKey) {
             delete cart[pKey];
             updateCartUI();
-            if (activeSplitCategory) renderSplitCategoryProducts(activeSplitCategory);
-            else renderHomeProducts();
+            renderFilteredProducts(document.getElementById('search-input').value.trim());
+        }
+
+        function setDeliverySpeed(speed) {
+            deliveryType = speed;
+            document.getElementById('spd-normal').className = speed === 'Normal' ? 'p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800' : 'p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700';
+            document.getElementById('spd-express').className = speed === 'Express' ? 'p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800' : 'p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700';
+            updateCartUI();
+        }
+
+        function setDeliveryShift(shift) {
+            deliveryShift = shift;
+            document.getElementById('shf-morning').className = shift.includes('Morning') ? 'p-2 rounded-xl border border-green-600 text-[11px] font-bold bg-green-50 text-green-800' : 'p-2 rounded-xl border border-gray-200 text-[11px] font-bold bg-gray-50 text-gray-700';
+            document.getElementById('shf-evening').className = shift.includes('Evening') ? 'p-2 rounded-xl border border-green-600 text-[11px] font-bold bg-green-50 text-green-800' : 'p-2 rounded-xl border border-gray-200 text-[11px] font-bold bg-gray-50 text-gray-700';
+        }
+
+        function setPaymentMode(mode) {
+            paymentMode = mode;
+            document.getElementById('pay-cod').className = mode === 'COD' ? 'p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800' : 'p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700';
+            document.getElementById('pay-online').className = mode === 'Online' ? 'p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800' : 'p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700';
         }
 
         function switchTab(tab) {
@@ -530,6 +599,14 @@
             document.getElementById('profile-modal').classList.add('hidden');
         }
 
+        function openLegalModal() {
+            document.getElementById('legal-modal').classList.remove('hidden');
+        }
+
+        function closeLegalModal() {
+            document.getElementById('legal-modal').classList.add('hidden');
+        }
+
         function saveProfileAndAddress() {
             let ph = document.getElementById('profile-phone').value.replace(/[^0-9]/g, '').trim();
             let nm = document.getElementById('profile-name').value.trim();
@@ -543,6 +620,12 @@
             currentName = nm;
             currentAddr = ad;
 
+            if (!savedAddresses.includes(ad)) {
+                savedAddresses.push(ad);
+                localStorage.setItem('manor_cust_addrs_list', JSON.stringify(savedAddresses));
+                renderSavedAddresses();
+            }
+
             localStorage.setItem('manor_cust_phone', ph);
             localStorage.setItem('manor_cust_name', nm);
             localStorage.setItem('manor_cust_addr', ad);
@@ -550,6 +633,37 @@
             updateAddressLabel();
             closeProfileModal();
             alert("Profile & Address saved successfully!");
+        }
+
+        function renderSavedAddresses() {
+            let con = document.getElementById('saved-addrs-list');
+            con.innerHTML = '';
+            if (savedAddresses.length === 0) {
+                con.innerHTML = '<p class="text-[10px] text-gray-400">No saved addresses yet.</p>';
+                return;
+            }
+
+            savedAddresses.forEach((ad, i) => {
+                con.innerHTML += `
+                    <div class="flex justify-between items-center bg-gray-50 p-2 rounded-xl border border-gray-200 text-xs">
+                        <span onclick="selectSavedAddress('${ad}')" class="truncate cursor-pointer flex-1 font-medium text-gray-800">📍 ${ad}</span>
+                        <button onclick="deleteSavedAddress(${i})" class="text-red-500 font-bold ml-2 px-1">✕</button>
+                    </div>
+                `;
+            });
+        }
+
+        function selectSavedAddress(ad) {
+            currentAddr = ad;
+            document.getElementById('profile-address').value = ad;
+            localStorage.setItem('manor_cust_addr', ad);
+            updateAddressLabel();
+        }
+
+        function deleteSavedAddress(idx) {
+            savedAddresses.splice(idx, 1);
+            localStorage.setItem('manor_cust_addrs_list', JSON.stringify(savedAddresses));
+            renderSavedAddresses();
         }
 
         function updateAddressLabel() {
@@ -560,18 +674,20 @@
             }
         }
 
-        function setPaymentMode(mode) {
-            paymentMode = mode;
-            document.getElementById('pay-cod').className = mode === 'COD' ? 'p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800 shadow-xs' : 'p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700 shadow-xs';
-            document.getElementById('pay-online').className = mode === 'Online' ? 'p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800 shadow-xs' : 'p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700 shadow-sm';
-        }
-
         function logout() {
             localStorage.clear();
             location.reload();
         }
 
         function placeOrder() {
+            if (storeSettings.storeOpen === false) {
+                return alert("Store is currently closed! New orders are suspended.");
+            }
+
+            if (!inRange) {
+                return alert(`Delivery is restricted to ${storeSettings.radiusKm} KM. You are ${distanceKm} KM away.`);
+            }
+
             if (!currentPhone || !currentAddr || !currentName) {
                 openProfileModal();
                 return alert("Please complete your profile and address first.");
@@ -581,7 +697,19 @@
             if (items.length === 0) return alert("Cart is empty!");
 
             let subtotal = items.reduce((sum, i) => sum + (i.effectivePrice * i.qty), 0);
-            let orderId = 'ord_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            let minOrd = Number(storeSettings.minOrd || 0);
+            if (minOrd > 0 && subtotal < minOrd) {
+                return alert(`Minimum order required is ₹${minOrd}.`);
+            }
+
+            let deliveryFee = Number(storeSettings.normCharge || 0);
+            if (deliveryType === 'Express') deliveryFee += Number(storeSettings.expCharge || 30);
+            let freeDelLimit = Number(storeSettings.freeDel || 0);
+            if (freeDelLimit > 0 && subtotal >= freeDelLimit) deliveryFee = 0;
+
+            let grandTotal = subtotal + deliveryFee;
+            let currentTs = Date.now();
+            let orderId = 'ord_' + currentTs + '_' + Math.floor(Math.random() * 1000);
 
             let orderObj = {
                 id: orderId,
@@ -590,10 +718,16 @@
                 addr: currentAddr,
                 items: cart,
                 subtotal: subtotal,
-                total: subtotal,
+                deliveryFee: deliveryFee,
+                total: grandTotal,
+                deliveryType: deliveryType,
+                deliveryShift: deliveryShift,
                 payment: paymentMode,
                 deliveryStatus: paymentMode === 'Online' ? '⏳ Payment Pending' : 'Order Successful',
-                timestamp: Date.now()
+                assignedBoy: '',
+                deliveryBoyPhone: '',
+                distance: distanceKm,
+                timestamp: currentTs
             };
 
             fetch(DB_URL + `orders/${orderId}.json`, {
@@ -603,8 +737,10 @@
                 cart = {};
                 updateCartUI();
                 if (paymentMode === 'Online') {
-                    let razorpayUrl = `https://shabaj9769-alt.github.io/manormart-pay/?amount=${subtotal}&order_id=${orderId}`;
-                    window.location.href = razorpayUrl;
+                    let customPayUrl = storeSettings.upi && storeSettings.upi.trim().startsWith('http')
+                        ? storeSettings.upi.trim()
+                        : 'https://shabaj9769-alt.github.io/manormart-pay/';
+                    window.location.href = `${customPayUrl}?amount=${grandTotal}&order_id=${orderId}`;
                 } else {
                     switchTab('orders');
                     alert("Order placed successfully!");
@@ -612,11 +748,36 @@
             });
         }
 
-        function loadCustomerOrders() {
-            if (!currentPhone) {
-                openProfileModal();
-                return;
+        // Live Order Timeline & Cancellation Flow
+        function renderTimelineHtml(status) {
+            let steps = ['Order Successful', 'Assigned', 'Out for Delivery', 'Delivered'];
+            let currentIdx = 0;
+            if (status === 'Assigned') currentIdx = 1;
+            else if (status === 'Out for Delivery') currentIdx = 2;
+            else if (status === 'Delivered') currentIdx = 3;
+            else if (status && status.includes('Cancelled')) {
+                return `<div class="bg-red-50 text-red-600 font-bold p-2 rounded-lg text-[10px] mt-1 text-center">${status}</div>`;
             }
+
+            return `
+                <div class="bg-purple-50 p-2 rounded-xl mt-2 border border-purple-100">
+                    <p class="text-[9px] font-bold text-purple-900 mb-1">🚀 Live Order Timeline:</p>
+                    <div class="flex justify-between items-center text-[8px] text-gray-500 font-bold">
+                        ${steps.map((st, i) => `
+                            <div class="flex flex-col items-center flex-1">
+                                <div class="w-4 h-4 rounded-full flex items-center justify-center text-[8px] text-white ${i <= currentIdx ? 'bg-purple-900' : 'bg-gray-300'}">
+                                    ${i <= currentIdx ? '✓' : i + 1}
+                                </div>
+                                <span class="text-center mt-0.5 ${i <= currentIdx ? 'text-purple-900' : ''}">${st}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadCustomerOrders() {
+            if (!currentPhone) return;
             fetch(DB_URL + "orders.json")
                 .then(res => res.json())
                 .then(data => {
@@ -624,21 +785,111 @@
                     let listContainer = document.getElementById('orders-list');
                     listContainer.innerHTML = '';
                     
-                    Object.keys(data).forEach(k => {
-                        let ord = data[k];
-                        if (ord.phone === currentPhone) {
-                            listContainer.innerHTML += `
-                                <div class="bg-white p-3.5 rounded-2xl border border-gray-200 shadow-2xs space-y-2">
-                                    <div class="flex justify-between items-center">
-                                        <span class="font-extrabold text-gray-900 text-xs">ORDER #${ord.id.slice(-6)}</span>
-                                        <span class="font-extrabold text-green-700 text-xs">₹${ord.total}</span>
-                                    </div>
-                                    <p class="text-[10px] text-gray-500 font-medium">Status: <strong class="text-green-700">${ord.deliveryStatus}</strong></p>
+                    let ordersList = Object.keys(data).map(k => data[k]).filter(o => o.phone === currentPhone).reverse();
+
+                    if (ordersList.length === 0) {
+                        listContainer.innerHTML = '<p class="text-center text-gray-400 text-xs py-10">No orders placed yet.</p>';
+                        return;
+                    }
+
+                    ordersList.forEach(ord => {
+                        let isDeleting = deleteStepOrderId === ord.id;
+                        let isCancelling = cancelStepOrderId === ord.id;
+                        let isDeliveredOrDispatched = ord.deliveryStatus === 'Delivered' || ord.deliveryStatus === 'Out for Delivery';
+                        let isCancelled = ord.deliveryStatus && ord.deliveryStatus.includes('Cancelled');
+
+                        let boyPhone = ord.deliveryBoyPhone || (deliveryBoysList[ord.assignedBoy]?.phone) || '';
+                        let boyName = ord.assignedBoy || '';
+
+                        let itemsStr = Object.values(ord.items || {}).map(i => `• ${i.name} (${i.unit}) x ${i.qty}`).join('<br>');
+
+                        listContainer.innerHTML += `
+                            <div class="bg-white p-3.5 rounded-2xl border border-gray-200 shadow-2xs space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-extrabold text-gray-900 text-xs">ORDER #${ord.id.slice(-6)}</span>
+                                    <span class="font-extrabold text-green-700 text-xs">₹${ord.total} (${ord.payment})</span>
                                 </div>
-                            `;
-                        }
+                                <p class="text-[10px] text-gray-500 font-medium">Shift: <strong>${ord.deliveryShift || 'Standard'}</strong> | Type: <strong>${ord.deliveryType || 'Normal'}</strong></p>
+                                
+                                ${renderTimelineHtml(ord.deliveryStatus)}
+
+                                ${boyName ? `
+                                    <div class="bg-green-50 p-2.5 rounded-xl border border-green-200 text-xs mt-2 flex justify-between items-center">
+                                        <div>
+                                            <p class="text-[10px] font-bold text-green-800">🛵 Delivery Partner:</p>
+                                            <p class="font-black text-gray-900">${boyName}${boyPhone ? `(${boyPhone})` : ''}</p>
+                                        </div>
+                                        ${boyPhone ? `<a href="tel:${boyPhone}" class="bg-green-700 text-white px-3 py-1.5 rounded-lg font-bold text-[10px]">📞 Call</a>` : ''}
+                                    </div>
+                                ` : ''}
+
+                                <div class="bg-gray-50 p-2 rounded-xl text-[10px] text-gray-600 mt-1">${itemsStr}</div>
+
+                                <div class="pt-2 border-t border-gray-100 flex justify-between items-center">
+                                    ${(!isDeliveredOrDispatched && !isCancelled) ? `
+                                        <button onclick="handleCancelOrder('${ord.id}', '${ord.payment}')" class="bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-xl text-[10px] font-bold">
+                                            ${isCancelling ? '⚠️ Tap to Confirm Cancel' : 'Cancel Order'}
+                                        </button>
+                                    ` : '<div></div>'}
+
+                                    <button onclick="confirmDeleteOrder('${ord.id}')" class="bg-red-50 text-red-600 border border-red-200 px-3 py-1 rounded-xl text-[10px] font-bold">
+                                        ${isDeleting ? '⚠️ Confirm Delete' : '🗑️ Delete'}
+                                    </button>
+                                </div>
+                            </div>
+                        `;
                     });
                 });
+        }
+
+        function handleCancelOrder(orderId, paymentModeVal) {
+            if (cancelStepOrderId === orderId) {
+                cancelStepOrderId = null;
+                let cancelStatus = paymentModeVal === 'Online' ? '❌ Cancelled (Refundable in 5-7 Days)' : '❌ Order Cancelled (COD)';
+
+                fetch(DB_URL + `orders/${orderId}/deliveryStatus.json`, {
+                    method: 'PUT',
+                    body: JSON.stringify(cancelStatus)
+                }).then(() => {
+                    alert(paymentModeVal === 'Online' ? "Order cancelled. Prepaid refund will credit within 5-7 business days." : "Order cancelled.");
+                    loadCustomerOrders();
+                });
+            } else {
+                cancelStepOrderId = orderId;
+                loadCustomerOrders();
+                setTimeout(() => { cancelStepOrderId = null; loadCustomerOrders(); }, 4000);
+            }
+        }
+
+        function confirmDeleteOrder(orderId) {
+            if (deleteStepOrderId === orderId) {
+                fetch(DB_URL + `orders/${orderId}.json`, { method: 'DELETE' })
+                    .then(() => {
+                        deleteStepOrderId = null;
+                        loadCustomerOrders();
+                        alert("Order removed from history.");
+                    });
+            } else {
+                deleteStepOrderId = orderId;
+                loadCustomerOrders();
+                setTimeout(() => { deleteStepOrderId = null; loadCustomerOrders(); }, 4000);
+            }
+        }
+
+        function checkURLPaymentReturn() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('status') === 'success' || params.get('razorpay_payment_id')) {
+                let orderId = params.get('order_id');
+                if (orderId) {
+                    fetch(DB_URL + `orders/${orderId}/deliveryStatus.json`, {
+                        method: 'PUT',
+                        body: JSON.stringify('Order Successful')
+                    }).then(() => {
+                        alert("Payment verified and order placed successfully!");
+                        switchTab('orders');
+                    });
+                }
+            }
         }
     </script>
 </body>
