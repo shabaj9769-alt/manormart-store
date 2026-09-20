@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manor Mart - Online Grocery Store</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; background-color: #fcfcfc; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div id="app" class="max-w-md mx-auto min-h-screen bg-white shadow-lg flex flex-col">
+        <!-- Header -->
+        <header class="bg-purple-900 text-white p-4 sticky top-0 z-50">
+            <div class="flex justify-between items-center mb-2">
+                <div>
+                    <h1 id="store-title" class="font-bold text-lg">🛒 MANOR MART</h1>
+                    <p id="store-address-label" class="text-xs text-amber-300 font-semibold truncate">📍 Delivery: Setup location</p>
+                </div>
+                <div id="geo-badge" class="bg-green-700 px-2 py-1 rounded text-xs font-bold">Inside Zone</div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="flex space-x-1">
+                <button onclick="switchTab('shop')" id="tab-shop" class="flex-1 py-1.5 rounded bg-amber-400 text-purple-900 font-bold text-xs text-center">🛍️ Shop</button>
+                <button onclick="switchTab('orders')" id="tab-orders" class="flex-1 py-1.5 rounded bg-purple-800 text-white font-bold text-xs text-center">📦 Orders</button>
+                <button onclick="switchTab('profile')" id="tab-profile" class="flex-1 py-1.5 rounded bg-purple-800 text-white font-bold text-xs text-center">⚙️ Profile</button>
+            </div>
+        </header>
+
+        <!-- Store Closed Banner -->
+        <div id="store-closed-banner" class="hidden bg-red-700 text-white p-2 text-center text-xs font-bold">
+            🔴 Store is Currently Closed! Orders are temporarily suspended.
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-3 pb-32 overflow-y-auto">
+            
+            <!-- SHOP TAB -->
+            <div id="view-shop" class="space-y-4">
+                <div id="announcement-box" class="hidden bg-orange-100 border border-orange-300 p-2 rounded text-xs text-orange-800 font-bold text-center"></div>
+
+                <!-- Search Bar -->
+                <div class="sticky top-0 bg-purple-900 pt-1 pb-2 z-10">
+                    <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="🔍 Search groceries (e.g. Rice, Milk)..." class="w-full p-2.5 rounded-lg border border-purple-300 bg-white text-xs outline-none">
+                </div>
+
+                <!-- Categories & Products Container -->
+                <div id="shop-content">
+                    <h2 class="font-bold text-sm text-gray-900 mb-2">📂 Categories</h2>
+                    <div id="categories-grid" class="grid grid-cols-4 gap-2"></div>
+
+                    <div id="products-section" class="mt-4 hidden">
+                        <div class="flex justify-between items-center mb-2">
+                            <button onclick="clearCategory()" class="bg-purple-900 text-white px-3 py-1 rounded text-xs font-bold">← Back</button>
+                            <span id="current-cat-title" class="font-bold text-xs text-purple-900"></span>
+                        </div>
+                        <div id="products-grid" class="grid grid-cols-2 gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ORDERS TAB -->
+            <div id="view-orders" class="hidden space-y-3">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="font-bold text-xs text-purple-900">📦 Track Your Orders</h2>
+                    <button onclick="loadCustomerOrders()" class="bg-purple-200 text-purple-900 px-2 py-1 rounded text-xs font-bold">🔄 Refresh</button>
+                </div>
+                <div id="orders-list" class="space-y-3">
+                    <p class="text-center text-gray-500 text-xs py-10">No orders placed yet.</p>
+                </div>
+            </div>
+
+            <!-- PROFILE TAB -->
+            <div id="view-profile" class="hidden space-y-4">
+                <div class="bg-white p-3 rounded-lg border border-purple-200 shadow-sm space-y-2">
+                    <h3 class="font-bold text-xs text-purple-900">👤 Personal Information</h3>
+                    <label class="text-[10px] font-bold text-gray-600">Your Name:</label>
+                    <input type="text" id="profile-name" class="w-full p-2 border border-purple-300 rounded text-xs" placeholder="Enter Full Name">
+                    
+                    <label class="text-[10px] font-bold text-gray-600">Mobile Number:</label>
+                    <input type="text" id="profile-phone" readonly class="w-full p-2 border border-gray-300 bg-gray-100 rounded text-xs text-gray-600">
+
+                    <button onclick="saveProfile()" class="w-full bg-purple-900 text-white py-2 rounded text-xs font-bold mt-2">💾 Save Profile</button>
+                </div>
+
+                <div class="bg-white p-3 rounded-lg border border-purple-200 shadow-sm space-y-2">
+                    <h3 class="font-bold text-xs text-purple-900">📍 Delivery Address</h3>
+                    <textarea id="profile-address" class="w-full p-2 border border-purple-300 rounded text-xs h-16" placeholder="House No, Landmark, Area..."></textarea>
+                    <button onclick="saveAddress()" class="w-full bg-purple-800 text-white py-1.5 rounded text-xs font-bold">➕ Save Address</button>
+                </div>
+
+                <div class="bg-white p-3 rounded-lg border border-purple-200 shadow-sm space-y-2">
+                    <button onclick="logout()" class="w-full bg-orange-600 text-white py-2 rounded text-xs font-bold">🚪 Logout</button>
+                </div>
+            </div>
+
+            <!-- CART / CHECKOUT VIEW -->
+            <div id="view-cart" class="hidden space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="font-bold text-sm text-purple-900">🛒 Cart & Checkout</h2>
+                    <button onclick="switchTab('shop')" class="bg-purple-800 text-white px-2 py-1 rounded text-xs font-bold">🔙 Back</button>
+                </div>
+                
+                <div class="bg-white p-3 rounded-lg border border-purple-200 shadow-sm">
+                    <div id="cart-items-container" class="divide-y divide-gray-100"></div>
+                    <div class="border-t border-gray-200 mt-3 pt-2 space-y-1 text-xs">
+                        <div class="flex justify-between"><span>Subtotal:</span><span id="cart-subtotal" class="font-bold">₹0</span></div>
+                        <div class="flex justify-between"><span>Delivery Fee:</span><span id="cart-delivery-fee" class="font-bold">₹0</span></div>
+                        <div class="flex justify-between text-purple-900 font-bold text-sm pt-1"><span>Grand Total:</span><span id="cart-total">₹0</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-3 rounded-lg border border-purple-200 shadow-sm space-y-2">
+                    <h3 class="font-bold text-xs text-purple-900">💳 Payment Mode</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setPaymentMode('COD')" id="pay-cod" class="p-2 rounded border text-xs font-bold bg-purple-900 text-white">💵 COD</button>
+                        <button onclick="setPaymentMode('Online')" id="pay-online" class="p-2 rounded border text-xs font-bold bg-purple-100 text-purple-900">💳 Online (Razorpay)</button>
+                    </div>
+
+                    <button onclick="placeOrder()" id="place-order-btn" class="w-full bg-purple-900 text-white py-2.5 rounded text-xs font-bold mt-3">Place Order</button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Floating Cart Bar -->
+        <div id="floating-cart" class="hidden fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-purple-900 text-white p-3 rounded-xl flex justify-between items-center shadow-2xl z-40">
+            <div>
+                <p id="floating-cart-info" class="text-xs font-bold">0 Items | ₹0</p>
+                <p class="text-[10px] text-purple-200">Taxes included</p>
+            </div>
+            <button onclick="switchTab('cart')" class="bg-amber-400 text-purple-900 px-3 py-1.5 rounded-lg font-bold text-xs">View Cart ➔</button>
+        </div>
+    </div>
+
+    <script>
+        const DB_URL = "https://manormart-b14cd-default-rtdb.firebaseio.com/";
+        let storeSettings = { store: 'MANOR MART', storeOpen: true, radiusKm: 2, freeDel: 0, normCharge: 0, expCharge: 30 };
+        let categories = {};
+        let cart = {};
+        let currentPhone = localStorage.getItem('manor_cust_phone') || '';
+        let currentName = localStorage.getItem('manor_cust_name') || '';
+        let currentAddr = localStorage.getItem('manor_cust_addr') || '';
+        let activeTab = 'shop';
+        let selectedCategory = '';
+        let paymentMode = 'COD';
+        let deleteStepOrderId = null;
+
+        // Initialize App
+        window.onload = () => {
+            if (!currentPhone) {
+                let phone = prompt("Enter your 10-digit mobile number to enter store:");
+                if (phone && phone.length === 10) {
+                    currentPhone = phone;
+                    localStorage.setItem('manor_cust_phone', phone);
+                }
+            }
+            document.getElementById('profile-phone').value = currentPhone;
+            document.getElementById('profile-name').value = currentName;
+            document.getElementById('profile-address').value = currentAddr;
+
+            fetchStoreData();
+            setInterval(fetchStoreData, 6000);
+            checkURLPaymentReturn();
+        };
+
+        function fetchStoreData() {
+            fetch(DB_URL + ".json")
+                .then(res => res.json())
+                .then(data => {
+                    if (!data) return;
+                    if (data.settings) {
+                        storeSettings = { ...storeSettings, ...data.settings };
+                        document.getElementById('store-title').innerText = "🛒 " + storeSettings.store;
+                        if (storeSettings.storeOpen === false) {
+                            document.getElementById('store-closed-banner').classList.remove('hidden');
+                        } else {
+                            document.getElementById('store-closed-banner').classList.add('hidden');
+                        }
+                    }
+                    if (data.categories) {
+                        categories = data.categories;
+                        renderCategories();
+                    }
+                }).catch(e => console.log(e));
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+            ['shop', 'orders', 'profile', 'cart'].forEach(t => {
+                document.getElementById('view-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t)?.classList.remove('bg-amber-400', 'text-purple-900');
+                document.getElementById('tab-' + t)?.classList.add('bg-purple-800', 'text-white');
+            });
+            document.getElementById('view-' + tab).classList.remove('hidden');
+            if(document.getElementById('tab-' + tab)) {
+                document.getElementById('tab-' + tab).classList.remove('bg-purple-800', 'text-white');
+                document.getElementById('tab-' + tab).classList.add('bg-amber-400', 'text-purple-900');
+            }
+
+            if (tab === 'orders') loadCustomerOrders();
+        }
+
+        function renderCategories() {
+            const grid = document.getElementById('categories-grid');
+            grid.innerHTML = '';
+            Object.keys(categories).forEach(cat => {
+                grid.innerHTML += `
+                    <button onclick="selectCategory('${cat}')" class="bg-white p-2 rounded-xl border border-gray-200 shadow-sm flex flex-col items-center justify-center">
+                        <span class="text-xl">🛍️</span>
+                        <span class="text-[10px] font-bold text-gray-800 mt-1 truncate w-full text-center">${cat}</span>
+                    </button>
+                `;
+            });
+        }
+
+        function selectCategory(cat) {
+            selectedCategory = cat;
+            document.getElementById('categories-grid').parentElement.classList.add('hidden');
+            document.getElementById('products-section').classList.remove('hidden');
+            document.getElementById('current-cat-title').innerText = "📁 " + cat;
+            renderProducts(cat);
+        }
+
+        function clearCategory() {
+            selectedCategory = '';
+            document.getElementById('categories-grid').parentElement.classList.remove('hidden');
+            document.getElementById('products-section').classList.add('hidden');
+        }
+
+        function renderProducts(cat, query = '') {
+            const pGrid = document.getElementById('products-grid');
+            pGrid.innerHTML = '';
+            let items = categories[cat] || {};
+            
+            Object.keys(items).forEach(pKey => {
+                if (['status', 'image', 'discountPercent'].includes(pKey)) return;
+                let pr = items[pKey];
+                if (query && !pr.name.toLowerCase().includes(query.toLowerCase())) return;
+
+                let effPrice = Number(pr.price || 0) - Number(pr.discount || 0);
+                let cartQty = cart[pKey]?.qty || 0;
+
+                pGrid.innerHTML += `
+                    <div class="bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="h-24 bg-gray-50 rounded-lg flex items-center justify-center text-xl mb-2">📦</div>
+                            <h4 class="font-bold text-xs text-gray-900 truncate">${pr.name}</h4>
+                            <p class="text-[10px] text-gray-500">${pr.unit || ''}</p>
+                            <div class="flex items-center mt-1">
+                                <span class="font-bold text-green-700 text-xs">₹${effPrice}</span>
+                                ${pr.discount > 0 ? `<span class="text-[9px] text-gray-400 line-through ml-1">₹${pr.price}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            ${cartQty === 0 ? `
+                                <button onclick='updateCart("${pKey}", ${JSON.stringify(pr)}, 1)' class="w-full bg-purple-900 text-white py-1 rounded text-[10px] font-bold">ADD +</button>
+                            ` : `
+                                <div class="flex items-center justify-between bg-purple-100 p-1 rounded">
+                                    <button onclick='updateCart("${pKey}", ${JSON.stringify(pr)}, -1)' class="bg-purple-900 text-white w-5 h-5 rounded font-bold text-xs">-</button>
+                                    <span class="text-xs font-bold">${cartQty}</span>
+                                    <button onclick='updateCart("${pKey}", ${JSON.stringify(pr)}, 1)' class="bg-purple-900 text-white w-5 h-5 rounded font-bold text-xs">+</button>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function handleSearch(val) {
+            if (!val) { if(selectedCategory) renderProducts(selectedCategory); return; }
+            document.getElementById('categories-grid').parentElement.classList.add('hidden');
+            document.getElementById('products-section').classList.remove('hidden');
+            document.getElementById('current-cat-title').innerText = `Search: "${val}"`;
+            
+            const pGrid = document.getElementById('products-grid');
+            pGrid.innerHTML = '';
+            Object.keys(categories).forEach(cat => {
+                let items = categories[cat];
+                Object.keys(items).forEach(pKey => {
+                    if (['status', 'image', 'discountPercent'].includes(pKey)) return;
+                    let pr = items[pKey];
+                    if (pr.name.toLowerCase().includes(val.toLowerCase())) {
+                        let effPrice = Number(pr.price || 0) - Number(pr.discount || 0);
+                        pGrid.innerHTML += `
+                            <div class="bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <h4 class="font-bold text-xs text-gray-900">${pr.name}</h4>
+                                    <span class="font-bold text-green-700 text-xs">₹${effPrice}</span>
+                                </div>
+                                <button onclick='updateCart("${pKey}", ${JSON.stringify(pr)}, 1)' class="mt-2 w-full bg-purple-900 text-white py-1 rounded text-[10px] font-bold">ADD +</button>
+                            </div>
+                        `;
+                    }
+                });
+            });
+        }
+
+        function updateCart(pKey, pr, delta) {
+            if (!cart[pKey]) {
+                cart[pKey] = { id: pKey, name: pr.name, unit: pr.unit || '', effectivePrice: Number(pr.price) - Number(pr.discount || 0), qty: 0 };
+            }
+            cart[pKey].qty += delta;
+            if (cart[pKey].qty <= 0) delete cart[pKey];
+
+            updateCartUI();
+            if (selectedCategory) renderProducts(selectedCategory);
+        }
+
+        function updateCartUI() {
+            let items = Object.values(cart);
+            let subtotal = items.reduce((sum, i) => sum + (i.effectivePrice * i.qty), 0);
+            let totalQty = items.reduce((sum, i) => sum + i.qty, 0);
+
+            const floating = document.getElementById('floating-cart');
+            if (totalQty > 0) {
+                floating.classList.remove('hidden');
+                document.getElementById('floating-cart-info').innerText = `${totalQty} Items | ₹${subtotal}`;
+            } else {
+                floating.classList.add('hidden');
+            }
+
+            // Render Cart View
+            let container = document.getElementById('cart-items-container');
+            container.innerHTML = '';
+            items.forEach(item => {
+                container.innerHTML += `
+                    <div class="flex justify-between items-center py-2">
+                        <div>
+                            <p class="font-bold text-xs">${item.name} (${item.unit})</p>
+                            <p class="text-[10px] text-gray-500">₹${item.effectivePrice} x ${item.qty} = ₹${item.effectivePrice * item.qty}</p>
+                        </div>
+                        <button onclick="deleteCartItem('${item.id}')" class="bg-red-600 text-white px-2 py-1 rounded text-[10px]">✕</button>
+                    </div>
+                `;
+            });
+
+            document.getElementById('cart-subtotal').innerText = '₹' + subtotal;
+            document.getElementById('cart-delivery-fee').innerText = '₹0';
+            document.getElementById('cart-total').innerText = '₹' + subtotal;
+        }
+
+        function deleteCartItem(pKey) {
+            delete cart[pKey];
+            updateCartUI();
+            if (selectedCategory) renderProducts(selectedCategory);
+        }
+
+        function setPaymentMode(mode) {
+            paymentMode = mode;
+            document.getElementById('pay-cod').className = mode === 'COD' ? 'p-2 rounded border text-xs font-bold bg-purple-900 text-white' : 'p-2 rounded border text-xs font-bold bg-purple-100 text-purple-900';
+            document.getElementById('pay-online').className = mode === 'Online' ? 'p-2 rounded border text-xs font-bold bg-purple-900 text-white' : 'p-2 rounded border text-xs font-bold bg-purple-100 text-purple-900';
+        }
+
+        function saveProfile() {
+            currentName = document.getElementById('profile-name').value;
+            localStorage.setItem('manor_cust_name', currentName);
+            alert("Profile saved!");
+        }
+
+        function saveAddress() {
+            currentAddr = document.getElementById('profile-address').value;
+            localStorage.setItem('manor_cust_addr', currentAddr);
+            alert("Address saved!");
+        }
+
+        function logout() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        function placeOrder() {
+            currentName = document.getElementById('profile-name').value;
+            currentAddr = document.getElementById('profile-address').value;
+
+            if (!currentName) return alert("Please enter your name in Profile.");
+            if (!currentAddr) return alert("Please enter delivery address.");
+
+            let items = Object.values(cart);
+            if (items.length === 0) return alert("Cart is empty!");
+
+            let subtotal = items.reduce((sum, i) => sum + (i.effectivePrice * i.qty), 0);
+            let orderId = 'ord_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+
+            let orderObj = {
+                id: orderId,
+                name: currentName,
+                phone: currentPhone,
+                addr: currentAddr,
+                items: cart,
+                subtotal: subtotal,
+                total: subtotal,
+                payment: paymentMode,
+                deliveryStatus: paymentMode === 'Online' ? '⏳ Payment Pending' : 'Order Successful',
+                timestamp: Date.now()
+            };
+
+            fetch(DB_URL + `orders/${orderId}.json`, {
+                method: 'PUT',
+                body: JSON.stringify(orderObj)
+            }).then(() => {
+                cart = {};
+                updateCartUI();
+                if (paymentMode === 'Online') {
+                    let razorpayUrl = `https://shabaj9769-alt.github.io/manormart-pay/?amount=${subtotal}&order_id=${orderId}`;
+                    window.location.href = razorpayUrl;
+                } else {
+                    switchTab('orders');
+                    alert("Order placed successfully!");
+                }
+            });
+        }
+
+        function loadCustomerOrders() {
+            if (!currentPhone) return;
+            fetch(DB_URL + "orders.json")
+                .then(res => res.json())
+                .then(data => {
+                    if (!data) return;
+                    let listContainer = document.getElementById('orders-list');
+                    listContainer.innerHTML = '';
+                    
+                    Object.keys(data).forEach(k => {
+                        let ord = data[k];
+                        if (ord.phone === currentPhone) {
+                            let isDeleting = deleteStepOrderId === ord.id;
+                            listContainer.innerHTML += `
+                                <div class="bg-white p-3 rounded-lg border border-purple-300 shadow-sm space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-bold text-purple-900 text-xs">ORDER #${ord.id.slice(-6)}</span>
+                                        <span class="font-bold text-green-700 text-xs">₹${ord.total}</span>
+                                    </div>
+                                    <p class="text-[10px] text-gray-600">Status: <strong class="text-purple-900">${ord.deliveryStatus}</strong></p>
+                                    
+                                    <!-- Order Delete Button placed nicely at bottom -->
+                                    <div class="pt-2 border-t border-gray-100 flex justify-end">
+                                        <button onclick="confirmDeleteOrder('${ord.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-[10px] font-bold">
+                                            ${isDeleting ? '⚠️ Tap Again to Delete' : '🗑️ Delete Order'}
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+                });
+        }
+
+        function confirmDeleteOrder(orderId) {
+            if (deleteStepOrderId === orderId) {
+                fetch(DB_URL + `orders/${orderId}.json`, { method: 'DELETE' })
+                    .then(() => {
+                        deleteStepOrderId = null;
+                        loadCustomerOrders();
+                        alert("Order removed from history.");
+                    });
+            } else {
+                deleteStepOrderId = orderId;
+                loadCustomerOrders();
+                setTimeout(() => { deleteStepOrderId = null; loadCustomerOrders(); }, 4000);
+            }
+        }
+
+        function checkURLPaymentReturn() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('status') === 'success' || params.get('razorpay_payment_id')) {
+                let orderId = params.get('order_id');
+                if (orderId) {
+                    fetch(DB_URL + `orders/${orderId}/deliveryStatus.json`, {
+                        method: 'PUT',
+                        body: JSON.stringify('Order Successful')
+                    }).then(() => {
+                        alert("Payment successful and verified!");
+                        switchTab('orders');
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
