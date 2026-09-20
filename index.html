@@ -23,14 +23,14 @@
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative">
             <h2 class="font-extrabold text-base text-gray-900">Select your location</h2>
             <p class="text-xs text-gray-600 leading-relaxed px-2">
-                We need your location to show you curated assortment from your nearest store
+                We need your location to show you curated assortment from your nearest store[span_3](start_span)[span_3](end_span)[span_4](start_span)[span_4](end_span)
             </p>
             <div class="space-y-2.5 pt-2">
                 <button onclick="handleInitialUseLocation()" class="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-2xl text-xs transition shadow-sm">
-                    Use my location
+                    Use my location[span_5](start_span)[span_5](end_span)[span_6](start_span)[span_6](end_span)
                 </button>
                 <button onclick="handleInitialManualLocation()" class="w-full bg-white hover:bg-gray-50 text-green-700 font-bold py-3 rounded-2xl text-xs border border-green-700 transition">
-                    Select manually
+                    Select manually[span_7](start_span)[span_7](end_span)[span_8](start_span)[span_8](end_span)
                 </button>
             </div>
         </div>
@@ -263,10 +263,10 @@
                     <button onclick="closeLegalModal()" class="w-7 h-7 rounded-full bg-gray-100 text-gray-600 font-bold text-xs flex items-center justify-center">✕</button>
                 </div>
                 <div class="space-y-2 text-xs text-gray-700 leading-relaxed">
-                    <p><strong>1. Quick Delivery:</strong> Manor Mart aggregates products locally in Manor, Maharashtra within geo-fenced boundaries[span_10](start_span)[span_10](end_span).</p>
-                    <p><strong>2. 5-7 Days Refund Policy:</strong> Prepaid orders (Razorpay/UPI) cancelled before dispatch will be automatically refunded back to the source bank account within 5 to 7 business days[span_11](start_span)[span_11](end_span).</p>
-                    <p><strong>3. Data Privacy:</strong> We collect your mobile number, address, and live GPS strictly to verify delivery radius and fulfill orders[span_12](start_span)[span_12](end_span).</p>
-                    <p><strong>4. Support:</strong> Contact us at <em>shabaj9769@gmail.com</em> for order support and grievances[span_13](start_span)[span_13](end_span).</p>
+                    <p><strong>1. Quick Delivery:</strong> Manor Mart aggregates products locally in Manor, Maharashtra within geo-fenced boundaries[span_9](start_span)[span_9](end_span).</p>
+                    <p><strong>2. 5-7 Days Refund Policy:</strong> Prepaid orders (Razorpay/UPI) cancelled before dispatch will be automatically refunded back to the source bank account within 5 to 7 business days[span_10](start_span)[span_10](end_span).</p>
+                    <p><strong>3. Data Privacy:</strong> We collect your mobile number, address, and live GPS strictly to verify delivery radius and fulfill orders[span_11](start_span)[span_11](end_span).</p>
+                    <p><strong>4. Support:</strong> Contact us at <em>shabaj9769@gmail.com</em> for order support and grievances[span_12](start_span)[span_12](end_span).</p>
                 </div>
                 <button onclick="closeLegalModal()" class="w-full bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold">✓ Close Policy</button>
             </div>
@@ -318,7 +318,6 @@
         let deleteStepOrderId = null;
 
         window.onload = () => {
-            // Check if user already picked location in current session
             let locationSet = localStorage.getItem('manor_location_confirmed');
             if (!locationSet) {
                 document.getElementById('initial-location-modal').classList.remove('hidden');
@@ -340,7 +339,6 @@
             setInterval(fetchStoreData, 6000);
         };
 
-        // --- BLINKIT LOCATION SELECTION FLOW ---
         function handleInitialUseLocation() {
             document.getElementById('initial-location-modal').classList.add('hidden');
             document.getElementById('manual-location-modal').classList.add('hidden');
@@ -386,7 +384,6 @@
             closeManualLocationModal();
         }
 
-        // GPS Geolocation & Distance Calculation
         function triggerGpsLocation(isManual = false) {
             if (!navigator.geolocation) {
                 updateGeoBadge(false, "GPS Not Supported");
@@ -498,7 +495,6 @@
             });
         }
 
-        // Render Home Categories with Photo Fallback
         function renderHomeCategories() {
             const grid = document.getElementById('categories-grid');
             let keys = Object.keys(categoriesData);
@@ -527,7 +523,6 @@
             });
         }
 
-        // Category Tap Toggle Logic
         function handleCategoryTap(cat) {
             if (activeCategory && activeCategory.trim().toLowerCase() === cat.trim().toLowerCase()) {
                 closeSplitCategory();
@@ -844,6 +839,7 @@
             location.reload();
         }
 
+        // --- FIXED PLACE ORDER & ONLINE RETURN REDIRECTION ---
         function placeOrder() {
             if (storeSettings.storeOpen === false) {
                 return alert("Store is currently closed! New orders are suspended.");
@@ -901,11 +897,14 @@
             }).then(() => {
                 cart = {};
                 updateCartUI();
+
                 if (paymentMode === 'Online') {
-                    let customPayUrl = storeSettings.upi && storeSettings.upi.trim().startsWith('http')
-                        ? storeSettings.upi.trim()
-                        : 'https://shabaj9769-alt.github.io/manormart-pay/';
-                    window.location.href = `${customPayUrl}?amount=${grandTotal}&order_id=${orderId}`;
+                    // Force redirect back to website URL without app_scheme
+                    let currentSiteBase = window.location.origin + window.location.pathname;
+                    let targetReturnUrl = encodeURIComponent(`${currentSiteBase}?status=success&order_id=${orderId}`);
+                    
+                    let paymentGatewayUrl = `https://shabaj9769-alt.github.io/manormart-pay/?amount=${grandTotal}&order_id=${orderId}&redirect_url=${targetReturnUrl}`;
+                    window.location.href = paymentGatewayUrl;
                 } else {
                     switchTab('orders');
                     alert("Order placed successfully!");
