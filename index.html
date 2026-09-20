@@ -6,39 +6,39 @@
     <title>Manor Mart - Instant Grocery Delivery</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-      body { font-family: system-ui, -apple-system, sans-serif; background-color: #f4f6f4; margin: 0; padding: 0; }
+      body { font-family: system-ui, -apple-system, sans-serif; background-color: #f8f9f8; margin: 0; padding: 0; }
+      @keyframes slideUp {
+        from { transform: translateY(100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 min-h-screen">
+<body class="bg-gray-100 text-gray-900 min-h-screen pb-20">
 
     <div id="app" class="w-full min-h-screen bg-white flex flex-col relative">
         
-        <!-- Blinkit-Style Top Header -->
-        <header class="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-50 shadow-sm">
-            <div class="flex justify-between items-center mb-2">
+        <!-- Blinkit Style Clean Top Header -->
+        <header class="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-40 shadow-xs">
+            <div class="flex justify-between items-center mb-2.5">
                 <div>
-                    <div class="flex items-center space-x-1">
-                        <span class="bg-green-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded">13 MINS</span>
-                        <h1 id="store-title" class="font-black text-sm tracking-tight text-gray-900">MANOR MART</h1>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-xs font-black tracking-tight text-gray-900">Delivery in 13 minutes</span>
                     </div>
-                    <p id="store-address-label" class="text-[11px] text-gray-500 font-medium truncate mt-0.5">📍 Select delivery address</p>
+                    <p id="store-address-label" onclick="openProfileModal()" class="text-[11px] text-gray-500 font-medium truncate mt-0.5 cursor-pointer flex items-center">
+                        📍 <span id="addr-text" class="underline ml-1">Select delivery address</span> ▼
+                    </p>
                 </div>
-                <div id="geo-badge" class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                    ⚡ In Zone
-                </div>
+                <!-- Profile Icon Button -->
+                <button onclick="openProfileModal()" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 border border-gray-200 shadow-2xs">
+                    👤
+                </button>
             </div>
 
-            <!-- Blinkit-Style Search Bar -->
-            <div class="relative mt-2">
+            <!-- Blinkit Style Search Bar -->
+            <div class="relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">🔍</span>
-                <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search 'rice, oil, milk'..." class="w-full pl-9 pr-3 py-2 bg-gray-100 border border-gray-200 rounded-xl text-xs focus:bg-white focus:border-green-600 outline-none transition font-medium">
-            </div>
-
-            <!-- Navigation Tabs -->
-            <div class="flex space-x-1 mt-3 border-t border-gray-100 pt-2">
-                <button onclick="switchTab('shop')" id="tab-shop" class="flex-1 py-1.5 rounded-lg bg-green-600 text-white font-bold text-xs text-center shadow-sm">🛍️ Shop</button>
-                <button onclick="switchTab('orders')" id="tab-orders" class="flex-1 py-1.5 rounded-lg bg-gray-100 text-gray-700 font-bold text-xs text-center">📦 Orders</button>
-                <button onclick="switchTab('profile')" id="tab-profile" class="flex-1 py-1.5 rounded-lg bg-gray-100 text-gray-700 font-bold text-xs text-center">⚙️ Profile</button>
+                <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search 'rice, oil, milk'..." class="w-full pl-9 pr-3 py-2.5 bg-gray-100 border border-gray-200 rounded-xl text-xs focus:bg-white focus:border-green-600 outline-none transition font-medium">
             </div>
         </header>
 
@@ -48,7 +48,7 @@
         </div>
 
         <!-- Main Content Area -->
-        <main class="flex-1 p-3 pb-32 overflow-y-auto">
+        <main class="flex-1 p-3 pb-24 overflow-y-auto">
             
             <!-- SHOP TAB -->
             <div id="view-shop" class="space-y-4">
@@ -57,11 +57,11 @@
                 <!-- Categories Grid (Blinkit Style) -->
                 <div id="shop-content">
                     <h2 class="font-extrabold text-xs text-gray-800 mb-2.5 uppercase tracking-wider">Grocery & Kitchen</h2>
-                    <div id="categories-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2.5"></div>
+                    <div id="categories-grid" class="grid grid-cols-4 gap-2.5"></div>
 
                     <div id="products-section" class="mt-4 hidden">
                         <div class="flex justify-between items-center mb-3">
-                            <button onclick="clearCategory()" class="bg-gray-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">← Back</button>
+                            <button onclick="clearCategory()" class="bg-gray-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-xs">← Back</button>
                             <span id="current-cat-title" class="font-extrabold text-xs text-gray-900"></span>
                         </div>
                         <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3"></div>
@@ -70,9 +70,9 @@
             </div>
 
             <!-- ORDERS TAB -->
-            <div id="view-orders" class="hidden space-y-3 max-w-2xl mx-auto">
+            <div id="view-orders" class="hidden space-y-3 max-w-2xl mx-auto pt-2">
                 <div class="flex justify-between items-center mb-2">
-                    <h2 class="font-extrabold text-xs text-gray-800 uppercase tracking-wider">📦 Your Orders</h2>
+                    <h2 class="font-extrabold text-sm text-gray-900">📦 Your Orders</h2>
                     <button onclick="loadCustomerOrders()" class="bg-gray-100 text-gray-800 px-2.5 py-1 rounded-lg text-xs font-bold">🔄 Refresh</button>
                 </div>
                 <div id="orders-list" class="space-y-3">
@@ -80,38 +80,14 @@
                 </div>
             </div>
 
-            <!-- PROFILE TAB -->
-            <div id="view-profile" class="hidden space-y-3 max-w-2xl mx-auto">
-                <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm space-y-2">
-                    <h3 class="font-extrabold text-xs text-gray-800 uppercase">👤 Personal Information</h3>
-                    <label class="text-[10px] font-bold text-gray-500">Your Name:</label>
-                    <input type="text" id="profile-name" class="w-full p-2.5 border border-gray-200 bg-gray-50 rounded-xl text-xs outline-none focus:border-green-600 font-medium" placeholder="Enter Full Name">
-                    
-                    <label class="text-[10px] font-bold text-gray-500">Mobile Number:</label>
-                    <input type="text" id="profile-phone" readonly class="w-full p-2.5 border border-gray-200 bg-gray-100 rounded-xl text-xs text-gray-500 font-medium">
-
-                    <button onclick="saveProfile()" class="w-full bg-green-600 text-white py-2.5 rounded-xl text-xs font-bold mt-1 shadow-sm">💾 Save Profile</button>
-                </div>
-
-                <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm space-y-2">
-                    <h3 class="font-extrabold text-xs text-gray-800 uppercase">📍 Delivery Address</h3>
-                    <textarea id="profile-address" class="w-full p-2.5 border border-gray-200 bg-gray-50 rounded-xl text-xs h-20 outline-none focus:border-green-600 font-medium" placeholder="House No, Landmark, Area..."></textarea>
-                    <button onclick="saveAddress()" class="w-full bg-gray-900 text-white py-2 rounded-xl text-xs font-bold shadow-sm">➕ Save Address</button>
-                </div>
-
-                <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm">
-                    <button onclick="logout()" class="w-full bg-red-50 text-red-600 border border-red-200 py-2.5 rounded-xl text-xs font-bold">🚪 Logout</button>
-                </div>
-            </div>
-
             <!-- CART / CHECKOUT VIEW -->
-            <div id="view-cart" class="hidden space-y-3 max-w-2xl mx-auto">
+            <div id="view-cart" class="hidden space-y-3 max-w-2xl mx-auto pt-2">
                 <div class="flex justify-between items-center mb-2">
                     <h2 class="font-extrabold text-sm text-gray-900">🛒 Review Cart & Pay</h2>
-                    <button onclick="switchTab('shop')" class="bg-gray-100 text-gray-800 px-3 py-1 rounded-lg text-xs font-bold">🔙 Back</button>
+                    <button onclick="switchTab('shop')" class="bg-gray-100 text-gray-800 px-3 py-1 rounded-lg text-xs font-bold">🔙 Back to Shop</button>
                 </div>
                 
-                <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm">
+                <div class="bg-white p-3.5 rounded-2xl border border-gray-200 shadow-xs">
                     <div id="cart-items-container" class="divide-y divide-gray-100"></div>
                     <div class="border-t border-gray-100 mt-3 pt-2 space-y-1 text-xs">
                         <div class="flex justify-between text-gray-500"><span>Subtotal</span><span id="cart-subtotal" class="font-bold text-gray-900">₹0</span></div>
@@ -120,11 +96,11 @@
                     </div>
                 </div>
 
-                <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm space-y-3">
+                <div class="bg-white p-3.5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
                     <h3 class="font-extrabold text-xs text-gray-800 uppercase">💳 Payment Method</h3>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="setPaymentMode('COD')" id="pay-cod" class="p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800 shadow-sm">💵 Cash on Delivery</button>
-                        <button onclick="setPaymentMode('Online')" id="pay-online" class="p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700 shadow-sm">💳 Online (Razorpay)</button>
+                        <button onclick="setPaymentMode('COD')" id="pay-cod" class="p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800 shadow-xs">💵 Cash on Delivery</button>
+                        <button onclick="setPaymentMode('Online')" id="pay-online" class="p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700 shadow-xs">💳 Online (Razorpay)</button>
                     </div>
 
                     <button onclick="placeOrder()" id="place-order-btn" class="w-full bg-green-600 text-white py-3 rounded-xl text-xs font-extrabold mt-2 shadow-md">Place Order</button>
@@ -133,19 +109,70 @@
 
         </main>
 
+        <!-- Blinkit Style Animated Login / Profile Modal -->
+        <div id="profile-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex justify-end flex-col backdrop-blur-xs">
+            <div id="modal-content" class="bg-white rounded-t-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up">
+                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-green-600 text-white rounded-lg flex items-center justify-center font-black text-xs">MM</div>
+                        <div>
+                            <h3 class="font-extrabold text-sm text-gray-900">Manor Mart</h3>
+                            <p class="text-[10px] text-gray-400 font-medium">India's last minute app</p>
+                        </div>
+                    </div>
+                    <button onclick="closeProfileModal()" class="w-7 h-7 rounded-full bg-gray-100 text-gray-600 font-bold text-xs flex items-center justify-center">✕</button>
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase">Mobile Number[span_1](start_span)[span_1](end_span):</label>
+                        <div class="flex items-center border border-gray-200 bg-gray-50 rounded-xl mt-1 overflow-hidden focus-within:border-green-600">
+                            <span class="px-3 text-xs font-bold text-gray-500 bg-gray-100 py-3 border-r border-gray-200">+91[span_2](start_span)[span_2](end_span)</span>
+                            <input type="tel" id="profile-phone" class="w-full p-3 bg-transparent text-xs font-bold outline-none" placeholder="Enter mobile number[span_3](start_span)[span_3](end_span)" maxlength="10">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase">Your Name:</label>
+                        <input type="text" id="profile-name" class="w-full p-3 border border-gray-200 bg-gray-50 rounded-xl text-xs font-medium mt-1 outline-none focus:border-green-600" placeholder="Enter Full Name">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase">Delivery Address:</label>
+                        <textarea id="profile-address" class="w-full p-3 border border-gray-200 bg-gray-50 rounded-xl text-xs h-20 font-medium mt-1 outline-none focus:border-green-600" placeholder="House No, Landmark, Area..."></textarea>
+                    </div>
+
+                    <button onclick="saveProfileAndAddress()" class="w-full bg-green-600 text-white py-3.5 rounded-xl text-xs font-extrabold shadow-md hover:bg-green-700 transition">Continue[span_4](start_span)[span_4](end_span)</button>
+                    
+                    <button onclick="logout()" class="w-full bg-red-50 text-red-600 border border-red-200 py-2.5 rounded-xl text-xs font-bold mt-2">🚪 Logout / Switch Account</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Floating Cart Bar -->
-        <div id="floating-cart" class="hidden fixed bottom-3 left-3 right-3 bg-green-700 text-white p-3.5 rounded-2xl flex justify-between items-center shadow-2xl z-45 max-w-3xl mx-auto">
+        <div id="floating-cart" class="hidden fixed bottom-16 left-3 right-3 bg-green-700 text-white p-3.5 rounded-2xl flex justify-between items-center shadow-xl z-30 max-w-3xl mx-auto">
             <div>
                 <p id="floating-cart-info" class="text-xs font-extrabold">0 items • ₹0</p>
                 <p class="text-[10px] text-green-100">Extra charges may apply</p>
             </div>
             <button onclick="switchTab('cart')" class="bg-white text-green-800 px-4 py-2 rounded-xl font-extrabold text-xs shadow-sm">View Cart ➔</button>
         </div>
+
+        <!-- Blinkit Style Bottom Navigation Bar -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-2 z-40 shadow-lg max-w-3xl mx-auto">
+            <button onclick="switchTab('shop')" id="bnav-shop" class="flex flex-col items-center text-green-700 font-bold text-[10px]">
+                <span class="text-lg">🛍️</span> Shop
+            </button>
+            <button onclick="switchTab('orders')" id="bnav-orders" class="flex flex-col items-center text-gray-400 font-bold text-[10px]">
+                <span class="text-lg">📦</span> Orders
+            </button>
+            <button onclick="openProfileModal()" class="flex flex-col items-center text-gray-400 font-bold text-[10px]">
+                <span class="text-lg">👤</span> Profile
+            </button>
+        </nav>
     </div>
 
     <script>
         const DB_URL = "https://manormart-b14cd-default-rtdb.firebaseio.com/";
-        let storeSettings = { store: 'MANOR MART', storeOpen: true, radiusKm: 2, freeDel: 0, normCharge: 0, expCharge: 30 };
+        let storeSettings = { store: 'MANOR MART', storeOpen: true, radiusKm: 2 };
         let categories = {};
         let cart = {};
         let currentPhone = localStorage.getItem('manor_cust_phone') || '';
@@ -158,11 +185,9 @@
 
         window.onload = () => {
             if (!currentPhone) {
-                let phone = prompt("Enter your 10-digit mobile number to enter store:");
-                if (phone && phone.length === 10) {
-                    currentPhone = phone;
-                    localStorage.setItem('manor_cust_phone', phone);
-                }
+                openProfileModal();
+            } else {
+                updateAddressLabel();
             }
             document.getElementById('profile-phone').value = currentPhone;
             document.getElementById('profile-name').value = currentName;
@@ -180,7 +205,6 @@
                     if (!data) return;
                     if (data.settings) {
                         storeSettings = { ...storeSettings, ...data.settings };
-                        document.getElementById('store-title').innerText = storeSettings.store;
                         if (storeSettings.storeOpen === false) {
                             document.getElementById('store-closed-banner').classList.remove('hidden');
                         } else {
@@ -196,18 +220,53 @@
 
         function switchTab(tab) {
             activeTab = tab;
-            ['shop', 'orders', 'profile', 'cart'].forEach(t => {
-                document.getElementById('view-' + t).classList.add('hidden');
-                document.getElementById('tab-' + t)?.classList.remove('bg-green-600', 'text-white', 'shadow-sm');
-                document.getElementById('tab-' + t)?.classList.add('bg-gray-100', 'text-gray-700');
+            ['shop', 'orders', 'cart'].forEach(t => {
+                document.getElementById('view-' + t)?.classList.add('hidden');
             });
-            document.getElementById('view-' + tab).classList.remove('hidden');
-            if(document.getElementById('tab-' + tab)) {
-                document.getElementById('tab-' + tab).classList.remove('bg-gray-100', 'text-gray-700');
-                document.getElementById('tab-' + tab).classList.add('bg-green-600', 'text-white', 'shadow-sm');
-            }
+            document.getElementById('view-' + tab)?.classList.remove('hidden');
+
+            document.getElementById('bnav-shop').className = tab === 'shop' ? 'flex flex-col items-center text-green-700 font-bold text-[10px]' : 'flex flex-col items-center text-gray-400 font-bold text-[10px]';
+            document.getElementById('bnav-orders').className = tab === 'orders' ? 'flex flex-col items-center text-green-700 font-bold text-[10px]' : 'flex flex-col items-center text-gray-400 font-bold text-[10px]';
 
             if (tab === 'orders') loadCustomerOrders();
+        }
+
+        function openProfileModal() {
+            document.getElementById('profile-modal').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.add('hidden');
+        }
+
+        function saveProfileAndAddress() {
+            let ph = document.getElementById('profile-phone').value.replace(/[^0-9]/g, '').trim();
+            let nm = document.getElementById('profile-name').value.trim();
+            let ad = document.getElementById('profile-address').value.trim();
+
+            if (ph.length !== 10) return alert("Please enter a valid 10-digit mobile number[span_5](start_span)[span_5](end_span).");
+            if (!nm) return alert("Please enter your name.");
+            if (!ad) return alert("Please enter delivery address.");
+
+            currentPhone = ph;
+            currentName = nm;
+            currentAddr = ad;
+
+            localStorage.setItem('manor_cust_phone', ph);
+            localStorage.setItem('manor_cust_name', nm);
+            localStorage.setItem('manor_cust_addr', ad);
+
+            updateAddressLabel();
+            closeProfileModal();
+            alert("Profile & Address saved successfully!");
+        }
+
+        function updateAddressLabel() {
+            if (currentAddr) {
+                document.getElementById('addr-text').innerText = currentAddr;
+            } else {
+                document.getElementById('addr-text').innerText = "Select delivery address";
+            }
         }
 
         function renderCategories() {
@@ -362,29 +421,16 @@
             document.getElementById('pay-online').className = mode === 'Online' ? 'p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800 shadow-sm' : 'p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700 shadow-sm';
         }
 
-        function saveProfile() {
-            currentName = document.getElementById('profile-name').value;
-            localStorage.setItem('manor_cust_name', currentName);
-            alert("Profile saved successfully!");
-        }
-
-        function saveAddress() {
-            currentAddr = document.getElementById('profile-address').value;
-            localStorage.setItem('manor_cust_addr', currentAddr);
-            alert("Delivery address saved successfully!");
-        }
-
         function logout() {
             localStorage.clear();
             location.reload();
         }
 
         function placeOrder() {
-            currentName = document.getElementById('profile-name').value;
-            currentAddr = document.getElementById('profile-address').value;
-
-            if (!currentName) return alert("Please enter your name in Profile.");
-            if (!currentAddr) return alert("Please enter delivery address.");
+            if (!currentPhone || !currentAddr || !currentName) {
+                openProfileModal();
+                return alert("Please complete your profile and address first.");
+            }
 
             let items = Object.values(cart);
             if (items.length === 0) return alert("Cart is empty!");
@@ -422,7 +468,10 @@
         }
 
         function loadCustomerOrders() {
-            if (!currentPhone) return;
+            if (!currentPhone) {
+                openProfileModal();
+                return;
+            }
             fetch(DB_URL + "orders.json")
                 .then(res => res.json())
                 .then(data => {
