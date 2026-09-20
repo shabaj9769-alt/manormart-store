@@ -125,10 +125,10 @@
 
                 <div class="space-y-3">
                     <div>
-                        <label class="text-[10px] font-bold text-gray-500 uppercase">Mobile Number[span_1](start_span)[span_1](end_span):</label>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase">Mobile Number:</label>
                         <div class="flex items-center border border-gray-200 bg-gray-50 rounded-xl mt-1 overflow-hidden focus-within:border-green-600">
-                            <span class="px-3 text-xs font-bold text-gray-500 bg-gray-100 py-3 border-r border-gray-200">+91[span_2](start_span)[span_2](end_span)</span>
-                            <input type="tel" id="profile-phone" class="w-full p-3 bg-transparent text-xs font-bold outline-none" placeholder="Enter mobile number[span_3](start_span)[span_3](end_span)" maxlength="10">
+                            <span class="px-3 text-xs font-bold text-gray-500 bg-gray-100 py-3 border-r border-gray-200">+91</span>
+                            <input type="tel" id="profile-phone" class="w-full p-3 bg-transparent text-xs font-bold outline-none" placeholder="Enter mobile number" maxlength="10">
                         </div>
                     </div>
                     <div>
@@ -140,7 +140,7 @@
                         <textarea id="profile-address" class="w-full p-3 border border-gray-200 bg-gray-50 rounded-xl text-xs h-20 font-medium mt-1 outline-none focus:border-green-600" placeholder="House No, Landmark, Area..."></textarea>
                     </div>
 
-                    <button onclick="saveProfileAndAddress()" class="w-full bg-green-600 text-white py-3.5 rounded-xl text-xs font-extrabold shadow-md hover:bg-green-700 transition">Continue[span_4](start_span)[span_4](end_span)</button>
+                    <button onclick="saveProfileAndAddress()" class="w-full bg-green-600 text-white py-3.5 rounded-xl text-xs font-extrabold shadow-md hover:bg-green-700 transition">Continue</button>
                     
                     <button onclick="logout()" class="w-full bg-red-50 text-red-600 border border-red-200 py-2.5 rounded-xl text-xs font-bold mt-2">🚪 Logout / Switch Account</button>
                 </div>
@@ -244,7 +244,7 @@
             let nm = document.getElementById('profile-name').value.trim();
             let ad = document.getElementById('profile-address').value.trim();
 
-            if (ph.length !== 10) return alert("Please enter a valid 10-digit mobile number[span_5](start_span)[span_5](end_span).");
+            if (ph.length !== 10) return alert("Please enter a valid 10-digit mobile number.");
             if (!nm) return alert("Please enter your name.");
             if (!ad) return alert("Please enter delivery address.");
 
@@ -306,19 +306,25 @@
                 let pr = items[pKey];
                 if (query && !pr.name.toLowerCase().includes(query.toLowerCase())) return;
 
-                let effPrice = Number(pr.price || 0) - Number(pr.discount || 0);
+                let priceVal = Number(pr.price || 0);
+                let discVal = Number(pr.discount || 0);
+                let effPrice = priceVal - discVal;
+                
+                // Calculate percentage discount if discount > 0 and price > 0
+                let discPercent = (discVal > 0 && priceVal > 0) ? Math.round((discVal / priceVal) * 100) : 0;
                 let cartQty = cart[pKey]?.qty || 0;
 
                 pGrid.innerHTML += `
-                    <div class="bg-white p-2.5 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between">
+                    <div class="bg-white p-2.5 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between relative overflow-hidden">
+                        ${discPercent > 0 ? `<div class="absolute top-0 left-0 bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-br-xl shadow-xs">${discPercent}% OFF</div>` : ''}
                         <div>
-                            <div class="h-28 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-2 border border-gray-100">🛒</div>
+                            <div class="h-28 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-2 border border-gray-100 mt-1">🛒</div>
                             <span class="bg-gray-100 text-gray-600 text-[9px] font-extrabold px-1.5 py-0.5 rounded">13 MINS</span>
                             <h4 class="font-bold text-xs text-gray-900 line-clamp-2 mt-1">${pr.name}</h4>
                             <p class="text-[10px] text-gray-400 mt-0.5">${pr.unit || ''}</p>
                             <div class="flex items-center mt-1">
                                 <span class="font-extrabold text-gray-900 text-xs">₹${effPrice}</span>
-                                ${pr.discount > 0 ? `<span class="text-[9px] text-gray-400 line-through ml-1">₹${pr.price}</span>` : ''}
+                                ${discVal > 0 ? `<span class="text-[9px] text-gray-400 line-through ml-1">₹${priceVal}</span>` : ''}
                             </div>
                         </div>
                         <div class="mt-2.5">
@@ -351,12 +357,21 @@
                     if (['status', 'image', 'discountPercent'].includes(pKey)) return;
                     let pr = items[pKey];
                     if (pr.name.toLowerCase().includes(val.toLowerCase())) {
-                        let effPrice = Number(pr.price || 0) - Number(pr.discount || 0);
+                        let priceVal = Number(pr.price || 0);
+                        let discVal = Number(pr.discount || 0);
+                        let effPrice = priceVal - discVal;
+                        let discPercent = (discVal > 0 && priceVal > 0) ? Math.round((discVal / priceVal) * 100) : 0;
+
                         pGrid.innerHTML += `
-                            <div class="bg-white p-2.5 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between">
+                            <div class="bg-white p-2.5 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between relative overflow-hidden">
+                                ${discPercent > 0 ? `<div class="absolute top-0 left-0 bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-br-xl shadow-xs">${discPercent}% OFF</div>` : ''}
                                 <div>
+                                    <div class="h-28 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-2 border border-gray-100 mt-1">🛒</div>
                                     <h4 class="font-bold text-xs text-gray-900 line-clamp-2">${pr.name}</h4>
-                                    <span class="font-extrabold text-gray-900 text-xs mt-1 block">₹${effPrice}</span>
+                                    <div class="flex items-center mt-1">
+                                        <span class="font-extrabold text-gray-900 text-xs">₹${effPrice}</span>
+                                        ${discVal > 0 ? `<span class="text-[9px] text-gray-400 line-through ml-1">₹${priceVal}</span>` : ''}
+                                    </div>
                                 </div>
                                 <button onclick='updateCart("${pKey}", ${JSON.stringify(pr)}, 1)' class="mt-2.5 w-full bg-emerald-50 text-emerald-700 border border-emerald-600 py-1.5 rounded-xl text-[11px] font-extrabold">ADD</button>
                             </div>
@@ -368,7 +383,9 @@
 
         function updateCart(pKey, pr, delta) {
             if (!cart[pKey]) {
-                cart[pKey] = { id: pKey, name: pr.name, unit: pr.unit || '', effectivePrice: Number(pr.price) - Number(pr.discount || 0), qty: 0 };
+                let priceVal = Number(pr.price || 0);
+                let discVal = Number(pr.discount || 0);
+                cart[pKey] = { id: pKey, name: pr.name, unit: pr.unit || '', effectivePrice: priceVal - discVal, qty: 0 };
             }
             cart[pKey].qty += delta;
             if (cart[pKey].qty <= 0) delete cart[pKey];
