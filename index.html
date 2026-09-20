@@ -109,7 +109,7 @@
 
         </main>
 
-        <!-- Blinkit Style Animated Login / Profile Modal -->
+        <!-- Profile Modal -->
         <div id="profile-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex justify-end flex-col backdrop-blur-xs">
             <div id="modal-content" class="bg-white rounded-t-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3">
@@ -156,7 +156,7 @@
             <button onclick="switchTab('cart')" class="bg-white text-green-800 px-4 py-2 rounded-xl font-extrabold text-xs shadow-sm">View Cart ➔</button>
         </div>
 
-        <!-- Blinkit Style Bottom Navigation Bar -->
+        <!-- Bottom Navigation Bar -->
         <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-2 z-40 shadow-lg max-w-3xl mx-auto">
             <button onclick="switchTab('shop')" id="bnav-shop" class="flex flex-col items-center text-green-700 font-bold text-[10px]">
                 <span class="text-lg">🛍️</span> Shop
@@ -214,6 +214,7 @@
                     if (data.categories) {
                         categories = data.categories;
                         renderCategories();
+                        if (selectedCategory) renderProducts(selectedCategory);
                     }
                 }).catch(e => console.log(e));
         }
@@ -273,10 +274,11 @@
             const grid = document.getElementById('categories-grid');
             grid.innerHTML = '';
             Object.keys(categories).forEach(cat => {
+                let displayName = decodeURIComponent(cat);
                 grid.innerHTML += `
                     <button onclick="selectCategory('${cat}')" class="bg-sky-50/50 hover:bg-sky-100/60 p-2.5 rounded-2xl border border-sky-100 flex flex-col items-center justify-center transition shadow-2xs">
                         <div class="w-12 h-12 bg-white rounded-xl shadow-xs flex items-center justify-center text-xl mb-1.5">📦</div>
-                        <span class="text-[10px] font-bold text-gray-800 truncate w-full text-center">${cat}</span>
+                        <span class="text-[10px] font-bold text-gray-800 truncate w-full text-center">${displayName}</span>
                     </button>
                 `;
             });
@@ -286,7 +288,7 @@
             selectedCategory = cat;
             document.getElementById('categories-grid').parentElement.classList.add('hidden');
             document.getElementById('products-section').classList.remove('hidden');
-            document.getElementById('current-cat-title').innerText = cat;
+            document.getElementById('current-cat-title').innerText = decodeURIComponent(cat);
             renderProducts(cat);
         }
 
@@ -309,8 +311,6 @@
                 let priceVal = Number(pr.price || 0);
                 let discVal = Number(pr.discount || 0);
                 let effPrice = priceVal - discVal;
-                
-                // Calculate percentage discount if discount > 0 and price > 0
                 let discPercent = (discVal > 0 && priceVal > 0) ? Math.round((discVal / priceVal) * 100) : 0;
                 let cartQty = cart[pKey]?.qty || 0;
 
@@ -499,7 +499,6 @@
                     Object.keys(data).forEach(k => {
                         let ord = data[k];
                         if (ord.phone === currentPhone) {
-                            let isDeleting = deleteStepOrderId === ord.id;
                             listContainer.innerHTML += `
                                 <div class="bg-white p-3.5 rounded-2xl border border-gray-200 shadow-2xs space-y-2">
                                     <div class="flex justify-between items-center">
@@ -507,32 +506,11 @@
                                         <span class="font-extrabold text-green-700 text-xs">₹${ord.total}</span>
                                     </div>
                                     <p class="text-[10px] text-gray-500 font-medium">Status: <strong class="text-green-700">${ord.deliveryStatus}</strong></p>
-                                    
-                                    <div class="pt-2 border-t border-gray-100 flex justify-end">
-                                        <button onclick="confirmDeleteOrder('${ord.id}')" class="bg-red-50 text-red-600 border border-red-200 px-3 py-1 rounded-xl text-[10px] font-bold">
-                                            ${isDeleting ? '⚠️ Tap Again to Delete' : '🗑️ Delete Order'}
-                                        </button>
-                                    </div>
                                 </div>
                             `;
                         }
                     });
                 });
-        }
-
-        function confirmDeleteOrder(orderId) {
-            if (deleteStepOrderId === orderId) {
-                fetch(DB_URL + `orders/${orderId}.json`, { method: 'DELETE' })
-                    .then(() => {
-                        deleteStepOrderId = null;
-                        loadCustomerOrders();
-                        alert("Order removed from history.");
-                    });
-            } else {
-                deleteStepOrderId = orderId;
-                loadCustomerOrders();
-                setTimeout(() => { deleteStepOrderId = null; loadCustomerOrders(); }, 4000);
-            }
         }
 
         function checkURLPaymentReturn() {
@@ -544,7 +522,7 @@
                         method: 'PUT',
                         body: JSON.stringify('Order Successful')
                     }).then(() => {
-                        alert("Payment successful and verified!");
+                        alert("Product successful and verified!");
                         switchTab('orders');
                     });
                 }
