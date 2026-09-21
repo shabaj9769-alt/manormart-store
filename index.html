@@ -15,12 +15,8 @@
         50% { transform: translateY(-10px) rotate(5deg); }
         100% { transform: translateY(0px) rotate(0deg); }
       }
-      .animate-floating-item {
-        animation: floatGrocery 4s ease-in-out infinite;
-      }
-      .animate-floating-item-delay {
-        animation: floatGrocery 4.5s ease-in-out 1.2s infinite;
-      }
+      .animate-floating-item { animation: floatGrocery 4s ease-in-out infinite; }
+      .animate-floating-item-delay { animation: floatGrocery 4.5s ease-in-out 1.2s infinite; }
       @keyframes slideUp {
         from { transform: translateY(100%); opacity: 0; }
         to { transform: translateY(0); opacity: 1; }
@@ -68,7 +64,7 @@
         </div>
     </div>
 
-    <!-- BLINKIT POPUP 1: SELECT YOUR LOCATION MODAL -->
+    <!-- SELECT LOCATION MODAL -->
     <div id="initial-location-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative">
             <h2 class="font-extrabold text-base text-gray-900">Select your location</h2>
@@ -86,7 +82,7 @@
         </div>
     </div>
 
-    <!-- BLINKIT POPUP 2: MANUAL LOCATION DRAWER -->
+    <!-- MANUAL LOCATION DRAWER -->
     <div id="manual-location-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex justify-end flex-col backdrop-blur-xs">
         <div class="bg-white rounded-t-3xl p-5 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl animate-slide-up">
             <div class="flex justify-between items-center border-b border-gray-100 pb-2.5">
@@ -117,7 +113,7 @@
         </div>
     </div>
 
-    <!-- MAIN APPLICATION CONTAINER (FULL WIDTH RESPONSIVE) -->
+    <!-- MAIN CONTAINER -->
     <div id="app" class="w-full min-h-screen bg-white flex flex-col relative pb-16">
         
         <!-- Header -->
@@ -125,7 +121,7 @@
             <div class="flex justify-between items-center mb-2">
                 <div>
                     <div class="flex items-center space-x-1.5">
-                        <span class="text-xs font-black tracking-tight text-gray-900">Delivery in 13 minutes</span>
+                        <span id="header-delivery-time-label" class="text-xs font-black tracking-tight text-gray-900">Delivery in 45 Mins</span>
                         <span id="geo-status-badge" class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded">Checking Location...</span>
                     </div>
                     <p id="store-address-label" onclick="openLocationOptions()" class="text-[11px] text-gray-500 font-medium truncate mt-0.5 cursor-pointer flex items-center">
@@ -161,7 +157,7 @@
                     </div>
                 </div>
 
-                <!-- BLINKIT STYLE SPLIT VIEW WITH FIXED HEADER -->
+                <!-- SPLIT VIEW -->
                 <div id="blinkit-split-view" class="hidden w-full flex-1 flex overflow-hidden border-t border-gray-100 h-[calc(100vh-130px)]">
                     <div id="sidebar-categories" class="w-[74px] shrink-0 bg-gray-50 border-r border-gray-200 overflow-y-auto no-scrollbar flex flex-col divide-y divide-gray-100"></div>
 
@@ -355,8 +351,8 @@
     </div>
 
     <script>
-        const DB_URL = "https://manormart-b14cd-default-rtdb.firebaseio.com/";
-        let storeSettings = { hubLat: 19.7280, hubLng: 72.9150, radiusKm: 10, storeOpen: true, normCharge: 0, expCharge: 30, freeDel: 0, minOrd: 0, groceryAnimation: true };
+        const DB_URL = "https://manorbiryani-default-rtdb.firebaseio.com/";
+        let storeSettings = { hubLat: 19.7280, hubLng: 72.9150, radiusKm: 10, storeOpen: true, normCharge: 0, expCharge: 30, freeDel: 0, minOrd: 0, groceryAnimation: true, expDeliveryTime: '45 Mins' };
         let categoriesData = {};
         let allProductsList = [];
         let deliveryBoysList = {};
@@ -603,6 +599,11 @@
 
                     if (data.settings) {
                         storeSettings = { ...storeSettings, ...data.settings };
+                        
+                        // Fix for delivery time label matching admin settings
+                        let timeLabel = storeSettings.expDeliveryTime || '45 Mins';
+                        document.getElementById('header-delivery-time-label').innerText = `Delivery in ${timeLabel}`;
+
                         if (storeSettings.adminNote) {
                             let ab = document.getElementById('announcement-box');
                             ab.innerText = "📢 " + storeSettings.adminNote;
@@ -749,12 +750,17 @@
                 ? `<img src="${pr.image}" class="h-28 w-full object-contain bg-gray-50/50 p-2 rounded-xl mb-1.5" onerror="this.outerHTML='<div class=\\'h-28 bg-gray-50 rounded-xl flex items-center justify-center text-xl mb-1.5 border border-gray-100\\'>🛒</div>';">` 
                 : `<div class="h-28 bg-gray-50 rounded-xl flex items-center justify-center text-xl mb-1.5 border border-gray-100">🛒</div>`;
 
+            let timeBadgeLabel = storeSettings.expDeliveryTime || '45 Mins';
+
+            // Fixed cart button functionality with correct stringified product handler
+            let productJsonStr = JSON.stringify(pr).replace(/"/g, '&quot;');
+
             return `
                 <div class="bg-white p-2 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between relative overflow-hidden ${isSoldOut ? 'opacity-70 bg-gray-50' : ''}">
                     ${discPercent > 0 ? `<div class="absolute top-0 left-0 bg-blue-600 text-white text-[8.5px] font-black px-1.5 py-0.5 rounded-br-xl shadow-xs z-10">${discPercent}% OFF</div>` : ''}
                     <div>
                         ${imgDisplay}
-                        <span class="bg-gray-100 text-gray-600 text-[8px] font-extrabold px-1.5 py-0.5 rounded">13 MINS</span>
+                        <span class="bg-gray-100 text-gray-600 text-[8px] font-extrabold px-1.5 py-0.5 rounded">${timeBadgeLabel}</span>
                         <h4 class="font-bold text-xs text-gray-900 line-clamp-2 mt-1 leading-snug">${pr.name}</h4>
                         <p class="text-[9.5px] text-gray-400 mt-0.5">${pr.unit || '1 unit'}</p>
                         <div class="flex items-center mt-1">
@@ -766,12 +772,12 @@
                         ${isSoldOut ? `
                             <div class="w-full bg-red-100 text-red-700 py-1.5 rounded-xl text-[10px] font-extrabold text-center">SOLD OUT</div>
                         ` : cartQty === 0 ? `
-                            <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-full bg-emerald-50 text-emerald-700 border border-emerald-600 py-1.5 rounded-xl text-[10.5px] font-extrabold hover:bg-emerald-600 hover:text-white transition shadow-2xs">ADD</button>
+                            <button onclick='updateCart("${pr.key}", JSON.parse("${productJsonStr}"), 1)' class="w-full bg-emerald-50 text-emerald-700 border border-emerald-600 py-1.5 rounded-xl text-[10.5px] font-extrabold hover:bg-emerald-600 hover:text-white transition shadow-2xs">ADD</button>
                         ` : `
                             <div class="flex items-center justify-between bg-emerald-600 text-white p-1 rounded-xl shadow-2xs">
-                                <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, -1)' class="w-5 h-5 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">-</button>
+                                <button onclick='updateCart("${pr.key}", JSON.parse("${productJsonStr}"), -1)' class="w-5 h-5 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">-</button>
                                 <span class="text-xs font-extrabold">${cartQty}</span>
-                                <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-5 h-5 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">+</button>
+                                <button onclick='updateCart("${pr.key}", JSON.parse("${productJsonStr}"), 1)' class="w-5 h-5 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">+</button>
                             </div>
                         `}
                     </div>
