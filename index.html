@@ -23,14 +23,14 @@
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative">
             <h2 class="font-extrabold text-base text-gray-900">Select your location</h2>
             <p class="text-xs text-gray-600 leading-relaxed px-2">
-                We need your location to show you curated assortment from your nearest store[span_2](start_span)[span_2](end_span)
+                We need your location to show you curated assortment from your nearest store[span_13](start_span)[span_13](end_span)
             </p>
             <div class="space-y-2.5 pt-2">
                 <button onclick="handleInitialUseLocation()" class="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-2xl text-xs transition shadow-sm">
-                    Use my location[span_3](start_span)[span_3](end_span)
+                    Use my location[span_14](start_span)[span_14](end_span)
                 </button>
                 <button onclick="handleInitialManualLocation()" class="w-full bg-white hover:bg-gray-50 text-green-700 font-bold py-3 rounded-2xl text-xs border border-green-700 transition">
-                    Select manually[span_4](start_span)[span_4](end_span)
+                    Select manually[span_15](start_span)[span_15](end_span)
                 </button>
             </div>
         </div>
@@ -46,7 +46,7 @@
 
             <div class="relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">🔍</span>
-                <input type="text" id="manual-location-search" oninput="handleManualAddressSearch(this.value)" placeholder="search delivery location (e.g. Manor, Naka, Area)" class="w-full pl-9 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs outline-none focus:border-green-600 font-medium">
+                <input type="text" id="manual-location-search" oninput="handleManualAddressSearch(this.value)" placeholder="search delivery location (e.g. Manor, Palghar, Area)" class="w-full pl-9 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs outline-none focus:border-green-600 font-medium">
             </div>
 
             <button onclick="handleInitialUseLocation()" class="w-full flex items-center space-x-3 bg-green-50/60 border border-green-200 p-3 rounded-2xl hover:bg-green-100 transition text-left">
@@ -60,7 +60,7 @@
             <div class="space-y-2 pt-1 border-t border-gray-100">
                 <label class="text-[10px] font-bold text-gray-500 uppercase">Exact Delivery Address:</label>
                 <textarea id="manual-address-text" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-xs h-20 outline-none font-medium" placeholder="Flat / House No, Street, Landmark..."></textarea>
-                <button onclick="saveManualAddressChoice()" class="w-full bg-green-700 text-white font-extrabold py-3 rounded-2xl text-xs shadow-sm hover:bg-green-800 transition">
+                <button onclick="saveManualAddressChoice()" id="manual-save-btn" class="w-full bg-green-700 text-white font-extrabold py-3 rounded-2xl text-xs shadow-sm hover:bg-green-800 transition">
                     Confirm & Start Shopping
                 </button>
             </div>
@@ -76,7 +76,7 @@
                 <div>
                     <div class="flex items-center space-x-1.5">
                         <span class="text-xs font-black tracking-tight text-gray-900">Delivery in 13 minutes</span>
-                        <span id="geo-status-badge" class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded">Checking GPS...</span>
+                        <span id="geo-status-badge" class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded">Checking Location...</span>
                     </div>
                     <p id="store-address-label" onclick="openLocationOptions()" class="text-[11px] text-gray-500 font-medium truncate mt-0.5 cursor-pointer flex items-center">
                         📍 <span id="addr-text" class="underline ml-1">Select Location</span> ▼
@@ -95,12 +95,12 @@
 
         <!-- Store Closed Banner -->
         <div id="store-closed-banner" class="hidden w-full bg-red-600 text-white p-2 text-center text-xs font-bold">
-            🔴 Store is Currently Closed! Orders are temporarily suspended.
+            🔴 Store is Currently Closed! Orders are temporarily suspended[span_16](start_span)[span_16](end_span).
         </div>
 
         <!-- Outside Zone Warning -->
-        <div id="geo-warning-banner" class="hidden w-full bg-amber-500 text-white p-2 text-center text-xs font-bold">
-            ⚠️ You are outside the delivery zone. Ordering is temporarily restricted.
+        <div id="geo-warning-banner" class="hidden w-full bg-red-600 text-white p-2 text-center text-xs font-bold">
+            🚫 You are outside our delivery zone! Orders are currently blocked for this location.
         </div>
 
         <!-- Main Content Area -->
@@ -193,6 +193,7 @@
                         <button onclick="setPaymentMode('Online')" id="pay-online" class="p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700">💳 Online (Razorpay)</button>
                     </div>
 
+                    <!-- Place Order Button with Dynamic Status Feedback -->
                     <button onclick="placeOrder()" id="place-order-btn" class="w-full bg-green-600 text-white py-3.5 rounded-xl text-xs font-extrabold mt-2 shadow-md hover:bg-green-700 transition">Place Order</button>
                 </div>
             </div>
@@ -227,7 +228,7 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-gray-500 uppercase">Current Delivery Address:</label>
-                        <textarea id="profile-address" class="w-full p-3 border border-gray-200 bg-gray-50 rounded-xl text-xs h-18 font-medium mt-1 outline-none focus:border-green-600" placeholder="House No, Landmark, Area..."></textarea>
+                        <textarea id="profile-address" onblur="fetchLocationFromAddress(this.value)" class="w-full p-3 border border-gray-200 bg-gray-50 rounded-xl text-xs h-18 font-medium mt-1 outline-none focus:border-green-600" placeholder="House No, Landmark, Area, Town..."></textarea>
                     </div>
 
                     <div id="saved-addrs-box" class="space-y-1 pt-1">
@@ -250,10 +251,10 @@
                     <button onclick="closeLegalModal()" class="w-7 h-7 rounded-full bg-gray-100 text-gray-600 font-bold text-xs flex items-center justify-center">✕</button>
                 </div>
                 <div class="space-y-2 text-xs text-gray-700 leading-relaxed">
-                    <p><strong>1. Quick Delivery:</strong> Manor Mart aggregates products locally in Manor, Maharashtra within geo-fenced boundaries.</p>
-                    <p><strong>2. 5-7 Days Refund Policy:</strong> Prepaid orders (Razorpay/UPI) cancelled before dispatch will be automatically refunded back to the source bank account within 5 to 7 business days.</p>
-                    <p><strong>3. Data Privacy:</strong> We collect your mobile number, address, and live GPS strictly to verify delivery radius and fulfill orders.</p>
-                    <p><strong>4. Support:</strong> Contact us at <em>shabaj9769@gmail.com</em> for order support and grievances.</p>
+                    <p><strong>1. Quick Delivery:</strong> Manor Mart aggregates products locally in Manor, Maharashtra within geo-fenced boundaries[span_17](start_span)[span_17](end_span).</p>
+                    <p><strong>2. 5-7 Days Refund Policy:</strong> Prepaid orders (Razorpay/UPI) cancelled before dispatch will be automatically refunded back to the source bank account within 5 to 7 business days[span_18](start_span)[span_18](end_span).</p>
+                    <p><strong>3. Data Privacy:</strong> We collect your mobile number, address, and live GPS strictly to verify delivery radius and fulfill orders[span_19](start_span)[span_19](end_span).</p>
+                    <p><strong>4. Support:</strong> Contact us at <em>shabaj9769@gmail.com</em> for order support and grievances[span_20](start_span)[span_20](end_span).</p>
                 </div>
                 <button onclick="closeLegalModal()" class="w-full bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold">✓ Close Policy</button>
             </div>
@@ -311,7 +312,11 @@
                 document.getElementById('initial-location-modal').classList.remove('hidden');
             } else {
                 document.getElementById('initial-location-modal').classList.add('hidden');
-                triggerGpsLocation();
+                if (currentAddr) {
+                    fetchLocationFromAddress(currentAddr);
+                } else {
+                    triggerGpsLocation();
+                }
             }
 
             if (currentPhone) {
@@ -351,9 +356,44 @@
             document.getElementById('manual-address-text').value = val;
         }
 
-        function saveManualAddressChoice() {
+        // Exact OpenStreetMap Geocoding from App (26).js
+        async function fetchLocationFromAddress(addressText) {
+            if (!addressText || addressText.trim().length < 3) return;
+            
+            document.getElementById('geo-status-badge').innerText = "Verifying Area...";
+            document.getElementById('geo-status-badge').className = "bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded";
+
+            try {
+                let clean = addressText.trim();
+                let queryStr = clean;
+                if (!queryStr.toLowerCase().includes('maharashtra')) {
+                    queryStr += ', Maharashtra, India';
+                }
+                let query = encodeURIComponent(queryStr);
+                let res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`, {
+                    headers: { 'User-Agent': 'ManorMartWeb/3.0' }
+                });
+                let data = await res.json();
+                if (data && data.length > 0) {
+                    let lat = parseFloat(data[0].lat);
+                    let lng = parseFloat(data[0].lon);
+                    verifyDeliveryDistance(lat, lng);
+                } else {
+                    // Agar address geocode na ho toh safer fallback
+                    document.getElementById('geo-status-badge').innerText = "Address Unverified";
+                }
+            } catch (e) {
+                console.log("Geocoding Error:", e);
+            }
+        }
+
+        async function saveManualAddressChoice() {
             let addr = document.getElementById('manual-address-text').value.trim();
-            if (!addr) return alert("Please enter delivery location or select current location.");
+            if (!addr) return alert("Please enter delivery location.");
+
+            let btn = document.getElementById('manual-save-btn');
+            btn.innerText = "Verifying Location...";
+            btn.disabled = true;
 
             currentAddr = addr;
             localStorage.setItem('manor_cust_addr', addr);
@@ -366,12 +406,14 @@
             }
 
             document.getElementById('addr-text').innerText = addr;
-            document.getElementById('geo-status-badge').innerText = "Manual Location";
-            document.getElementById('geo-status-badge').className = "bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded";
+            await fetchLocationFromAddress(addr);
 
+            btn.innerText = "Confirm & Start Shopping";
+            btn.disabled = false;
             closeManualLocationModal();
         }
 
+        // Live Satellite GPS
         function triggerGpsLocation(isManual = false) {
             if (!navigator.geolocation) {
                 updateGeoBadge(false, "GPS Not Supported");
@@ -412,14 +454,23 @@
             distanceKm = calculateDistanceKm(lat, lng, hubLat, hubLng);
             inRange = distanceKm <= maxRadius;
 
+            let placeBtn = document.getElementById('place-order-btn');
+
             if (inRange) {
                 updateGeoBadge(true, `⚡ In Zone (${distanceKm} km)`);
                 document.getElementById('geo-warning-banner').classList.add('hidden');
-                document.getElementById('addr-text').innerText = "Live GPS Verified";
+                if (placeBtn) {
+                    placeBtn.className = "w-full bg-green-600 text-white py-3.5 rounded-xl text-xs font-extrabold mt-2 shadow-md hover:bg-green-700 transition";
+                    placeBtn.innerText = "Place Order";
+                }
             } else {
                 updateGeoBadge(false, `Outside Zone (${distanceKm} km)`);
+                document.getElementById('geo-warning-banner').innerText = `🚫 Outside Delivery Zone (${distanceKm} KM)! Delivery restricted to ${maxRadius} KM.`;
                 document.getElementById('geo-warning-banner').classList.remove('hidden');
-                document.getElementById('addr-text').innerText = "Out of delivery area";
+                if (placeBtn) {
+                    placeBtn.className = "w-full bg-red-600 text-white py-3.5 rounded-xl text-xs font-extrabold mt-2 shadow-md transition opacity-90";
+                    placeBtn.innerText = `🚫 Outside Zone (${distanceKm} KM / Limit ${maxRadius} KM)`;
+                }
             }
         }
 
@@ -687,7 +738,6 @@
             let grandTotal = subtotal + (subtotal > 0 ? deliveryFee : 0);
 
             const floating = document.getElementById('floating-cart');
-            // Floating bar sirf Shop tab me dikhna chahiye
             if (totalQty > 0 && currentTab === 'shop') {
                 floating.classList.remove('hidden');
                 document.getElementById('floating-cart-info').innerText = `${totalQty} items • ₹${grandTotal}`;
@@ -759,7 +809,7 @@
         function openLegalModal() { document.getElementById('legal-modal').classList.remove('hidden'); }
         function closeLegalModal() { document.getElementById('legal-modal').classList.add('hidden'); }
 
-        function saveProfileAndAddress() {
+        async function saveProfileAndAddress() {
             let ph = document.getElementById('profile-phone').value.replace(/[^0-9]/g, '').trim();
             let nm = document.getElementById('profile-name').value.trim();
             let ad = document.getElementById('profile-address').value.trim();
@@ -783,6 +833,7 @@
             localStorage.setItem('manor_cust_addr', ad);
 
             updateAddressLabel();
+            await fetchLocationFromAddress(ad);
             closeProfileModal();
             alert("Profile & Address saved successfully!");
         }
@@ -810,6 +861,7 @@
             document.getElementById('profile-address').value = ad;
             localStorage.setItem('manor_cust_addr', ad);
             updateAddressLabel();
+            fetchLocationFromAddress(ad);
         }
 
         function deleteSavedAddress(idx) {
@@ -831,13 +883,14 @@
             location.reload();
         }
 
+        // Place Order - Stricly Checked Geo-Fencing
         function placeOrder() {
             if (storeSettings.storeOpen === false) {
                 return alert("Store is currently closed! New orders are suspended.");
             }
 
             if (!inRange) {
-                return alert(`Delivery is restricted to ${storeSettings.radiusKm} KM. You are ${distanceKm} KM away.`);
+                return alert(`🚫 Delivery is strictly restricted to ${storeSettings.radiusKm} KM from store hub. You are currently ${distanceKm} KM away. Orders outside delivery area cannot be placed!`);
             }
 
             if (!currentPhone || !currentAddr || !currentName) {
