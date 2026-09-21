@@ -9,6 +9,18 @@
       body { font-family: system-ui, -apple-system, sans-serif; background-color: #ffffff; margin: 0; padding: 0; overflow-x: hidden; }
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      @keyframes floatGrocery {
+        0% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-12px) rotate(6deg); }
+        100% { transform: translateY(0px) rotate(0deg); }
+      }
+      .animate-floating-item {
+        animation: floatGrocery 3.5s ease-in-out infinite;
+      }
+      .animate-floating-item-delay {
+        animation: floatGrocery 4.2s ease-in-out 1.2s infinite;
+      }
       @keyframes slideUp {
         from { transform: translateY(100%); opacity: 0; }
         to { transform: translateY(0); opacity: 1; }
@@ -18,25 +30,36 @@
 </head>
 <body class="bg-white text-gray-900 min-h-screen">
 
+    <!-- FLOATING GROCERY ANIMATION LAYER -->
+    <div id="grocery-animation-layer" class="hidden pointer-events-none fixed inset-0 z-30 overflow-hidden opacity-35">
+        <span class="animate-floating-item absolute top-20 left-4 text-3xl">🥦</span>
+        <span class="animate-floating-item-delay absolute top-36 right-6 text-3xl">🥛</span>
+        <span class="animate-floating-item absolute top-64 left-8 text-2xl">🍞</span>
+        <span class="animate-floating-item-delay absolute top-80 right-10 text-3xl">🍎</span>
+        <span class="animate-floating-item absolute bottom-44 left-10 text-3xl">🧀</span>
+        <span class="animate-floating-item-delay absolute bottom-36 right-8 text-3xl">🍫</span>
+        <span class="animate-floating-item absolute bottom-60 left-1/2 text-2xl">🥤</span>
+    </div>
+
     <!-- BLINKIT POPUP 1: SELECT YOUR LOCATION MODAL -->
     <div id="initial-location-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative">
             <h2 class="font-extrabold text-base text-gray-900">Select your location</h2>
             <p class="text-xs text-gray-600 leading-relaxed px-2">
-                We need your location to show you curated assortment from your nearest store[span_13](start_span)[span_13](end_span)
+                We need your location to show you curated assortment from your nearest store
             </p>
             <div class="space-y-2.5 pt-2">
                 <button onclick="handleInitialUseLocation()" class="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-2xl text-xs transition shadow-sm">
-                    Use my location[span_14](start_span)[span_14](end_span)
+                    Use my location
                 </button>
                 <button onclick="handleInitialManualLocation()" class="w-full bg-white hover:bg-gray-50 text-green-700 font-bold py-3 rounded-2xl text-xs border border-green-700 transition">
-                    Select manually[span_15](start_span)[span_15](end_span)
+                    Select manually
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- BLINKIT POPUP 2: SEARCH / MANUAL LOCATION SLIDE DRAWER -->
+    <!-- BLINKIT POPUP 2: MANUAL LOCATION DRAWER -->
     <div id="manual-location-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex justify-end flex-col backdrop-blur-xs">
         <div class="bg-white rounded-t-3xl p-5 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl animate-slide-up">
             <div class="flex justify-between items-center border-b border-gray-100 pb-2.5">
@@ -46,7 +69,7 @@
 
             <div class="relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">🔍</span>
-                <input type="text" id="manual-location-search" oninput="handleManualAddressSearch(this.value)" placeholder="search delivery location (e.g. Manor, Palghar, Area)" class="w-full pl-9 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs outline-none focus:border-green-600 font-medium">
+                <input type="text" id="manual-location-search" oninput="handleManualAddressSearch(this.value)" placeholder="search delivery location (e.g. Manor, Palghar)" class="w-full pl-9 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs outline-none focus:border-green-600 font-medium">
             </div>
 
             <button onclick="handleInitialUseLocation()" class="w-full flex items-center space-x-3 bg-green-50/60 border border-green-200 p-3 rounded-2xl hover:bg-green-100 transition text-left">
@@ -95,7 +118,7 @@
 
         <!-- Store Closed Banner -->
         <div id="store-closed-banner" class="hidden w-full bg-red-600 text-white p-2 text-center text-xs font-bold">
-            🔴 Store is Currently Closed! Orders are temporarily suspended[span_16](start_span)[span_16](end_span).
+            🔴 Store is Currently Closed! Orders are temporarily suspended.
         </div>
 
         <!-- Outside Zone Warning -->
@@ -193,7 +216,6 @@
                         <button onclick="setPaymentMode('Online')" id="pay-online" class="p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700">💳 Online (Razorpay)</button>
                     </div>
 
-                    <!-- Place Order Button with Dynamic Status Feedback -->
                     <button onclick="placeOrder()" id="place-order-btn" class="w-full bg-green-600 text-white py-3.5 rounded-xl text-xs font-extrabold mt-2 shadow-md hover:bg-green-700 transition">Place Order</button>
                 </div>
             </div>
@@ -251,16 +273,16 @@
                     <button onclick="closeLegalModal()" class="w-7 h-7 rounded-full bg-gray-100 text-gray-600 font-bold text-xs flex items-center justify-center">✕</button>
                 </div>
                 <div class="space-y-2 text-xs text-gray-700 leading-relaxed">
-                    <p><strong>1. Quick Delivery:</strong> Manor Mart aggregates products locally in Manor, Maharashtra within geo-fenced boundaries[span_17](start_span)[span_17](end_span).</p>
-                    <p><strong>2. 5-7 Days Refund Policy:</strong> Prepaid orders (Razorpay/UPI) cancelled before dispatch will be automatically refunded back to the source bank account within 5 to 7 business days[span_18](start_span)[span_18](end_span).</p>
-                    <p><strong>3. Data Privacy:</strong> We collect your mobile number, address, and live GPS strictly to verify delivery radius and fulfill orders[span_19](start_span)[span_19](end_span).</p>
-                    <p><strong>4. Support:</strong> Contact us at <em>shabaj9769@gmail.com</em> for order support and grievances[span_20](start_span)[span_20](end_span).</p>
+                    <p><strong>1. Quick Delivery:</strong> Manor Mart aggregates products locally in Manor, Maharashtra within geo-fenced boundaries.</p>
+                    <p><strong>2. 5-7 Days Refund Policy:</strong> Prepaid orders (Razorpay/UPI) cancelled before dispatch will be automatically refunded back to the source bank account within 5 to 7 business days.</p>
+                    <p><strong>3. Data Privacy:</strong> We collect your mobile number, address, and live GPS strictly to verify delivery radius and fulfill orders.</p>
+                    <p><strong>4. Support:</strong> Contact us at <em>shabaj9769@gmail.com</em> for order support and grievances.</p>
                 </div>
                 <button onclick="closeLegalModal()" class="w-full bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold">✓ Close Policy</button>
             </div>
         </div>
 
-        <!-- Floating Cart Bar (Only Visible on Shop Tab) -->
+        <!-- Floating Cart Bar -->
         <div id="floating-cart" class="hidden fixed bottom-16 left-3 right-3 bg-green-700 text-white p-3.5 rounded-2xl flex justify-between items-center shadow-xl z-30 max-w-xl mx-auto">
             <div>
                 <p id="floating-cart-info" class="text-xs font-extrabold">0 items • ₹0</p>
@@ -269,7 +291,7 @@
             <button onclick="switchTab('cart')" class="bg-white text-green-800 px-4 py-2 rounded-xl font-extrabold text-xs shadow-sm">View Cart ➔</button>
         </div>
 
-        <!-- Bottom Navigation Bar -->
+        <!-- Navigation Bar -->
         <nav class="fixed bottom-0 left-0 right-0 w-full bg-white border-t border-gray-200 flex justify-around py-2 z-40 shadow-lg">
             <button onclick="switchTab('shop')" id="bnav-shop" class="flex flex-col items-center text-green-700 font-bold text-[10px]">
                 <span class="text-lg">🛍️</span> Shop
@@ -285,7 +307,7 @@
 
     <script>
         const DB_URL = "https://manormart-b14cd-default-rtdb.firebaseio.com/";
-        let storeSettings = { hubLat: 19.7280, hubLng: 72.9150, radiusKm: 10, storeOpen: true, normCharge: 0, expCharge: 30, freeDel: 0, minOrd: 0 };
+        let storeSettings = { hubLat: 19.7280, hubLng: 72.9150, radiusKm: 10, storeOpen: true, normCharge: 0, expCharge: 30, freeDel: 0, minOrd: 0, groceryAnimation: true };
         let categoriesData = {};
         let allProductsList = [];
         let deliveryBoysList = {};
@@ -356,7 +378,6 @@
             document.getElementById('manual-address-text').value = val;
         }
 
-        // Exact OpenStreetMap Geocoding from App (26).js
         async function fetchLocationFromAddress(addressText) {
             if (!addressText || addressText.trim().length < 3) return;
             
@@ -379,7 +400,6 @@
                     let lng = parseFloat(data[0].lon);
                     verifyDeliveryDistance(lat, lng);
                 } else {
-                    // Agar address geocode na ho toh safer fallback
                     document.getElementById('geo-status-badge').innerText = "Address Unverified";
                 }
             } catch (e) {
@@ -413,7 +433,6 @@
             closeManualLocationModal();
         }
 
-        // Live Satellite GPS
         function triggerGpsLocation(isManual = false) {
             if (!navigator.geolocation) {
                 updateGeoBadge(false, "GPS Not Supported");
@@ -502,6 +521,13 @@
                             ab.classList.remove('hidden');
                         } else {
                             document.getElementById('announcement-box').classList.add('hidden');
+                        }
+
+                        let animLayer = document.getElementById('grocery-animation-layer');
+                        if (storeSettings.groceryAnimation !== false) {
+                            animLayer.classList.remove('hidden');
+                        } else {
+                            animLayer.classList.add('hidden');
                         }
                     }
 
@@ -883,7 +909,6 @@
             location.reload();
         }
 
-        // Place Order - Stricly Checked Geo-Fencing
         function placeOrder() {
             if (storeSettings.storeOpen === false) {
                 return alert("Store is currently closed! New orders are suspended.");
