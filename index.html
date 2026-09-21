@@ -28,7 +28,7 @@
       .animate-slide-up { animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 </head>
-<body class="bg-white text-gray-900 min-h-screen">
+<body class="bg-gray-100 text-gray-900 min-h-screen flex justify-center items-start">
 
     <!-- FLOATING GROCERY ANIMATION LAYER -->
     <div id="grocery-animation-layer" class="hidden pointer-events-none fixed inset-0 -z-10 overflow-hidden opacity-25">
@@ -117,8 +117,8 @@
         </div>
     </div>
 
-    <!-- MAIN APPLICATION CONTAINER -->
-    <div id="app" class="w-full min-h-screen bg-white flex flex-col relative pb-16">
+    <!-- MAIN APPLICATION CONTAINER (STRICT MOBILE FRAME) -->
+    <div id="app" class="w-full max-w-md min-h-screen bg-white flex flex-col relative pb-16 shadow-2xl">
         
         <!-- Header -->
         <header class="w-full bg-white border-b border-gray-100 px-3.5 py-2.5 sticky top-0 z-40 shadow-xs">
@@ -156,16 +156,15 @@
 
                 <div id="home-category-view" class="w-full p-3 overflow-y-auto">
                     <h2 class="font-extrabold text-xs text-gray-800 uppercase tracking-wider mb-2.5">GROCERY & KITCHEN</h2>
-                    <div id="categories-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                    <div id="categories-grid" class="grid grid-cols-4 gap-2">
                         <p class="col-span-4 text-center text-gray-400 text-xs py-4">Loading categories...</p>
                     </div>
                 </div>
 
-                <!-- BLINKIT STYLE SPLIT VIEW WITH PERFECT STICKY CATEGORY HEADER AND INNER SCROLL -->
+                <!-- BLINKIT STYLE SPLIT VIEW WITH RESPONSIVE LAYOUT -->
                 <div id="blinkit-split-view" class="hidden w-full flex-1 flex overflow-hidden border-t border-gray-100 h-[calc(100vh-130px)]">
-                    <div id="sidebar-categories" class="w-[74px] shrink-0 bg-gray-50 border-r border-gray-200 overflow-y-auto no-scrollbar flex flex-col divide-y divide-gray-100"></div>
+                    <div id="sidebar-categories" class="w-[74px] min-w-[74px] shrink-0 bg-gray-50 border-r border-gray-200 overflow-y-auto no-scrollbar flex flex-col divide-y divide-gray-100"></div>
 
-                    <!-- Right container: header is fixed, only inner product grid container scrolls -->
                     <div class="flex-1 min-w-0 bg-white flex flex-col relative overflow-hidden">
                         <div class="bg-white/95 backdrop-blur-xs z-30 px-2.5 pt-2.5 pb-2 border-b border-gray-100 flex justify-between items-center shrink-0 shadow-2xs">
                             <div class="truncate mr-1">
@@ -185,7 +184,7 @@
                         <h3 id="search-query-title" class="font-black text-xs text-gray-900 uppercase">Search Results</h3>
                         <button onclick="clearSearch()" class="text-[11px] text-red-600 font-bold">✕ Clear</button>
                     </div>
-                    <div id="search-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 pb-24"></div>
+                    <div id="search-products-grid" class="grid grid-cols-2 gap-2 pb-24"></div>
                 </div>
             </div>
 
@@ -333,7 +332,7 @@
         </div>
 
         <!-- Floating Cart Bar -->
-        <div id="floating-cart" class="hidden fixed bottom-16 left-3 right-3 bg-green-700 text-white p-3.5 rounded-2xl flex justify-between items-center shadow-xl z-30 max-w-xl mx-auto">
+        <div id="floating-cart" class="hidden fixed bottom-16 left-3 right-3 bg-green-700 text-white p-3.5 rounded-2xl flex justify-between items-center shadow-xl z-30 max-w-md mx-auto">
             <div>
                 <p id="floating-cart-info" class="text-xs font-extrabold">0 items • ₹0</p>
                 <p class="text-[10px] text-green-100">All taxes included</p>
@@ -342,7 +341,7 @@
         </div>
 
         <!-- Navigation Bar -->
-        <nav class="fixed bottom-0 left-0 right-0 w-full bg-white border-t border-gray-200 flex justify-around py-2 z-40 shadow-lg">
+        <nav class="fixed bottom-0 left-0 right-0 w-full max-w-md mx-auto bg-white border-t border-gray-200 flex justify-around py-2 z-40 shadow-lg left-1/2 -translate-x-1/2">
             <button onclick="switchTab('shop')" id="bnav-shop" class="flex flex-col items-center text-green-700 font-bold text-[10px]">
                 <span class="text-lg">🛍️</span> Shop
             </button>
@@ -747,8 +746,8 @@
             let isSoldOut = pr.status === 'sold' || pr.inStock === false;
 
             let imgDisplay = pr.image 
-                ? `<img src="${pr.image}" class="h-20 w-full object-cover rounded-xl mb-1.5" onerror="this.outerHTML='<div class=\\'h-20 bg-gray-50 rounded-xl flex items-center justify-center text-xl mb-1.5 border border-gray-100\\'>🛒</div>';">` 
-                : `<div class="h-20 bg-gray-50 rounded-xl flex items-center justify-center text-xl mb-1.5 border border-gray-100">🛒</div>`;
+                ? `<img src="${pr.image}" class="h-28 w-full object-contain bg-gray-50/50 p-2 rounded-xl mb-1.5" onerror="this.outerHTML='<div class=\\'h-28 bg-gray-50 rounded-xl flex items-center justify-center text-xl mb-1.5 border border-gray-100\\'>🛒</div>';">` 
+                : `<div class="h-28 bg-gray-50 rounded-xl flex items-center justify-center text-xl mb-1.5 border border-gray-100">🛒</div>`;
 
             return `
                 <div class="bg-white p-2 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between relative overflow-hidden ${isSoldOut ? 'opacity-70 bg-gray-50' : ''}">
