@@ -242,7 +242,7 @@
                         <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Delivery Speed:</label>
                         <div class="grid grid-cols-2 gap-2">
                             <button onclick="setDeliverySpeed('Normal')" id="spd-normal" class="p-2.5 rounded-xl border border-green-600 text-xs font-bold bg-green-50 text-green-800">📦 Normal (Standard)</button>
-                            <button onclick="setDeliverySpeed('Express')" id="spd-express" class="p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700">⚡ Express (+₹30)</button>
+                            <button onclick="setDeliverySpeed('Express')" id="spd-express" class="p-2.5 rounded-xl border border-gray-200 text-xs font-bold bg-gray-50 text-gray-700"><span id="express-speed-btn-label">⚡ Express (+₹30)</span></button>
                         </div>
                     </div>
 
@@ -602,6 +602,9 @@
                         
                         let timeLabel = storeSettings.expDeliveryTime || '45 Mins';
                         document.getElementById('header-delivery-time-label').innerText = `Delivery in ${timeLabel}`;
+                        
+                        let expChargeVal = Number(storeSettings.expCharge || 30);
+                        document.getElementById('express-speed-btn-label').innerText = `⚡ Express (+₹${expChargeVal}) (${timeLabel})`;
 
                         if (storeSettings.adminNote) {
                             let ab = document.getElementById('announcement-box');
