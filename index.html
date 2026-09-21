@@ -46,14 +46,14 @@
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative">
             <h2 class="font-extrabold text-base text-gray-900">Select your location</h2>
             <p class="text-xs text-gray-600 leading-relaxed px-2">
-                We need your location to show you curated assortment from your nearest store[span_2](start_span)[span_2](end_span)
+                We need your location to show you curated assortment from your nearest store
             </p>
             <div class="space-y-2.5 pt-2">
                 <button onclick="handleInitialUseLocation()" class="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-2xl text-xs transition shadow-sm">
-                    Use my location[span_3](start_span)[span_3](end_span)
+                    Use my location
                 </button>
                 <button onclick="handleInitialManualLocation()" class="w-full bg-white hover:bg-gray-50 text-green-700 font-bold py-3 rounded-2xl text-xs border border-green-700 transition">
-                    Select manually[span_4](start_span)[span_4](end_span)
+                    Select manually
                 </button>
             </div>
         </div>
@@ -127,6 +127,7 @@
             <div id="view-shop" class="w-full flex-1 flex flex-col overflow-hidden">
                 <div id="announcement-box" class="hidden m-2.5 bg-amber-50 border border-amber-200 p-2 rounded-xl text-xs text-amber-800 font-bold text-center"></div>
 
+                <!-- STATE 1: CLEAN HOME CATEGORIES GRID -->
                 <div id="home-category-view" class="w-full p-3 overflow-y-auto">
                     <h2 class="font-extrabold text-xs text-gray-800 uppercase tracking-wider mb-2.5">GROCERY & KITCHEN</h2>
                     <div id="categories-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-2">
@@ -134,6 +135,7 @@
                     </div>
                 </div>
 
+                <!-- STATE 2: BLINKIT STYLE SPLIT VIEW -->
                 <div id="blinkit-split-view" class="hidden w-full flex-1 flex overflow-hidden border-t border-gray-100 h-[calc(100vh-130px)]">
                     <div id="sidebar-categories" class="w-[74px] shrink-0 bg-gray-50 border-r border-gray-200 overflow-y-auto no-scrollbar flex flex-col divide-y divide-gray-100"></div>
 
@@ -149,6 +151,7 @@
                     </div>
                 </div>
 
+                <!-- STATE 3: SEARCH RESULTS VIEW -->
                 <div id="search-results-view" class="hidden w-full flex-1 p-3 overflow-y-auto">
                     <div class="flex justify-between items-center mb-2">
                         <h3 id="search-query-title" class="font-black text-xs text-gray-900 uppercase">Search Results</h3>
@@ -333,7 +336,6 @@
         let cart = {};
         let currentTab = 'shop';
         
-        // Secure Session Handling: Keep phone persistent for orders, but clear address on explicit logout for privacy
         let currentPhone = localStorage.getItem('manor_cust_phone') || '';
         let currentName = localStorage.getItem('manor_cust_name') || '';
         let currentAddr = localStorage.getItem('manor_cust_addr') || '';
@@ -933,7 +935,6 @@
         }
 
         function logout() {
-            // Keep phone number persistent so session / orders remain accessible on re-login
             localStorage.removeItem('manor_cust_addr');
             localStorage.removeItem('manor_location_confirmed');
             currentAddr = '';
