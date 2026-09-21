@@ -99,7 +99,7 @@
             </div>
 
             <!-- TAB 2: PRODUCTS & CATALOG -->
-            <div id="view-products" class="space-y-4">
+            <div id="view-products" class="hidden space-y-4">
                 <div class="bg-white p-3 rounded-2xl border border-green-200 shadow-2xs">
                     <input type="text" id="global-product-search" oninput="renderProductCatalog()" placeholder="🔍 Search any product to edit/delete..." class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs outline-none">
                 </div>
@@ -224,7 +224,22 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-gray-600">Express Time:</label>
-                            <input type="text" id="set-exptime" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none mt-1">
+                            <input type="text" id="set-exptime" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none mt-1" placeholder="e.g. 30 Mins / 1 Hour">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-600">Normal Fee (₹):</label>
+                            <input type="number" id="set-normcharge" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none mt-1">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-600">Express Extra (₹):</label>
+                            <input type="number" id="set-expcharge" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none mt-1">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-600">Free Above (₹):</label>
+                            <input type="number" id="set-freedel" class="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none mt-1">
                         </div>
                     </div>
 
@@ -706,7 +721,7 @@
                 method: 'PATCH',
                 body: JSON.stringify({ name, price, discount: disc, unit, image })
             }).then(() => {
-                alert("Product updated with photo successfully!");
+                alert("Product updated successfully!");
                 closeEditModal();
                 loadAllData();
             });
@@ -833,6 +848,9 @@
             document.getElementById('set-radius').value = s.radiusKm || 2;
             document.getElementById('set-minord').value = s.minOrd || 0;
             document.getElementById('set-exptime').value = s.expDeliveryTime || '45 Mins';
+            document.getElementById('set-normcharge').value = s.normCharge || 0;
+            document.getElementById('set-expcharge').value = s.expCharge || 30;
+            document.getElementById('set-freedel').value = s.freeDel || 0;
             document.getElementById('set-storename').value = s.store || 'MANOR MART';
             document.getElementById('set-pin').value = s.pin || '1234';
         }
@@ -853,16 +871,30 @@
             let radius = Number(document.getElementById('set-radius').value || 2);
             let minOrd = Number(document.getElementById('set-minord').value || 0);
             let expTime = document.getElementById('set-exptime').value.trim();
+            let normCharge = Number(document.getElementById('set-normcharge').value || 0);
+            let expCharge = Number(document.getElementById('set-expcharge').value || 30);
+            let freeDel = Number(document.getElementById('set-freedel').value || 0);
             let storeName = document.getElementById('set-storename').value.trim();
             let pin = document.getElementById('set-pin').value.trim();
 
-            let payload = { hubLat: lat, hubLng: lng, radiusKm: radius, minOrd, expDeliveryTime: expTime, store: storeName, pin };
+            let payload = { 
+                hubLat: lat, 
+                hubLng: lng, 
+                radiusKm: radius, 
+                minOrd, 
+                expDeliveryTime: expTime, 
+                normCharge, 
+                expCharge, 
+                freeDel, 
+                store: storeName, 
+                pin 
+            };
 
             fetch(DB_URL + "settings.json", {
                 method: 'PATCH',
                 body: JSON.stringify(payload)
             }).then(() => {
-                alert("Settings & GPS coordinates saved successfully!");
+                alert("Settings & Delivery options saved successfully!");
                 loadSettingsAndPin();
             });
         }
