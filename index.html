@@ -23,14 +23,14 @@
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative">
             <h2 class="font-extrabold text-base text-gray-900">Select your location</h2>
             <p class="text-xs text-gray-600 leading-relaxed px-2">
-                We need your location to show you curated assortment from your nearest store
+                We need your location to show you curated assortment from your nearest store[span_2](start_span)[span_2](end_span)
             </p>
             <div class="space-y-2.5 pt-2">
                 <button onclick="handleInitialUseLocation()" class="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-2xl text-xs transition shadow-sm">
-                    Use my location
+                    Use my location[span_3](start_span)[span_3](end_span)
                 </button>
                 <button onclick="handleInitialManualLocation()" class="w-full bg-white hover:bg-gray-50 text-green-700 font-bold py-3 rounded-2xl text-xs border border-green-700 transition">
-                    Select manually
+                    Select manually[span_4](start_span)[span_4](end_span)
                 </button>
             </div>
         </div>
@@ -44,13 +44,11 @@
                 <button onclick="closeManualLocationModal()" class="w-7 h-7 rounded-full bg-gray-100 text-gray-500 font-bold text-xs flex items-center justify-center">✕</button>
             </div>
 
-            <!-- Search Delivery Location Input -->
             <div class="relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">🔍</span>
                 <input type="text" id="manual-location-search" oninput="handleManualAddressSearch(this.value)" placeholder="search delivery location (e.g. Manor, Naka, Area)" class="w-full pl-9 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs outline-none focus:border-green-600 font-medium">
             </div>
 
-            <!-- Use Current Location Tile -->
             <button onclick="handleInitialUseLocation()" class="w-full flex items-center space-x-3 bg-green-50/60 border border-green-200 p-3 rounded-2xl hover:bg-green-100 transition text-left">
                 <span class="text-green-700 text-lg">🎯</span>
                 <div>
@@ -59,7 +57,6 @@
                 </div>
             </button>
 
-            <!-- Manual Detail Address Form -->
             <div class="space-y-2 pt-1 border-t border-gray-100">
                 <label class="text-[10px] font-bold text-gray-500 uppercase">Exact Delivery Address:</label>
                 <textarea id="manual-address-text" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-xs h-20 outline-none font-medium" placeholder="Flat / House No, Street, Landmark..."></textarea>
@@ -70,7 +67,7 @@
         </div>
     </div>
 
-    <!-- MAIN APPLICATION CONTAINER (FULL WIDTH EDGE-TO-EDGE) -->
+    <!-- MAIN APPLICATION CONTAINER -->
     <div id="app" class="w-full min-h-screen bg-white flex flex-col relative pb-20">
         
         <!-- Header -->
@@ -90,7 +87,6 @@
                 </button>
             </div>
 
-            <!-- Search Bar -->
             <div class="relative w-full">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">🔍</span>
                 <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search 'kaju, rice, milk'..." class="w-full pl-9 pr-3 py-2.5 bg-gray-100 border border-gray-200 rounded-xl text-xs focus:bg-white focus:border-green-600 outline-none transition font-medium">
@@ -99,7 +95,7 @@
 
         <!-- Store Closed Banner -->
         <div id="store-closed-banner" class="hidden w-full bg-red-600 text-white p-2 text-center text-xs font-bold">
-            🔴 Store is Currently Closed! Orders are temporarily suspended[span_7](start_span)[span_7](end_span).
+            🔴 Store is Currently Closed! Orders are temporarily suspended.
         </div>
 
         <!-- Outside Zone Warning -->
@@ -112,11 +108,8 @@
             
             <!-- SHOP TAB -->
             <div id="view-shop" class="w-full flex-1 flex flex-col overflow-hidden">
-                
-                <!-- Announcement Notice -->
                 <div id="announcement-box" class="hidden m-3 bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-xs text-amber-800 font-bold text-center"></div>
 
-                <!-- STATE 1: CLEAN HOME CATEGORIES GRID -->
                 <div id="home-category-view" class="w-full p-3 overflow-y-auto">
                     <h2 class="font-extrabold text-xs text-gray-800 uppercase tracking-wider mb-3">GROCERY & KITCHEN</h2>
                     <div id="categories-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-2.5">
@@ -124,12 +117,9 @@
                     </div>
                 </div>
 
-                <!-- STATE 2: BLINKIT STYLE SPLIT VIEW (FULL HEIGHT FULL WIDTH) -->
                 <div id="blinkit-split-view" class="hidden w-full flex-1 flex overflow-hidden border-t border-gray-100 h-[calc(100vh-140px)]">
-                    <!-- Left Sidebar (Vertical Categories) -->
                     <div id="sidebar-categories" class="w-24 bg-gray-50 border-r border-gray-200 overflow-y-auto no-scrollbar flex flex-col divide-y divide-gray-100"></div>
 
-                    <!-- Right Column (Active Category Products) -->
                     <div class="flex-1 bg-white p-3 overflow-y-auto flex flex-col">
                         <div class="flex justify-between items-center mb-2.5 pb-1 border-b border-gray-100">
                             <div>
@@ -142,7 +132,6 @@
                     </div>
                 </div>
 
-                <!-- STATE 3: SEARCH RESULTS VIEW -->
                 <div id="search-results-view" class="hidden w-full flex-1 p-3 overflow-y-auto">
                     <div class="flex justify-between items-center mb-2.5">
                         <h3 id="search-query-title" class="font-black text-xs text-gray-900 uppercase">Search Results</h3>
@@ -150,7 +139,6 @@
                     </div>
                     <div id="search-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pb-28"></div>
                 </div>
-
             </div>
 
             <!-- ORDERS TAB -->
@@ -180,7 +168,6 @@
                     </div>
                 </div>
 
-                <!-- Delivery Speed & Shift Selection -->
                 <div class="bg-white p-3.5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
                     <h3 class="font-extrabold text-xs text-gray-800 uppercase">⚡ Delivery Options</h3>
                     
@@ -263,16 +250,16 @@
                     <button onclick="closeLegalModal()" class="w-7 h-7 rounded-full bg-gray-100 text-gray-600 font-bold text-xs flex items-center justify-center">✕</button>
                 </div>
                 <div class="space-y-2 text-xs text-gray-700 leading-relaxed">
-                    <p><strong>1. Quick Delivery:</strong> Manor Mart aggregates products locally in Manor, Maharashtra within geo-fenced boundaries[span_8](start_span)[span_8](end_span).</p>
-                    <p><strong>2. 5-7 Days Refund Policy:</strong> Prepaid orders (Razorpay/UPI) cancelled before dispatch will be automatically refunded back to the source bank account within 5 to 7 business days[span_9](start_span)[span_9](end_span).</p>
-                    <p><strong>3. Data Privacy:</strong> We collect your mobile number, address, and live GPS strictly to verify delivery radius and fulfill orders[span_10](start_span)[span_10](end_span).</p>
-                    <p><strong>4. Support:</strong> Contact us at <em>shabaj9769@gmail.com</em> for order support and grievances[span_11](start_span)[span_11](end_span).</p>
+                    <p><strong>1. Quick Delivery:</strong> Manor Mart aggregates products locally in Manor, Maharashtra within geo-fenced boundaries.</p>
+                    <p><strong>2. 5-7 Days Refund Policy:</strong> Prepaid orders (Razorpay/UPI) cancelled before dispatch will be automatically refunded back to the source bank account within 5 to 7 business days.</p>
+                    <p><strong>3. Data Privacy:</strong> We collect your mobile number, address, and live GPS strictly to verify delivery radius and fulfill orders.</p>
+                    <p><strong>4. Support:</strong> Contact us at <em>shabaj9769@gmail.com</em> for order support and grievances.</p>
                 </div>
                 <button onclick="closeLegalModal()" class="w-full bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold">✓ Close Policy</button>
             </div>
         </div>
 
-        <!-- Floating Cart Bar -->
+        <!-- Floating Cart Bar (Only Visible on Shop Tab) -->
         <div id="floating-cart" class="hidden fixed bottom-16 left-3 right-3 bg-green-700 text-white p-3.5 rounded-2xl flex justify-between items-center shadow-xl z-30 max-w-xl mx-auto">
             <div>
                 <p id="floating-cart-info" class="text-xs font-extrabold">0 items • ₹0</p>
@@ -302,6 +289,7 @@
         let allProductsList = [];
         let deliveryBoysList = {};
         let cart = {};
+        let currentTab = 'shop';
         
         let currentPhone = localStorage.getItem('manor_cust_phone') || '';
         let currentName = localStorage.getItem('manor_cust_name') || '';
@@ -699,7 +687,8 @@
             let grandTotal = subtotal + (subtotal > 0 ? deliveryFee : 0);
 
             const floating = document.getElementById('floating-cart');
-            if (totalQty > 0) {
+            // Floating bar sirf Shop tab me dikhna chahiye
+            if (totalQty > 0 && currentTab === 'shop') {
                 floating.classList.remove('hidden');
                 document.getElementById('floating-cart-info').innerText = `${totalQty} items • ₹${grandTotal}`;
             } else {
@@ -751,6 +740,7 @@
         }
 
         function switchTab(tab) {
+            currentTab = tab;
             ['shop', 'orders', 'cart'].forEach(t => {
                 document.getElementById('view-' + t)?.classList.add('hidden');
             });
@@ -758,6 +748,8 @@
 
             document.getElementById('bnav-shop').className = tab === 'shop' ? 'flex flex-col items-center text-green-700 font-bold text-[10px]' : 'flex flex-col items-center text-gray-400 font-bold text-[10px]';
             document.getElementById('bnav-orders').className = tab === 'orders' ? 'flex flex-col items-center text-green-700 font-bold text-[10px]' : 'flex flex-col items-center text-gray-400 font-bold text-[10px]';
+
+            updateCartUI();
 
             if (tab === 'orders') loadCustomerOrders();
         }
@@ -839,7 +831,6 @@
             location.reload();
         }
 
-        // --- FIXED PLACE ORDER & BROWSER ONLY RETURN ---
         function placeOrder() {
             if (storeSettings.storeOpen === false) {
                 return alert("Store is currently closed! New orders are suspended.");
@@ -899,7 +890,6 @@
                 updateCartUI();
 
                 if (paymentMode === 'Online') {
-                    // Browser redirect return link
                     let currentSiteBase = window.location.origin + window.location.pathname;
                     let targetReturnUrl = encodeURIComponent(`${currentSiteBase}?status=success&order_id=${orderId}`);
                     let paymentGatewayUrl = `https://shabaj9769-alt.github.io/manormart-pay/?amount=${grandTotal}&order_id=${orderId}&redirect_url=${targetReturnUrl}`;
