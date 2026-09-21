@@ -351,7 +351,8 @@
     </div>
 
     <script>
-        const DB_URL = "https://manorbiryani-default-rtdb.firebaseio.com/";
+        // Updated to use the correct Admin Firebase URL
+        const DB_URL = "https://manormart-b14cd-default-rtdb.firebaseio.com/";
         let storeSettings = { hubLat: 19.7280, hubLng: 72.9150, radiusKm: 10, storeOpen: true, normCharge: 0, expCharge: 30, freeDel: 0, minOrd: 0, groceryAnimation: true, expDeliveryTime: '45 Mins' };
         let categoriesData = {};
         let allProductsList = [];
@@ -600,7 +601,6 @@
                     if (data.settings) {
                         storeSettings = { ...storeSettings, ...data.settings };
                         
-                        // Fix for delivery time label matching admin settings
                         let timeLabel = storeSettings.expDeliveryTime || '45 Mins';
                         document.getElementById('header-delivery-time-label').innerText = `Delivery in ${timeLabel}`;
 
@@ -751,8 +751,6 @@
                 : `<div class="h-28 bg-gray-50 rounded-xl flex items-center justify-center text-xl mb-1.5 border border-gray-100">🛒</div>`;
 
             let timeBadgeLabel = storeSettings.expDeliveryTime || '45 Mins';
-
-            // Fixed cart button functionality with correct stringified product handler
             let productJsonStr = JSON.stringify(pr).replace(/"/g, '&quot;');
 
             return `
