@@ -351,7 +351,6 @@
     </div>
 
     <script>
-        // Updated to use the correct Admin Firebase URL
         const DB_URL = "https://manormart-b14cd-default-rtdb.firebaseio.com/";
         let storeSettings = { hubLat: 19.7280, hubLng: 72.9150, radiusKm: 10, storeOpen: true, normCharge: 0, expCharge: 30, freeDel: 0, minOrd: 0, groceryAnimation: true, expDeliveryTime: '45 Mins' };
         let categoriesData = {};
@@ -751,7 +750,6 @@
                 : `<div class="h-28 bg-gray-50 rounded-xl flex items-center justify-center text-xl mb-1.5 border border-gray-100">🛒</div>`;
 
             let timeBadgeLabel = storeSettings.expDeliveryTime || '45 Mins';
-            let productJsonStr = JSON.stringify(pr).replace(/"/g, '&quot;');
 
             return `
                 <div class="bg-white p-2 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between relative overflow-hidden ${isSoldOut ? 'opacity-70 bg-gray-50' : ''}">
@@ -770,17 +768,29 @@
                         ${isSoldOut ? `
                             <div class="w-full bg-red-100 text-red-700 py-1.5 rounded-xl text-[10px] font-extrabold text-center">SOLD OUT</div>
                         ` : cartQty === 0 ? `
-                            <button onclick='updateCart("${pr.key}", JSON.parse("${productJsonStr}"), 1)' class="w-full bg-emerald-50 text-emerald-700 border border-emerald-600 py-1.5 rounded-xl text-[10.5px] font-extrabold hover:bg-emerald-600 hover:text-white transition shadow-2xs">ADD</button>
+                            <button onclick="handleAddClick('${pr.key}')" class="w-full bg-emerald-50 text-emerald-700 border border-emerald-600 py-1.5 rounded-xl text-[10.5px] font-extrabold hover:bg-emerald-600 hover:text-white transition shadow-2xs">ADD</button>
                         ` : `
                             <div class="flex items-center justify-between bg-emerald-600 text-white p-1 rounded-xl shadow-2xs">
-                                <button onclick='updateCart("${pr.key}", JSON.parse("${productJsonStr}"), -1)' class="w-5 h-5 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">-</button>
+                                <button onclick="updateCartQty('${pr.key}', -1)" class="w-5 h-5 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">-</button>
                                 <span class="text-xs font-extrabold">${cartQty}</span>
-                                <button onclick='updateCart("${pr.key}", JSON.parse("${productJsonStr}"), 1)' class="w-5 h-5 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">+</button>
+                                <button onclick="updateCartQty('${pr.key}', 1)" class="w-5 h-5 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">+</button>
                             </div>
                         `}
                     </div>
                 </div>
             `;
+        }
+
+        function handleAddClick(pKey) {
+            let pr = allProductsList.find(item => item.key === pKey);
+            if (!pr) return;
+            updateCart(pKey, pr, 1);
+        }
+
+        function updateCartQty(pKey, delta) {
+            let pr = allProductsList.find(item => item.key === pKey);
+            if (!pr) return;
+            updateCart(pKey, pr, delta);
         }
 
         function handleSearch(val) {
