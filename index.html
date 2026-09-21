@@ -12,14 +12,14 @@
 
       @keyframes floatGrocery {
         0% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-12px) rotate(6deg); }
+        50% { transform: translateY(-10px) rotate(5deg); }
         100% { transform: translateY(0px) rotate(0deg); }
       }
       .animate-floating-item {
-        animation: floatGrocery 3.5s ease-in-out infinite;
+        animation: floatGrocery 4s ease-in-out infinite;
       }
       .animate-floating-item-delay {
-        animation: floatGrocery 4.2s ease-in-out 1.2s infinite;
+        animation: floatGrocery 4.5s ease-in-out 1.2s infinite;
       }
       @keyframes slideUp {
         from { transform: translateY(100%); opacity: 0; }
@@ -30,15 +30,15 @@
 </head>
 <body class="bg-white text-gray-900 min-h-screen">
 
-    <!-- FLOATING GROCERY ANIMATION LAYER -->
-    <div id="grocery-animation-layer" class="hidden pointer-events-none fixed inset-0 z-30 overflow-hidden opacity-35">
-        <span class="animate-floating-item absolute top-20 left-4 text-3xl">🥦</span>
-        <span class="animate-floating-item-delay absolute top-36 right-6 text-3xl">🥛</span>
-        <span class="animate-floating-item absolute top-64 left-8 text-2xl">🍞</span>
-        <span class="animate-floating-item-delay absolute top-80 right-10 text-3xl">🍎</span>
-        <span class="animate-floating-item absolute bottom-44 left-10 text-3xl">🧀</span>
-        <span class="animate-floating-item-delay absolute bottom-36 right-8 text-3xl">🍫</span>
-        <span class="animate-floating-item absolute bottom-60 left-1/2 text-2xl">🥤</span>
+    <!-- FLOATING GROCERY ANIMATION LAYER (BEHIND CONTENT) -->
+    <div id="grocery-animation-layer" class="hidden pointer-events-none fixed inset-0 -z-10 overflow-hidden opacity-25">
+        <span class="animate-floating-item absolute top-20 left-4 text-2xl">🥦</span>
+        <span class="animate-floating-item-delay absolute top-36 right-6 text-2xl">🥛</span>
+        <span class="animate-floating-item absolute top-64 left-8 text-xl">🍞</span>
+        <span class="animate-floating-item-delay absolute top-80 right-10 text-2xl">🍎</span>
+        <span class="animate-floating-item absolute bottom-44 left-10 text-2xl">🧀</span>
+        <span class="animate-floating-item-delay absolute bottom-36 right-8 text-2xl">🍫</span>
+        <span class="animate-floating-item absolute bottom-60 left-1/2 text-xl">🥤</span>
     </div>
 
     <!-- BLINKIT POPUP 1: SELECT YOUR LOCATION MODAL -->
@@ -46,14 +46,14 @@
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative">
             <h2 class="font-extrabold text-base text-gray-900">Select your location</h2>
             <p class="text-xs text-gray-600 leading-relaxed px-2">
-                We need your location to show you curated assortment from your nearest store
+                We need your location to show you curated assortment from your nearest store[span_9](start_span)[span_9](end_span)
             </p>
             <div class="space-y-2.5 pt-2">
                 <button onclick="handleInitialUseLocation()" class="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-2xl text-xs transition shadow-sm">
-                    Use my location
+                    Use my location[span_10](start_span)[span_10](end_span)
                 </button>
                 <button onclick="handleInitialManualLocation()" class="w-full bg-white hover:bg-gray-50 text-green-700 font-bold py-3 rounded-2xl text-xs border border-green-700 transition">
-                    Select manually
+                    Select manually[span_11](start_span)[span_11](end_span)
                 </button>
             </div>
         </div>
@@ -91,11 +91,11 @@
     </div>
 
     <!-- MAIN APPLICATION CONTAINER -->
-    <div id="app" class="w-full min-h-screen bg-white flex flex-col relative pb-20">
+    <div id="app" class="w-full min-h-screen bg-white flex flex-col relative pb-16">
         
         <!-- Header -->
-        <header class="w-full bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-40 shadow-xs">
-            <div class="flex justify-between items-center mb-2.5">
+        <header class="w-full bg-white border-b border-gray-100 px-3.5 py-2.5 sticky top-0 z-40 shadow-xs">
+            <div class="flex justify-between items-center mb-2">
                 <div>
                     <div class="flex items-center space-x-1.5">
                         <span class="text-xs font-black tracking-tight text-gray-900">Delivery in 13 minutes</span>
@@ -105,14 +105,14 @@
                         📍 <span id="addr-text" class="underline ml-1">Select Location</span> ▼
                     </p>
                 </div>
-                <button onclick="openProfileModal()" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 border border-gray-200 shadow-2xs">
+                <button onclick="openProfileModal()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 border border-gray-200 shadow-2xs">
                     👤
                 </button>
             </div>
 
             <div class="relative w-full">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">🔍</span>
-                <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search 'kaju, rice, milk'..." class="w-full pl-9 pr-3 py-2.5 bg-gray-100 border border-gray-200 rounded-xl text-xs focus:bg-white focus:border-green-600 outline-none transition font-medium">
+                <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search 'kaju, rice, milk'..." class="w-full pl-9 pr-3 py-2 bg-gray-100 border border-gray-200 rounded-xl text-xs focus:bg-white focus:border-green-600 outline-none transition font-medium">
             </div>
         </header>
 
@@ -125,41 +125,46 @@
             
             <!-- SHOP TAB -->
             <div id="view-shop" class="w-full flex-1 flex flex-col overflow-hidden">
-                <div id="announcement-box" class="hidden m-3 bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-xs text-amber-800 font-bold text-center"></div>
+                <div id="announcement-box" class="hidden m-2.5 bg-amber-50 border border-amber-200 p-2 rounded-xl text-xs text-amber-800 font-bold text-center"></div>
 
+                <!-- STATE 1: CLEAN HOME CATEGORIES GRID -->
                 <div id="home-category-view" class="w-full p-3 overflow-y-auto">
-                    <h2 class="font-extrabold text-xs text-gray-800 uppercase tracking-wider mb-3">GROCERY & KITCHEN</h2>
-                    <div id="categories-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-2.5">
+                    <h2 class="font-extrabold text-xs text-gray-800 uppercase tracking-wider mb-2.5">GROCERY & KITCHEN</h2>
+                    <div id="categories-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-2">
                         <p class="col-span-4 text-center text-gray-400 text-xs py-4">Loading categories...</p>
                     </div>
                 </div>
 
-                <div id="blinkit-split-view" class="hidden w-full flex-1 flex overflow-hidden border-t border-gray-100 h-[calc(100vh-140px)]">
-                    <div id="sidebar-categories" class="w-24 bg-gray-50 border-r border-gray-200 overflow-y-auto no-scrollbar flex flex-col divide-y divide-gray-100"></div>
+                <!-- STATE 2: BLINKIT STYLE SPLIT VIEW (EXACT MOBILE PROPORTIONS) -->
+                <div id="blinkit-split-view" class="hidden w-full flex-1 flex overflow-hidden border-t border-gray-100 h-[calc(100vh-130px)]">
+                    <!-- Left Sidebar (Fixed 74px) -->
+                    <div id="sidebar-categories" class="w-[74px] shrink-0 bg-gray-50 border-r border-gray-200 overflow-y-auto no-scrollbar flex flex-col divide-y divide-gray-100"></div>
 
-                    <div class="flex-1 bg-white p-3 overflow-y-auto flex flex-col">
-                        <div class="flex justify-between items-center mb-2.5 pb-1 border-b border-gray-100">
-                            <div>
-                                <h3 id="split-cat-title" class="font-black text-xs text-gray-900 uppercase">CATEGORY</h3>
+                    <!-- Right Column (Remaining space) -->
+                    <div class="flex-1 min-w-0 bg-white p-2.5 overflow-y-auto flex flex-col">
+                        <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-100 shrink-0">
+                            <div class="truncate mr-1">
+                                <h3 id="split-cat-title" class="font-black text-xs text-gray-900 uppercase truncate">CATEGORY</h3>
                                 <span id="split-prod-count" class="text-[9px] text-gray-400 font-bold">0 items</span>
                             </div>
-                            <button onclick="closeSplitCategory()" class="text-[11px] bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1 rounded-lg font-extrabold transition">✕ Close</button>
+                            <button onclick="closeSplitCategory()" class="shrink-0 text-[11px] bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1 rounded-lg font-extrabold transition">✕ Close</button>
                         </div>
-                        <div id="split-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 pb-28"></div>
+                        <div id="split-products-grid" class="grid grid-cols-2 gap-2 pb-24"></div>
                     </div>
                 </div>
 
+                <!-- STATE 3: SEARCH RESULTS VIEW -->
                 <div id="search-results-view" class="hidden w-full flex-1 p-3 overflow-y-auto">
-                    <div class="flex justify-between items-center mb-2.5">
+                    <div class="flex justify-between items-center mb-2">
                         <h3 id="search-query-title" class="font-black text-xs text-gray-900 uppercase">Search Results</h3>
                         <button onclick="clearSearch()" class="text-[11px] text-red-600 font-bold">✕ Clear</button>
                     </div>
-                    <div id="search-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pb-28"></div>
+                    <div id="search-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 pb-24"></div>
                 </div>
             </div>
 
             <!-- ORDERS TAB -->
-            <div id="view-orders" class="hidden w-full p-3 space-y-3 overflow-y-auto pb-28">
+            <div id="view-orders" class="hidden w-full p-3 space-y-3 overflow-y-auto pb-24">
                 <div class="flex justify-between items-center mb-1">
                     <h2 class="font-extrabold text-sm text-gray-900">📦 Track Orders & Live Timeline</h2>
                     <button onclick="loadCustomerOrders()" class="bg-gray-100 text-gray-800 px-2.5 py-1 rounded-lg text-xs font-bold">🔄 Refresh</button>
@@ -195,7 +200,7 @@
             </div>
 
             <!-- CART VIEW -->
-            <div id="view-cart" class="hidden w-full p-3 space-y-3 overflow-y-auto pb-28">
+            <div id="view-cart" class="hidden w-full p-3 space-y-3 overflow-y-auto pb-24">
                 <div class="flex justify-between items-center mb-2">
                     <h2 class="font-extrabold text-sm text-gray-900">🛒 Review Cart & Pay</h2>
                     <button onclick="switchTab('shop')" class="bg-gray-100 text-gray-800 px-3 py-1 rounded-lg text-xs font-bold">🔙 Back to Shop</button>
@@ -607,13 +612,13 @@
                     : null;
 
                 let iconHtml = catImgUrl
-                    ? `<img src="${catImgUrl}" class="w-12 h-12 rounded-xl object-cover shadow-xs mb-1.5" onerror="this.outerHTML='<div class=\\'w-12 h-12 bg-white rounded-xl shadow-xs flex items-center justify-center text-xl mb-1.5\\'>📦</div>';">`
-                    : `<div class="w-12 h-12 bg-white rounded-xl shadow-xs flex items-center justify-center text-xl mb-1.5">📦</div>`;
+                    ? `<img src="${catImgUrl}" class="w-11 h-11 rounded-xl object-cover shadow-xs mb-1" onerror="this.outerHTML='<div class=\\'w-11 h-11 bg-white rounded-xl shadow-xs flex items-center justify-center text-lg mb-1\\'>📦</div>';">`
+                    : `<div class="w-11 h-11 bg-white rounded-xl shadow-xs flex items-center justify-center text-lg mb-1">📦</div>`;
 
                 grid.innerHTML += `
-                    <button onclick="handleCategoryTap('${cat}')" class="bg-sky-50/50 hover:bg-sky-100/60 border border-sky-100 p-2.5 rounded-2xl flex flex-col items-center justify-center transition shadow-2xs">
+                    <button onclick="handleCategoryTap('${cat}')" class="bg-sky-50/50 hover:bg-sky-100/60 border border-sky-100 p-2 rounded-2xl flex flex-col items-center justify-center transition shadow-2xs">
                         ${iconHtml}
-                        <span class="text-[10px] font-bold text-gray-800 truncate w-full text-center">${cat}</span>
+                        <span class="text-[9.5px] font-bold text-gray-800 truncate w-full text-center">${cat}</span>
                     </button>
                 `;
             });
@@ -650,13 +655,13 @@
                 let catImgUrl = catObj?.image && typeof catObj.image === 'string' && catObj.image.trim().startsWith('http') ? catObj.image.trim() : null;
 
                 let iconHtml = catImgUrl
-                    ? `<img src="${catImgUrl}" class="w-7 h-7 rounded-lg object-cover mx-auto mb-1" onerror="this.outerHTML='<div class=\\'text-lg\\'>📦</div>';">`
-                    : `<div class="text-lg">📦</div>`;
+                    ? `<img src="${catImgUrl}" class="w-7 h-7 rounded-lg object-cover mx-auto mb-1" onerror="this.outerHTML='<div class=\\'text-base text-center\\'>📦</div>';">`
+                    : `<div class="text-base text-center">📦</div>`;
 
                 side.innerHTML += `
-                    <button onclick="handleCategoryTap('${cat}')" class="p-2.5 text-center transition w-full ${isCurrent ? 'bg-white border-l-4 border-green-600 font-extrabold text-green-900 shadow-xs' : 'text-gray-500 font-medium hover:bg-gray-100'}">
+                    <button onclick="handleCategoryTap('${cat}')" class="p-2 text-center transition w-full ${isCurrent ? 'bg-white border-l-4 border-green-600 font-black text-green-900 shadow-xs' : 'text-gray-500 font-medium hover:bg-gray-100'}">
                         ${iconHtml}
-                        <span class="text-[9px] block leading-tight truncate">${cat}</span>
+                        <span class="text-[8.5px] block leading-tight truncate text-center">${cat}</span>
                     </button>
                 `;
             });
@@ -689,17 +694,17 @@
             let isSoldOut = pr.status === 'sold' || pr.inStock === false;
 
             let imgDisplay = pr.image 
-                ? `<img src="${pr.image}" class="h-24 w-full object-cover rounded-xl mb-1.5" onerror="this.outerHTML='<div class=\\'h-24 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-1.5 border border-gray-100\\'>🛒</div>';">` 
-                : `<div class="h-24 bg-gray-50 rounded-xl flex items-center justify-center text-2xl mb-1.5 border border-gray-100">🛒</div>`;
+                ? `<img src="${pr.image}" class="h-20 w-full object-cover rounded-xl mb-1.5" onerror="this.outerHTML='<div class=\\'h-20 bg-gray-50 rounded-xl flex items-center justify-center text-xl mb-1.5 border border-gray-100\\'>🛒</div>';">` 
+                : `<div class="h-20 bg-gray-50 rounded-xl flex items-center justify-center text-xl mb-1.5 border border-gray-100">🛒</div>`;
 
             return `
-                <div class="bg-white p-2.5 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between relative overflow-hidden ${isSoldOut ? 'opacity-70 bg-gray-50' : ''}">
-                    ${discPercent > 0 ? `<div class="absolute top-0 left-0 bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-br-xl shadow-xs z-10">${discPercent}% OFF</div>` : ''}
+                <div class="bg-white p-2 rounded-2xl border border-gray-200 shadow-2xs flex flex-col justify-between relative overflow-hidden ${isSoldOut ? 'opacity-70 bg-gray-50' : ''}">
+                    ${discPercent > 0 ? `<div class="absolute top-0 left-0 bg-blue-600 text-white text-[8.5px] font-black px-1.5 py-0.5 rounded-br-xl shadow-xs z-10">${discPercent}% OFF</div>` : ''}
                     <div>
                         ${imgDisplay}
                         <span class="bg-gray-100 text-gray-600 text-[8px] font-extrabold px-1.5 py-0.5 rounded">13 MINS</span>
                         <h4 class="font-bold text-xs text-gray-900 line-clamp-2 mt-1 leading-snug">${pr.name}</h4>
-                        <p class="text-[10px] text-gray-400 mt-0.5">${pr.unit || '1 unit'}</p>
+                        <p class="text-[9.5px] text-gray-400 mt-0.5">${pr.unit || '1 unit'}</p>
                         <div class="flex items-center mt-1">
                             <span class="font-extrabold text-gray-900 text-xs">₹${effPrice}</span>
                             ${discVal > 0 ? `<span class="text-[9px] text-gray-400 line-through ml-1">₹${priceVal}</span>` : ''}
@@ -709,12 +714,12 @@
                         ${isSoldOut ? `
                             <div class="w-full bg-red-100 text-red-700 py-1.5 rounded-xl text-[10px] font-extrabold text-center">SOLD OUT</div>
                         ` : cartQty === 0 ? `
-                            <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-full bg-emerald-50 text-emerald-700 border border-emerald-600 py-1.5 rounded-xl text-[11px] font-extrabold hover:bg-emerald-600 hover:text-white transition shadow-2xs">ADD</button>
+                            <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-full bg-emerald-50 text-emerald-700 border border-emerald-600 py-1.5 rounded-xl text-[10.5px] font-extrabold hover:bg-emerald-600 hover:text-white transition shadow-2xs">ADD</button>
                         ` : `
                             <div class="flex items-center justify-between bg-emerald-600 text-white p-1 rounded-xl shadow-2xs">
-                                <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, -1)' class="w-6 h-6 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">-</button>
+                                <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, -1)' class="w-5 h-5 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">-</button>
                                 <span class="text-xs font-extrabold">${cartQty}</span>
-                                <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-6 h-6 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">+</button>
+                                <button onclick='updateCart("${pr.key}", ${JSON.stringify(pr)}, 1)' class="w-5 h-5 rounded-lg font-extrabold text-xs flex items-center justify-center hover:bg-emerald-700">+</button>
                             </div>
                         `}
                     </div>
