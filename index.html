@@ -46,14 +46,14 @@
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative">
             <h2 class="font-extrabold text-base text-gray-900">Select your location</h2>
             <p class="text-xs text-gray-600 leading-relaxed px-2">
-                We need your location to show you curated assortment from your nearest store
+                We need your location to show you curated assortment from your nearest store[span_2](start_span)[span_2](end_span)
             </p>
             <div class="space-y-2.5 pt-2">
                 <button onclick="handleInitialUseLocation()" class="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-2xl text-xs transition shadow-sm">
-                    Use my location
+                    Use my location[span_3](start_span)[span_3](end_span)
                 </button>
                 <button onclick="handleInitialManualLocation()" class="w-full bg-white hover:bg-gray-50 text-green-700 font-bold py-3 rounded-2xl text-xs border border-green-700 transition">
-                    Select manually
+                    Select manually[span_4](start_span)[span_4](end_span)
                 </button>
             </div>
         </div>
@@ -333,7 +333,7 @@
         let cart = {};
         let currentTab = 'shop';
         
-        // Persistent Customer Data
+        // Secure Session Handling: Keep phone persistent for orders, but clear address on explicit logout for privacy
         let currentPhone = localStorage.getItem('manor_cust_phone') || '';
         let currentName = localStorage.getItem('manor_cust_name') || '';
         let currentAddr = localStorage.getItem('manor_cust_addr') || '';
@@ -350,15 +350,11 @@
 
         window.onload = () => {
             let locationSet = localStorage.getItem('manor_location_confirmed');
-            if (!locationSet) {
+            if (!locationSet || !currentAddr) {
                 document.getElementById('initial-location-modal').classList.remove('hidden');
             } else {
                 document.getElementById('initial-location-modal').classList.add('hidden');
-                if (currentAddr) {
-                    fetchLocationFromAddress(currentAddr);
-                } else {
-                    triggerGpsLocation();
-                }
+                fetchLocationFromAddress(currentAddr);
             }
 
             if (currentPhone) {
