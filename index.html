@@ -41,8 +41,35 @@
         <span class="animate-floating-item absolute bottom-60 left-1/2 text-xl">🥤</span>
     </div>
 
+    <!-- MANDATORY LOGIN MODAL (APPEARS ON STARTUP / LOGOUT IF NO PHONE) -->
+    <div id="mandatory-login-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative animate-slide-up">
+            <div class="w-12 h-12 bg-green-100 text-green-700 rounded-2xl mx-auto flex items-center justify-center text-xl font-black">📱</div>
+            <h2 class="font-extrabold text-base text-gray-900">Login to Manor Mart</h2>
+            <p class="text-xs text-gray-600 leading-relaxed px-1">
+                Please enter your 10-digit mobile number to view your order history and manage your deliveries.
+            </p>
+            <div class="space-y-3 pt-1 text-left">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase">Mobile Number:</label>
+                    <div class="flex items-center border border-gray-200 bg-gray-50 rounded-xl mt-1 overflow-hidden focus-within:border-green-600">
+                        <span class="px-3 text-xs font-bold text-gray-500 bg-gray-100 py-3 border-r border-gray-200">+91</span>
+                        <input type="tel" id="login-modal-phone" class="w-full p-3 bg-transparent text-xs font-bold outline-none" placeholder="Enter 10-digit number" maxlength="10">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase">Your Name:</label>
+                    <input type="text" id="login-modal-name" class="w-full p-3 border border-gray-200 bg-gray-50 rounded-xl text-xs font-medium mt-1 outline-none focus:border-green-600" placeholder="Enter Full Name">
+                </div>
+                <button onclick="submitMandatoryLogin()" class="w-full bg-green-700 hover:bg-green-800 text-white font-extrabold py-3.5 rounded-2xl text-xs transition shadow-sm mt-2">
+                    Continue to App ➔
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- BLINKIT POPUP 1: SELECT YOUR LOCATION MODAL -->
-    <div id="initial-location-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
+    <div id="initial-location-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative">
             <h2 class="font-extrabold text-base text-gray-900">Select your location</h2>
             <p class="text-xs text-gray-600 leading-relaxed px-2">
@@ -127,7 +154,6 @@
             <div id="view-shop" class="w-full flex-1 flex flex-col overflow-hidden">
                 <div id="announcement-box" class="hidden m-2.5 bg-amber-50 border border-amber-200 p-2 rounded-xl text-xs text-amber-800 font-bold text-center"></div>
 
-                <!-- STATE 1: CLEAN HOME CATEGORIES GRID -->
                 <div id="home-category-view" class="w-full p-3 overflow-y-auto">
                     <h2 class="font-extrabold text-xs text-gray-800 uppercase tracking-wider mb-2.5">GROCERY & KITCHEN</h2>
                     <div id="categories-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-2">
@@ -135,12 +161,12 @@
                     </div>
                 </div>
 
-                <!-- STATE 2: BLINKIT STYLE SPLIT VIEW -->
+                <!-- BLINKIT STYLE SPLIT VIEW WITH STICKY CATEGORY HEADER -->
                 <div id="blinkit-split-view" class="hidden w-full flex-1 flex overflow-hidden border-t border-gray-100 h-[calc(100vh-130px)]">
                     <div id="sidebar-categories" class="w-[74px] shrink-0 bg-gray-50 border-r border-gray-200 overflow-y-auto no-scrollbar flex flex-col divide-y divide-gray-100"></div>
 
                     <div class="flex-1 min-w-0 bg-white p-2.5 overflow-y-auto flex flex-col">
-                        <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-100 shrink-0">
+                        <div class="sticky top-0 bg-white/95 backdrop-blur-xs z-20 flex justify-between items-center mb-2 pb-1.5 border-b border-gray-100 shrink-0">
                             <div class="truncate mr-1">
                                 <h3 id="split-cat-title" class="font-black text-xs text-gray-900 uppercase truncate">CATEGORY</h3>
                                 <span id="split-prod-count" class="text-[9px] text-gray-400 font-bold">0 items</span>
@@ -151,7 +177,6 @@
                     </div>
                 </div>
 
-                <!-- STATE 3: SEARCH RESULTS VIEW -->
                 <div id="search-results-view" class="hidden w-full flex-1 p-3 overflow-y-auto">
                     <div class="flex justify-between items-center mb-2">
                         <h3 id="search-query-title" class="font-black text-xs text-gray-900 uppercase">Search Results</h3>
@@ -169,7 +194,7 @@
                 </div>
                 
                 <div id="orders-list" class="space-y-3">
-                    <p class="text-center text-gray-400 text-xs py-10">No orders placed yet.</p>
+                    <p class="text-center text-gray-400 text-xs py-10">Please login to view your orders.</p>
                 </div>
 
                 <div class="bg-gray-50 border border-gray-200 rounded-2xl p-3.5 space-y-2 mt-4">
@@ -351,12 +376,17 @@
         let deleteStepOrderId = null;
 
         window.onload = () => {
-            let locationSet = localStorage.getItem('manor_location_confirmed');
-            if (!locationSet || !currentAddr) {
-                document.getElementById('initial-location-modal').classList.remove('hidden');
+            // Check if user is logged in (has valid phone number)
+            if (!currentPhone) {
+                document.getElementById('mandatory-login-modal').classList.remove('hidden');
             } else {
-                document.getElementById('initial-location-modal').classList.add('hidden');
-                fetchLocationFromAddress(currentAddr);
+                let locationSet = localStorage.getItem('manor_location_confirmed');
+                if (!locationSet || !currentAddr) {
+                    document.getElementById('initial-location-modal').classList.remove('hidden');
+                } else {
+                    document.getElementById('initial-location-modal').classList.add('hidden');
+                    fetchLocationFromAddress(currentAddr);
+                }
             }
 
             if (currentPhone) {
@@ -364,6 +394,7 @@
                 document.getElementById('profile-name').value = currentName;
                 document.getElementById('profile-address').value = currentAddr;
                 updateAddressLabel();
+                loadCustomerOrders();
             }
 
             renderSavedAddresses();
@@ -371,6 +402,34 @@
             checkURLPaymentReturn();
             setInterval(fetchStoreData, 6000);
         };
+
+        function submitMandatoryLogin() {
+            let ph = document.getElementById('login-modal-phone').value.replace(/[^0-9]/g, '').trim();
+            let nm = document.getElementById('login-modal-name').value.trim();
+
+            if (ph.length !== 10) return alert("Please enter a valid 10-digit mobile number.");
+            if (!nm) return alert("Please enter your name.");
+
+            currentPhone = ph;
+            currentName = nm;
+
+            localStorage.setItem('manor_cust_phone', ph);
+            localStorage.setItem('manor_cust_name', nm);
+
+            document.getElementById('profile-phone').value = ph;
+            document.getElementById('profile-name').value = nm;
+
+            document.getElementById('mandatory-login-modal').classList.add('hidden');
+            
+            // Proceed to location selection
+            let locationSet = localStorage.getItem('manor_location_confirmed');
+            if (!locationSet || !currentAddr) {
+                document.getElementById('initial-location-modal').classList.remove('hidden');
+            } else {
+                fetchLocationFromAddress(currentAddr);
+            }
+            loadCustomerOrders();
+        }
 
         function formatOrderDateTime(ts) {
             if (!ts) return '';
@@ -935,11 +994,17 @@
         }
 
         function logout() {
+            localStorage.removeItem('manor_cust_phone');
+            localStorage.removeItem('manor_cust_name');
             localStorage.removeItem('manor_cust_addr');
             localStorage.removeItem('manor_location_confirmed');
+            
+            currentPhone = '';
+            currentName = '';
             currentAddr = '';
+            
             updateAddressLabel();
-            alert("Logged out of address session. Phone number session retained for orders.");
+            alert("Logged out successfully! All session data cleared.");
             location.reload();
         }
 
@@ -1041,7 +1106,11 @@
         }
 
         function loadCustomerOrders() {
-            if (!currentPhone) return;
+            if (!currentPhone) {
+                document.getElementById('orders-list').innerHTML = '<p class="text-center text-gray-400 text-xs py-10">Please login to view your orders.</p>';
+                return;
+            }
+
             fetch(DB_URL + "orders.json")
                 .then(res => res.json())
                 .then(data => {
@@ -1052,7 +1121,7 @@
                     let ordersList = Object.keys(data).map(k => data[k]).filter(o => o.phone === currentPhone).reverse();
 
                     if (ordersList.length === 0) {
-                        listContainer.innerHTML = '<p class="text-center text-gray-400 text-xs py-10">No orders placed yet.</p>';
+                        listContainer.innerHTML = '<p class="text-center text-gray-400 text-xs py-10">No orders placed with this mobile number.</p>';
                         return;
                     }
 
