@@ -46,14 +46,14 @@
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative">
             <h2 class="font-extrabold text-base text-gray-900">Select your location</h2>
             <p class="text-xs text-gray-600 leading-relaxed px-2">
-                We need your location to show you curated assortment from your nearest store[span_2](start_span)[span_2](end_span)
+                We need your location to show you curated assortment from your nearest store[span_3](start_span)[span_3](end_span)
             </p>
             <div class="space-y-2.5 pt-2">
                 <button onclick="handleInitialUseLocation()" class="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-2xl text-xs transition shadow-sm">
-                    Use my location[span_3](start_span)[span_3](end_span)
+                    Use my location[span_4](start_span)[span_4](end_span)
                 </button>
                 <button onclick="handleInitialManualLocation()" class="w-full bg-white hover:bg-gray-50 text-green-700 font-bold py-3 rounded-2xl text-xs border border-green-700 transition">
-                    Select manually[span_4](start_span)[span_4](end_span)
+                    Select manually[span_5](start_span)[span_5](end_span)
                 </button>
             </div>
         </div>
@@ -69,14 +69,14 @@
 
             <div class="relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">🔍</span>
-                <input type="text" id="manual-location-search" oninput="handleManualAddressSearch(this.value)" placeholder="search delivery location (e.g. Manor, Palghar)" class="w-full pl-9 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs outline-none focus:border-green-600 font-medium">
+                <input type="text" id="manual-location-search" oninput="handleManualAddressSearch(this.value)" placeholder="Search delivery location (e.g. Manor, Palghar)" class="w-full pl-9 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs outline-none focus:border-green-600 font-medium">
             </div>
 
             <button onclick="handleInitialUseLocation()" class="w-full flex items-center space-x-3 bg-green-50/60 border border-green-200 p-3 rounded-2xl hover:bg-green-100 transition text-left">
                 <span class="text-green-700 text-lg">🎯</span>
                 <div>
                     <p class="font-black text-xs text-green-800">Use current location</p>
-                    <p class="text-[10px] text-green-700">Using phone satellite GPS</p>
+                    <p class="text-[10px] text-green-700">Using phone GPS</p>
                 </div>
             </button>
 
@@ -158,7 +158,7 @@
                 </div>
             </div>
 
-            <!-- ORDERS TAB (WITH LIVE HELP, NUMBER & EMAIL) -->
+            <!-- ORDERS TAB -->
             <div id="view-orders" class="hidden w-full p-3 space-y-3 overflow-y-auto pb-28">
                 <div class="flex justify-between items-center mb-1">
                     <h2 class="font-extrabold text-sm text-gray-900">📦 Track Orders & Live Timeline</h2>
@@ -169,19 +169,19 @@
                     <p class="text-center text-gray-400 text-xs py-10">No orders placed yet.</p>
                 </div>
 
-                <!-- HELP & POLICIES FOOTER CARD -->
+                <!-- HELP & POLICIES FOOTER CARD (CLEAN ENGLISH) -->
                 <div class="bg-gray-50 border border-gray-200 rounded-2xl p-3.5 space-y-2 mt-4">
                     <div class="flex items-center space-x-2">
                         <span class="text-base">📞</span>
                         <h3 class="font-extrabold text-xs text-gray-900">Need Help with your Order?</h3>
                     </div>
                     <p class="text-[11px] text-gray-600 leading-tight">
-                        Aapke order delivery, cancel ya payment support ke liye humse direct call ya email par rabta karein:
+                        For questions regarding delivery, cancellation, or refund support, reach out to us directly:
                     </p>
                     
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <a href="tel:8779612829" class="bg-green-700 text-white text-center py-2.5 rounded-xl font-bold text-[11px] flex items-center justify-center space-x-1 shadow-2xs">
-                            <span>📞</span> <span>8779612829</span>
+                            <span>📞</span> <span>Call Support</span>
                         </a>
                         <a href="mailto:shabaj9769@gmail.com" class="bg-white border border-gray-300 text-gray-800 text-center py-2.5 rounded-xl font-bold text-[10px] flex items-center justify-center space-x-1 shadow-2xs truncate">
                             <span>✉️</span> <span class="truncate">Email Support</span>
@@ -283,7 +283,7 @@
             </div>
         </div>
 
-        <!-- Legal Policies Modal -->
+        <!-- Legal Policies Modal (CLEAN OFFICIAL ENGLISH - NO SPAN TAGS) -->
         <div id="legal-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-2xl p-5 w-full max-w-lg space-y-3 shadow-2xl max-h-[85vh] overflow-y-auto">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-2">
@@ -291,12 +291,12 @@
                     <button onclick="closeLegalModal()" class="w-7 h-7 rounded-full bg-gray-100 text-gray-600 font-bold text-xs flex items-center justify-center">✕</button>
                 </div>
                 <div class="space-y-2 text-xs text-gray-700 leading-relaxed">
-                    <p><strong>1. Delivery Coverage:</strong> Manor Mart Manor aur as-pass ke areas mein geo-fencing radius ke mutabiq items deliver karta hai[span_5](start_span)[span_5](end_span).</p>
-                    <p><strong>2. 5-7 Days Refund Policy:</strong> Agar aap order dispatch se pehle cancel karte hain, toh online prepaid payments (Razorpay/UPI) ka refund 5 se 7 dinon mein aapke original bank account mein credit ho jata hai[span_6](start_span)[span_6](end_span).</p>
-                    <p><strong>3. Data Privacy:</strong> Aapka naam, mobile number aur GPS location sirf order deliver karne aur radius check karne ke liye use hota hai[span_7](start_span)[span_7](end_span).</p>
+                    <p><strong>1. Delivery Coverage:</strong> Manor Mart provides hyper-local grocery deliveries exclusively within the configured geo-fencing radius from our store hub[span_6](start_span)[span_6](end_span).</p>
+                    <p><strong>2. 5-7 Days Refund Policy:</strong> Orders cancelled before dispatch ("Out for Delivery") are eligible for a full refund[span_7](start_span)[span_7](end_span). For prepaid online payments (Razorpay / UPI), the refund amount will be credited back to your source bank account within 5 to 7 business days[span_8](start_span)[span_8](end_span).</p>
+                    <p><strong>3. Data Privacy & Protection:</strong> Customer contact numbers, delivery addresses, and GPS coordinates are collected solely to route deliveries and enforce service boundaries[span_9](start_span)[span_9](end_span). Your personal data is never sold or shared with third parties[span_10](start_span)[span_10](end_span).</p>
                     <p><strong>4. Official Helpline Support:</strong><br>
                     • Phone: <strong>8779612829</strong><br>
-                    • Email: <strong>shabaj9769@gmail.com</strong>[span_8](start_span)[span_8](end_span)</p>
+                    • Email: <strong>shabaj9769@gmail.com</strong>[span_11](start_span)[span_11](end_span)</p>
                 </div>
                 <button onclick="closeLegalModal()" class="w-full bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold">✓ Close Policy</button>
             </div>
