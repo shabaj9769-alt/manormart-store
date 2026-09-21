@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Manor Mart - Instant Grocery Delivery</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-      body { font-family: system-ui, -apple-system, sans-serif; background-color: #f8f9f8; margin: 0; padding: 0; }
+      body { font-family: system-ui, -apple-system, sans-serif; background-color: #ffffff; margin: 0; padding: 0; overflow-x: hidden; }
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       @keyframes slideUp {
@@ -16,21 +16,21 @@
       .animate-slide-up { animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 min-h-screen pb-20">
+<body class="bg-white text-gray-900 min-h-screen">
 
     <!-- BLINKIT POPUP 1: SELECT YOUR LOCATION MODAL -->
     <div id="initial-location-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative">
             <h2 class="font-extrabold text-base text-gray-900">Select your location</h2>
             <p class="text-xs text-gray-600 leading-relaxed px-2">
-                We need your location to show you curated assortment from your nearest store[span_3](start_span)[span_3](end_span)[span_4](start_span)[span_4](end_span)
+                We need your location to show you curated assortment from your nearest store
             </p>
             <div class="space-y-2.5 pt-2">
                 <button onclick="handleInitialUseLocation()" class="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-2xl text-xs transition shadow-sm">
-                    Use my location[span_5](start_span)[span_5](end_span)[span_6](start_span)[span_6](end_span)
+                    Use my location
                 </button>
                 <button onclick="handleInitialManualLocation()" class="w-full bg-white hover:bg-gray-50 text-green-700 font-bold py-3 rounded-2xl text-xs border border-green-700 transition">
-                    Select manually[span_7](start_span)[span_7](end_span)[span_8](start_span)[span_8](end_span)
+                    Select manually
                 </button>
             </div>
         </div>
@@ -70,11 +70,11 @@
         </div>
     </div>
 
-    <!-- MAIN APPLICATION CONTAINER -->
-    <div id="app" class="w-full min-h-screen bg-white flex flex-col relative max-w-2xl mx-auto shadow-sm">
+    <!-- MAIN APPLICATION CONTAINER (FULL WIDTH EDGE-TO-EDGE) -->
+    <div id="app" class="w-full min-h-screen bg-white flex flex-col relative pb-20">
         
         <!-- Header -->
-        <header class="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-40 shadow-xs">
+        <header class="w-full bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-40 shadow-xs">
             <div class="flex justify-between items-center mb-2.5">
                 <div>
                     <div class="flex items-center space-x-1.5">
@@ -91,41 +91,41 @@
             </div>
 
             <!-- Search Bar -->
-            <div class="relative">
+            <div class="relative w-full">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">🔍</span>
-                <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search 'kaju, rice, milk'..." class="w-full pl-9 pr-3 py-2 bg-gray-100 border border-gray-200 rounded-xl text-xs focus:bg-white focus:border-green-600 outline-none transition font-medium">
+                <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search 'kaju, rice, milk'..." class="w-full pl-9 pr-3 py-2.5 bg-gray-100 border border-gray-200 rounded-xl text-xs focus:bg-white focus:border-green-600 outline-none transition font-medium">
             </div>
         </header>
 
         <!-- Store Closed Banner -->
-        <div id="store-closed-banner" class="hidden bg-red-600 text-white p-2 text-center text-xs font-bold">
-            🔴 Store is Currently Closed! Orders are temporarily suspended.
+        <div id="store-closed-banner" class="hidden w-full bg-red-600 text-white p-2 text-center text-xs font-bold">
+            🔴 Store is Currently Closed! Orders are temporarily suspended[span_7](start_span)[span_7](end_span).
         </div>
 
         <!-- Outside Zone Warning -->
-        <div id="geo-warning-banner" class="hidden bg-amber-500 text-white p-2 text-center text-xs font-bold">
+        <div id="geo-warning-banner" class="hidden w-full bg-amber-500 text-white p-2 text-center text-xs font-bold">
             ⚠️ You are outside the delivery zone. Ordering is temporarily restricted.
         </div>
 
         <!-- Main Content Area -->
-        <main class="flex-1 overflow-hidden flex flex-col">
+        <main class="w-full flex-1 overflow-hidden flex flex-col">
             
             <!-- SHOP TAB -->
-            <div id="view-shop" class="flex-1 flex flex-col overflow-hidden">
+            <div id="view-shop" class="w-full flex-1 flex flex-col overflow-hidden">
                 
                 <!-- Announcement Notice -->
                 <div id="announcement-box" class="hidden m-3 bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-xs text-amber-800 font-bold text-center"></div>
 
                 <!-- STATE 1: CLEAN HOME CATEGORIES GRID -->
-                <div id="home-category-view" class="p-3 overflow-y-auto">
+                <div id="home-category-view" class="w-full p-3 overflow-y-auto">
                     <h2 class="font-extrabold text-xs text-gray-800 uppercase tracking-wider mb-3">GROCERY & KITCHEN</h2>
-                    <div id="categories-grid" class="grid grid-cols-4 gap-2.5">
+                    <div id="categories-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-2.5">
                         <p class="col-span-4 text-center text-gray-400 text-xs py-4">Loading categories...</p>
                     </div>
                 </div>
 
-                <!-- STATE 2: BLINKIT STYLE SPLIT VIEW (CATEGORY TAP PAR) -->
-                <div id="blinkit-split-view" class="hidden flex-1 flex overflow-hidden border-t border-gray-100">
+                <!-- STATE 2: BLINKIT STYLE SPLIT VIEW (FULL HEIGHT FULL WIDTH) -->
+                <div id="blinkit-split-view" class="hidden w-full flex-1 flex overflow-hidden border-t border-gray-100 h-[calc(100vh-140px)]">
                     <!-- Left Sidebar (Vertical Categories) -->
                     <div id="sidebar-categories" class="w-24 bg-gray-50 border-r border-gray-200 overflow-y-auto no-scrollbar flex flex-col divide-y divide-gray-100"></div>
 
@@ -138,23 +138,23 @@
                             </div>
                             <button onclick="closeSplitCategory()" class="text-[11px] bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1 rounded-lg font-extrabold transition">✕ Close</button>
                         </div>
-                        <div id="split-products-grid" class="grid grid-cols-2 gap-2 pb-24"></div>
+                        <div id="split-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 pb-28"></div>
                     </div>
                 </div>
 
                 <!-- STATE 3: SEARCH RESULTS VIEW -->
-                <div id="search-results-view" class="hidden flex-1 p-3 overflow-y-auto">
+                <div id="search-results-view" class="hidden w-full flex-1 p-3 overflow-y-auto">
                     <div class="flex justify-between items-center mb-2.5">
                         <h3 id="search-query-title" class="font-black text-xs text-gray-900 uppercase">Search Results</h3>
                         <button onclick="clearSearch()" class="text-[11px] text-red-600 font-bold">✕ Clear</button>
                     </div>
-                    <div id="search-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pb-24"></div>
+                    <div id="search-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pb-28"></div>
                 </div>
 
             </div>
 
             <!-- ORDERS TAB -->
-            <div id="view-orders" class="hidden p-3 space-y-3 overflow-y-auto pb-28">
+            <div id="view-orders" class="hidden w-full p-3 space-y-3 overflow-y-auto pb-28">
                 <div class="flex justify-between items-center mb-2">
                     <h2 class="font-extrabold text-sm text-gray-900">📦 Track Orders & Live Timeline</h2>
                     <button onclick="loadCustomerOrders()" class="bg-gray-100 text-gray-800 px-2.5 py-1 rounded-lg text-xs font-bold">🔄 Refresh</button>
@@ -165,7 +165,7 @@
             </div>
 
             <!-- CART VIEW -->
-            <div id="view-cart" class="hidden p-3 space-y-3 overflow-y-auto pb-28">
+            <div id="view-cart" class="hidden w-full p-3 space-y-3 overflow-y-auto pb-28">
                 <div class="flex justify-between items-center mb-2">
                     <h2 class="font-extrabold text-sm text-gray-900">🛒 Review Cart & Pay</h2>
                     <button onclick="switchTab('shop')" class="bg-gray-100 text-gray-800 px-3 py-1 rounded-lg text-xs font-bold">🔙 Back to Shop</button>
@@ -263,17 +263,17 @@
                     <button onclick="closeLegalModal()" class="w-7 h-7 rounded-full bg-gray-100 text-gray-600 font-bold text-xs flex items-center justify-center">✕</button>
                 </div>
                 <div class="space-y-2 text-xs text-gray-700 leading-relaxed">
-                    <p><strong>1. Quick Delivery:</strong> Manor Mart aggregates products locally in Manor, Maharashtra within geo-fenced boundaries[span_9](start_span)[span_9](end_span).</p>
-                    <p><strong>2. 5-7 Days Refund Policy:</strong> Prepaid orders (Razorpay/UPI) cancelled before dispatch will be automatically refunded back to the source bank account within 5 to 7 business days[span_10](start_span)[span_10](end_span).</p>
-                    <p><strong>3. Data Privacy:</strong> We collect your mobile number, address, and live GPS strictly to verify delivery radius and fulfill orders[span_11](start_span)[span_11](end_span).</p>
-                    <p><strong>4. Support:</strong> Contact us at <em>shabaj9769@gmail.com</em> for order support and grievances[span_12](start_span)[span_12](end_span).</p>
+                    <p><strong>1. Quick Delivery:</strong> Manor Mart aggregates products locally in Manor, Maharashtra within geo-fenced boundaries[span_8](start_span)[span_8](end_span).</p>
+                    <p><strong>2. 5-7 Days Refund Policy:</strong> Prepaid orders (Razorpay/UPI) cancelled before dispatch will be automatically refunded back to the source bank account within 5 to 7 business days[span_9](start_span)[span_9](end_span).</p>
+                    <p><strong>3. Data Privacy:</strong> We collect your mobile number, address, and live GPS strictly to verify delivery radius and fulfill orders[span_10](start_span)[span_10](end_span).</p>
+                    <p><strong>4. Support:</strong> Contact us at <em>shabaj9769@gmail.com</em> for order support and grievances[span_11](start_span)[span_11](end_span).</p>
                 </div>
                 <button onclick="closeLegalModal()" class="w-full bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold">✓ Close Policy</button>
             </div>
         </div>
 
         <!-- Floating Cart Bar -->
-        <div id="floating-cart" class="hidden fixed bottom-16 left-3 right-3 bg-green-700 text-white p-3.5 rounded-2xl flex justify-between items-center shadow-xl z-30 max-w-2xl mx-auto">
+        <div id="floating-cart" class="hidden fixed bottom-16 left-3 right-3 bg-green-700 text-white p-3.5 rounded-2xl flex justify-between items-center shadow-xl z-30 max-w-xl mx-auto">
             <div>
                 <p id="floating-cart-info" class="text-xs font-extrabold">0 items • ₹0</p>
                 <p class="text-[10px] text-green-100">All taxes included</p>
@@ -282,7 +282,7 @@
         </div>
 
         <!-- Bottom Navigation Bar -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-2 z-40 shadow-lg max-w-2xl mx-auto">
+        <nav class="fixed bottom-0 left-0 right-0 w-full bg-white border-t border-gray-200 flex justify-around py-2 z-40 shadow-lg">
             <button onclick="switchTab('shop')" id="bnav-shop" class="flex flex-col items-center text-green-700 font-bold text-[10px]">
                 <span class="text-lg">🛍️</span> Shop
             </button>
@@ -839,7 +839,7 @@
             location.reload();
         }
 
-        // --- FIXED PLACE ORDER & ONLINE RETURN REDIRECTION ---
+        // --- FIXED PLACE ORDER & BROWSER ONLY RETURN ---
         function placeOrder() {
             if (storeSettings.storeOpen === false) {
                 return alert("Store is currently closed! New orders are suspended.");
@@ -899,10 +899,9 @@
                 updateCartUI();
 
                 if (paymentMode === 'Online') {
-                    // Force redirect back to website URL without app_scheme
+                    // Browser redirect return link
                     let currentSiteBase = window.location.origin + window.location.pathname;
                     let targetReturnUrl = encodeURIComponent(`${currentSiteBase}?status=success&order_id=${orderId}`);
-                    
                     let paymentGatewayUrl = `https://shabaj9769-alt.github.io/manormart-pay/?amount=${grandTotal}&order_id=${orderId}&redirect_url=${targetReturnUrl}`;
                     window.location.href = paymentGatewayUrl;
                 } else {
