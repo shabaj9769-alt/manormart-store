@@ -41,7 +41,7 @@
         <span class="animate-floating-item absolute bottom-60 left-1/2 text-xl">🥤</span>
     </div>
 
-    <!-- MANDATORY LOGIN MODAL (APPEARS ON STARTUP / LOGOUT IF NO PHONE) -->
+    <!-- MANDATORY LOGIN MODAL -->
     <div id="mandatory-login-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-2xl text-center relative animate-slide-up">
             <div class="w-12 h-12 bg-green-100 text-green-700 rounded-2xl mx-auto flex items-center justify-center text-xl font-black">📱</div>
@@ -161,19 +161,22 @@
                     </div>
                 </div>
 
-                <!-- BLINKIT STYLE SPLIT VIEW WITH STICKY CATEGORY HEADER -->
+                <!-- BLINKIT STYLE SPLIT VIEW WITH FULLY FIXED STICKY CATEGORY HEADER -->
                 <div id="blinkit-split-view" class="hidden w-full flex-1 flex overflow-hidden border-t border-gray-100 h-[calc(100vh-130px)]">
                     <div id="sidebar-categories" class="w-[74px] shrink-0 bg-gray-50 border-r border-gray-200 overflow-y-auto no-scrollbar flex flex-col divide-y divide-gray-100"></div>
 
-                    <div class="flex-1 min-w-0 bg-white p-2.5 overflow-y-auto flex flex-col">
-                        <div class="sticky top-0 bg-white/95 backdrop-blur-xs z-20 flex justify-between items-center mb-2 pb-1.5 border-b border-gray-100 shrink-0">
+                    <!-- Right container handles internal scrolling properly while keeping header sticky -->
+                    <div class="flex-1 min-w-0 bg-white flex flex-col overflow-y-auto relative">
+                        <div class="sticky top-0 bg-white/95 backdrop-blur-xs z-30 px-2.5 pt-2.5 pb-2 border-b border-gray-100 flex justify-between items-center shadow-2xs">
                             <div class="truncate mr-1">
                                 <h3 id="split-cat-title" class="font-black text-xs text-gray-900 uppercase truncate">CATEGORY</h3>
                                 <span id="split-prod-count" class="text-[9px] text-gray-400 font-bold">0 items</span>
                             </div>
                             <button onclick="closeSplitCategory()" class="shrink-0 text-[11px] bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1 rounded-lg font-extrabold transition">✕ Close</button>
                         </div>
-                        <div id="split-products-grid" class="grid grid-cols-2 gap-2 pb-24"></div>
+                        <div class="p-2.5 flex-1">
+                            <div id="split-products-grid" class="grid grid-cols-2 gap-2 pb-24"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -376,7 +379,6 @@
         let deleteStepOrderId = null;
 
         window.onload = () => {
-            // Check if user is logged in (has valid phone number)
             if (!currentPhone) {
                 document.getElementById('mandatory-login-modal').classList.remove('hidden');
             } else {
@@ -421,7 +423,6 @@
 
             document.getElementById('mandatory-login-modal').classList.add('hidden');
             
-            // Proceed to location selection
             let locationSet = localStorage.getItem('manor_location_confirmed');
             if (!locationSet || !currentAddr) {
                 document.getElementById('initial-location-modal').classList.remove('hidden');
