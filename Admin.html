@@ -47,7 +47,7 @@
         <main class="flex-1 p-4 pb-24 overflow-y-auto">
             
             <!-- TAB 1: ORDERS -->
-            <div id="view-orders" class="space-y-4">
+            <div id="view-orders" class="hidden space-y-4">
                 <div class="bg-white p-3 rounded-2xl border border-green-200 shadow-2xs">
                     <input type="text" id="order-search" oninput="renderOrders()" placeholder="🔍 Global Search Order by Customer Name, Phone or ID..." class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs outline-none">
                 </div>
@@ -57,7 +57,6 @@
                     <button onclick="loadOrders()" class="bg-green-100 text-green-800 px-3 py-1.5 rounded-lg text-xs font-bold shadow-2xs">🔄 Refresh</button>
                 </div>
 
-                <!-- Normal Pending Orders -->
                 <div class="bg-white rounded-2xl border border-green-200 overflow-hidden shadow-2xs">
                     <button onclick="toggleSection('normal-body')" class="w-full bg-green-800 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
                         <span>📦 NORMAL PENDING ORDERS</span> <span id="normal-count">(0)</span>
@@ -65,7 +64,6 @@
                     <div id="normal-body" class="p-3 space-y-3"></div>
                 </div>
 
-                <!-- Express Orders -->
                 <div class="bg-white rounded-2xl border border-orange-200 overflow-hidden shadow-2xs">
                     <button onclick="toggleSection('express-body')" class="w-full bg-orange-600 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
                         <span>⚡ EXPRESS ORDERS</span> <span id="express-count">(0)</span>
@@ -73,7 +71,6 @@
                     <div id="express-body" class="p-3 space-y-3 hidden"></div>
                 </div>
 
-                <!-- Store Earnings & Audit -->
                 <div class="bg-white rounded-2xl border border-green-200 overflow-hidden shadow-2xs">
                     <button onclick="toggleSection('stats-body')" class="w-full bg-green-900 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
                         <span>📊 Store Earnings & Cash / Online Audit</span> <span>▼</span>
@@ -86,34 +83,6 @@
                     </div>
                 </div>
 
-                <!-- All Delivery Boys Collection Audit -->
-                <div class="bg-white rounded-2xl border border-sky-200 overflow-hidden shadow-2xs">
-                    <button onclick="toggleSection('boys-audit-body')" class="w-full bg-sky-700 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
-                        <span>🚴 All Delivery Boys Collection Audit</span> <span>▼</span>
-                    </button>
-                    <div id="boys-audit-body" class="p-3 space-y-2 hidden">
-                        <p class="text-[11px] text-gray-600 font-bold">Delivered Orders Collection by All Partners Combined:</p>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div class="bg-sky-50 p-2 rounded-xl text-center"><p class="text-[9px] font-bold text-gray-500">Delivered</p><p id="audit-boys-count" class="text-sm font-black text-sky-900">0</p></div>
-                            <div class="bg-amber-50 p-2 rounded-xl text-center"><p class="text-[9px] font-bold text-gray-500">Cash in Hand</p><p id="audit-boys-cash" class="text-sm font-black text-amber-800">₹0</p></div>
-                            <div class="bg-purple-50 p-2 rounded-xl text-center"><p class="text-[9px] font-bold text-gray-500">Online Paid</p><p id="audit-boys-online" class="text-sm font-black text-purple-900">₹0</p></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Search Boy Performance by Phone -->
-                <div class="bg-white rounded-2xl border border-purple-200 overflow-hidden shadow-2xs">
-                    <button onclick="toggleSection('boy-search-body')" class="w-full bg-purple-900 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
-                        <span>🔍 Search Boy Performance by Phone Number</span> <span>▼</span>
-                    </button>
-                    <div id="boy-search-body" class="p-3 space-y-2 hidden">
-                        <label class="text-[10px] font-bold text-gray-600 block">Enter 10-digit Phone Number:</label>
-                        <input type="tel" id="search-boy-phone" maxlength="10" oninput="searchBoyByPhone()" placeholder="Enter 10-digit Mobile Number" class="w-full p-2 bg-gray-50 border border-purple-200 rounded-xl text-xs outline-none font-bold">
-                        <div id="boy-search-result" class="mt-2"></div>
-                    </div>
-                </div>
-
-                <!-- Delivered Orders -->
                 <div class="bg-white rounded-2xl border border-green-200 overflow-hidden shadow-2xs">
                     <button onclick="toggleSection('delivered-body')" class="w-full bg-green-700 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
                         <span>✅ DELIVERED ORDERS</span> <span id="delivered-count">(0)</span>
@@ -121,7 +90,6 @@
                     <div id="delivered-body" class="p-3 space-y-3 hidden"></div>
                 </div>
 
-                <!-- Cancelled Orders -->
                 <div class="bg-white rounded-2xl border border-red-200 overflow-hidden shadow-2xs">
                     <button onclick="toggleSection('cancelled-body')" class="w-full bg-red-700 text-white p-3 text-left font-extrabold text-xs flex justify-between items-center">
                         <span>❌ CANCELLED ORDERS</span> <span id="cancelled-count">(0)</span>
@@ -136,7 +104,6 @@
                     <input type="text" id="global-product-search" oninput="renderProductCatalog()" placeholder="🔍 Search any product to edit/delete..." class="w-full p-2.5 bg-gray-50 border border-green-200 rounded-xl text-xs outline-none">
                 </div>
 
-                <!-- Create Category Card -->
                 <div class="bg-green-50 p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
                     <h3 class="font-extrabold text-xs text-green-900 uppercase">📁 Create New Category</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -146,7 +113,6 @@
                     <button onclick="addCategory()" class="w-full bg-green-900 text-white py-2.5 rounded-xl text-xs font-extrabold shadow-sm hover:bg-green-800 transition">Add Category</button>
                 </div>
 
-                <!-- Add New Product Form -->
                 <div class="bg-green-50 p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
                     <h3 class="font-extrabold text-xs text-green-900 uppercase">🛍️ Add New Product</h3>
                     <div>
@@ -178,7 +144,6 @@
                     <button onclick="addProduct()" class="w-full bg-green-900 text-white py-3 rounded-xl text-xs font-extrabold shadow-md hover:bg-green-800 transition mt-1">Save & Add Product</button>
                 </div>
 
-                <!-- Manage Store Catalog (Accordion Folders) -->
                 <div class="bg-white p-4 rounded-2xl border border-green-200 shadow-2xs space-y-3">
                     <div class="flex justify-between items-center">
                         <h3 class="font-extrabold text-xs text-green-900 uppercase">🎯 Manage Store Catalog</h3>
@@ -353,7 +318,8 @@
     </div>
 
     <script>
-        const DB_URL = "https://manorbiryani-default-rtdb.firebaseio.com/";
+        // Updated to use the correct matching Firebase URL
+        const DB_URL = "https://manormart-b14cd-default-rtdb.firebaseio.com/";
         let adminPin = '1234';
         let storeData = { categories: {}, orders: {}, deliveryBoys: {}, settings: {} };
         let selectedProductCat = '';
@@ -433,37 +399,6 @@
             });
         }
 
-        function formatOrderDateTime(ts) {
-            if (!ts) return '';
-            try {
-                const d = new Date(Number(ts));
-                return d.toLocaleString('en-IN', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true
-                });
-            } catch(e) {
-                return '';
-            }
-        }
-
-        function groupOrdersByDate(orderList) {
-            let groups = {};
-            orderList.forEach(ord => {
-                let dateKey = 'Other';
-                if (ord.timestamp) {
-                    let d = new Date(ord.timestamp);
-                    dateKey = d.toLocaleDateString('en-GB');
-                }
-                if (!groups[dateKey]) groups[dateKey] = [];
-                groups[dateKey].push(ord);
-            });
-            return groups;
-        }
-
         function renderOrders() {
             let ordersObj = storeData.orders || {};
             let list = Object.keys(ordersObj).map(k => ({ id: k, ...ordersObj[k] })).reverse();
@@ -489,133 +424,61 @@
             document.getElementById('cancelled-count').innerText = `(${cancelledList.length})`;
 
             let totalSales = 0, totalCash = 0, totalOnline = 0;
-            let allBoysDelivered = 0, allBoysCash = 0, allBoysOnline = 0;
-
             list.forEach(o => {
                 let v = Number(o.total || 0);
                 totalSales += v;
                 if (o.payment === 'Online') totalOnline += v;
                 else totalCash += v;
-
-                if (o.deliveryStatus === 'Delivered' && o.assignedBoy) {
-                    allBoysDelivered++;
-                    if (o.payment === 'Online') allBoysOnline += v;
-                    else allBoysCash += v;
-                }
             });
-
             document.getElementById('stat-total-ord').innerText = list.length;
             document.getElementById('stat-total-sales').innerText = '₹' + totalSales;
             document.getElementById('stat-total-cash').innerText = '₹' + totalCash;
             document.getElementById('stat-total-online').innerText = '₹' + totalOnline;
 
-            document.getElementById('audit-boys-count').innerText = allBoysDelivered;
-            document.getElementById('audit-boys-cash').innerText = '₹' + allBoysCash;
-            document.getElementById('audit-boys-online').innerText = '₹' + allBoysOnline;
-
-            renderGroupedOrders('normal-body', groupOrdersByDate(normalList), false);
-            renderGroupedOrders('express-body', groupOrdersByDate(expressList), true);
-            renderGroupedOrders('delivered-body', groupOrdersByDate(deliveredList), false);
-            renderGroupedOrders('cancelled-body', groupOrdersByDate(cancelledList), false);
+            renderOrderGroup('normal-body', normalList);
+            renderOrderGroup('express-body', expressList);
+            renderOrderGroup('delivered-body', deliveredList);
+            renderOrderGroup('cancelled-body', cancelledList);
         }
 
-        function renderGroupedOrders(containerId, groupsObj, isExpress) {
+        function renderOrderGroup(containerId, ordersArr) {
             let con = document.getElementById(containerId);
             con.innerHTML = '';
-            let dateKeys = Object.keys(groupsObj);
-
-            if (dateKeys.length === 0) {
+            if (ordersArr.length === 0) {
                 con.innerHTML = '<p class="text-center text-gray-400 text-xs py-4">No orders in this section.</p>';
                 return;
             }
 
-            dateKeys.forEach(dateStr => {
-                let ordersArr = groupsObj[dateStr];
-                con.innerHTML += `<div class="bg-gray-200 px-2.5 py-1 rounded text-[11px] font-extrabold text-gray-700 my-2">📅 Date: ${dateStr} (${ordersArr.length} orders)</div>`;
+            ordersArr.forEach(ord => {
+                let itemsStr = Object.values(ord.items || {}).map(i => `• ${i.name} (${i.unit}) x ${i.qty}`).join('<br>');
+                let boysObj = storeData.deliveryBoys || {};
+                let boysBtns = Object.keys(boysObj).map(bk => {
+                    let b = boysObj[bk];
+                    return `<button onclick="assignBoy('${ord.id}', '${b.name}', '${b.phone}')" class="bg-green-700 text-white px-2 py-1 rounded text-[10px] font-bold mr-1 mb-1">${b.name}</button>`;
+                }).join('');
 
-                ordersArr.forEach(ord => {
-                    let itemsStr = Object.values(ord.items || {}).map(i => `• ${i.name} (${i.unit}) x ${i.qty} = ₹${(Number(i.effectivePrice || i.price)) * i.qty}`).join('<br>');
-                    let boysObj = storeData.deliveryBoys || {};
-                    let boysBtns = Object.keys(boysObj).map(bk => {
-                        let b = boysObj[bk];
-                        return `<button onclick="assignBoy('${ord.id}', '${b.name}', '${b.phone}')" class="bg-green-700 text-white px-2 py-1 rounded text-[10px] font-bold mr-1 mb-1">${b.name}</button>`;
-                    }).join('');
-
-                    let timeFormatted = formatOrderDateTime(ord.timestamp);
-
-                    con.innerHTML += `
-                        <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs space-y-2">
-                            <div class="flex justify-between font-extrabold text-green-900">
-                                <span>${isExpress ? '⚡ EXPRESS' : 'ORDER'} #${ord.id.slice(-6)}</span>
-                                <span class="text-green-700">₹${ord.total} (${ord.payment})</span>
-                            </div>
-                            ${timeFormatted ? `<p class="text-[10px] text-purple-800 font-bold">🕒 Placed on: ${timeFormatted}</p>` : ''}
-                            <p class="text-gray-700">👤 <strong>${ord.name}</strong> (${ord.phone})</p>
-                            <p class="text-gray-600">📍 ${ord.addr} | Shift: ${ord.deliveryShift || 'Normal'}</p>
-                            <div class="bg-white p-2 rounded border border-gray-200 text-[11px]">${itemsStr}</div>
-                            <p class="font-bold text-green-800">Status: ${ord.deliveryStatus || 'Pending'} | Partner: ${ord.assignedBoy || 'None'} ${ord.deliveryBoyPhone ? '(' + ord.deliveryBoyPhone + ')' : ''}</p>
-                            <div class="pt-1 flex flex-wrap gap-1">${boysBtns}</div>
-                            <div class="flex justify-between items-center pt-2 border-t border-gray-200">
-                                <div class="space-x-1">
-                                    <button onclick="updateStatus('${ord.id}', 'Order Successful')" class="bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold">Accept</button>
-                                    <button onclick="updateStatus('${ord.id}', 'Out for Delivery')" class="bg-amber-500 text-white px-2 py-1 rounded text-[10px] font-bold">Dispatched</button>
-                                    <button onclick="updateStatus('${ord.id}', 'Delivered')" class="bg-green-600 text-white px-2 py-1 rounded text-[10px] font-bold">Delivered</button>
-                                </div>
-                                <button onclick="deleteOrder('${ord.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded text-[10px] font-bold">Delete</button>
-                            </div>
+                con.innerHTML += `
+                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs space-y-2">
+                        <div class="flex justify-between font-extrabold text-green-900">
+                            <span>ORDER #${ord.id.slice(-6)}</span>
+                            <span class="text-green-700">₹${ord.total} (${ord.payment})</span>
                         </div>
-                    `;
-                });
-            });
-        }
-
-        function searchBoyByPhone() {
-            let phone = document.getElementById('search-boy-phone').value.trim();
-            let resCon = document.getElementById('boy-search-result');
-            resCon.innerHTML = '';
-
-            if (phone.length !== 10) return;
-
-            let boys = storeData.deliveryBoys || {};
-            let foundBoy = null;
-            for (let bk in boys) {
-                if (boys[bk].phone === phone) {
-                    foundBoy = boys[bk];
-                    break;
-                }
-            }
-
-            if (!foundBoy) {
-                resCon.innerHTML = '<p class="text-red-600 text-[11px]">No delivery boy registered with this phone number.</p>';
-                return;
-            }
-
-            let ordersObj = storeData.orders || {};
-            let list = Object.keys(ordersObj).map(k => ({ id: k, ...ordersObj[k] }));
-            let boyOrders = list.filter(o => o.assignedBoy === foundBoy.name && o.deliveryStatus === 'Delivered');
-            
-            let totalCash = 0, totalOnline = 0, totalAmt = 0;
-            boyOrders.forEach(o => {
-                let amt = Number(o.total || 0);
-                totalAmt += amt;
-                if (o.payment === 'Online') totalOnline += amt;
-                else totalCash += amt;
-            });
-
-            let itemsListHtml = boyOrders.map(bo => `<p class="text-[10px] text-gray-700">• Order #${bo.id.slice(-6)} - ₹${bo.total} (${bo.payment})</p>`).join('');
-
-            resCon.innerHTML = `
-                <div class="bg-purple-50 p-3 rounded-xl border border-purple-200 text-xs space-y-1">
-                    <p class="font-black text-purple-900">Partner: ${foundBoy.name} (${foundBoy.phone})</p>
-                    <div class="grid grid-cols-4 gap-1 py-1 text-center font-bold">
-                        <div class="bg-white p-1 rounded"><span class="text-[9px] text-gray-500 block">Orders</span>${boyOrders.length}</div>
-                        <div class="bg-white p-1 rounded"><span class="text-[9px] text-gray-500 block">Cash</span>₹${totalCash}</div>
-                        <div class="bg-white p-1 rounded"><span class="text-[9px] text-gray-500 block">Online</span>₹${totalOnline}</div>
-                        <div class="bg-white p-1 rounded"><span class="text-[9px] text-gray-500 block">Total</span>₹${totalAmt}</div>
+                        <p class="text-gray-700">👤 <strong>${ord.name}</strong> (${ord.phone})</p>
+                        <p class="text-gray-600">📍 ${ord.addr}</p>
+                        <div class="bg-white p-2 rounded border border-gray-200 text-[11px]">${itemsStr}</div>
+                        <p class="font-bold text-green-800">Status: ${ord.deliveryStatus || 'Pending'} | Partner: ${ord.assignedBoy || 'None'}</p>
+                        <div class="pt-1 flex flex-wrap gap-1">${boysBtns}</div>
+                        <div class="flex justify-between items-center pt-2 border-t border-gray-200">
+                            <div class="space-x-1">
+                                <button onclick="updateStatus('${ord.id}', 'Order Successful')" class="bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold">Accept</button>
+                                <button onclick="updateStatus('${ord.id}', 'Out for Delivery')" class="bg-amber-500 text-white px-2 py-1 rounded text-[10px] font-bold">Dispatched</button>
+                                <button onclick="updateStatus('${ord.id}', 'Delivered')" class="bg-green-600 text-white px-2 py-1 rounded text-[10px] font-bold">Delivered</button>
+                            </div>
+                            <button onclick="deleteOrder('${ord.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded text-[10px] font-bold">Delete</button>
+                        </div>
                     </div>
-                    <div class="mt-1 max-h-24 overflow-y-auto bg-white p-1.5 rounded">${itemsListHtml || '<p class="text-[10px] text-gray-400">No delivered orders yet.</p>'}</div>
-                </div>
-            `;
+                `;
+            });
         }
 
         function updateStatus(orderId, status) {
@@ -844,7 +707,7 @@
                 method: 'PATCH',
                 body: JSON.stringify({ name, price, discount: disc, unit, image })
             }).then(() => {
-                alert("Product updated successfully!");
+                alert("Product updated with photo successfully!");
                 closeEditModal();
                 loadAllData();
             });
